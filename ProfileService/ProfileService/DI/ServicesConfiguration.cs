@@ -1,27 +1,18 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using ProfileService.BLL.Utilities.Mapping;
-using ProfileService.DAL.Repositories.IRepositories;
-using ProfileService.DAL.Repositories;
 using System.Security.Claims;
-using ProfileService.BLL.Services.IServices;
-using ProfileService.BLL.Services;
-using Microsoft.EntityFrameworkCore;
-using ProfileService.DAL.DataContext;
 
 namespace ProfileService.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration) => services.AddDbContext<ProfileDbContext>(options =>
+        public static void AddApiDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("ProfileDatabase");
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
+        }
 
-            options.UseNpgsql(connectionString);
-        });
-
-        public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
+        private static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -41,7 +32,7 @@ namespace ProfileService.DI
             });
         }
 
-        public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+        private static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
             string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? throw new InvalidOperationException("Cors origins are not defined");
 
@@ -52,28 +43,6 @@ namespace ProfileService.DI
                                           .AllowAnyHeader()
                                           .AllowCredentials());
             });
-        }
-        public static void AddMapper(this IServiceCollection services)
-        {
-            var mapperConfig = new MapperConfiguration(config =>
-            {
-                config.AddProfile(new AutoMapperProfile());
-            });
-
-            IMapper mapper = mapperConfig.CreateMapper();
-
-            services.AddSingleton(mapper);
-        }
-
-        public static void AddDataAccessRepositories(this IServiceCollection services)
-        {
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            services.AddScoped<IProfileRepository, ProfileRepository>();
-        }
-
-        public static void AddBusinessLogicServices(this IServiceCollection services)
-        {
-            services.AddScoped<IUserProfileService, UserProfileService>();
         }
     }
 }

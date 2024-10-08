@@ -1,3 +1,4 @@
+using ProfileService.BLL.DI;
 using ProfileService.DI;
 using ProfileService.Middleware;
 
@@ -11,15 +12,13 @@ namespace ProfileService
 
             var services = builder.Services;
 
+            services.AddApplicationDependencies(builder.Configuration);
+            services.AddApiDependencies(builder.Configuration);
+
             services.AddControllers();
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddAuthenticationBearer(builder.Configuration);
-            services.AddCorsPolicy(builder.Configuration);
-            services.AddDatabaseContext(builder.Configuration);
-            services.AddDataAccessRepositories();
-            services.AddBusinessLogicServices();
-            services.AddMapper();
 
             var app = builder.Build();
 
