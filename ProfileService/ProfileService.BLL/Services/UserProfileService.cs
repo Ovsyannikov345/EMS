@@ -2,6 +2,7 @@
 using ProfileService.BLL.Dto;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
+using ProfileService.BLL.Utilities.Messages;
 using ProfileService.DAL.Models;
 using ProfileService.DAL.Repositories.IRepositories;
 
@@ -15,7 +16,7 @@ namespace ProfileService.BLL.Services
 
             if (await profileRepository.GetByFilterAsync(p => p.Auth0Id == userProfile.Auth0Id, cancellationToken) is not null)
             {
-                throw new BadRequestException("Profile already exists");
+                throw new BadRequestException(UserProfileMessages.ProfileAlreadyExists);
             }
 
             return await profileRepository.CreateAsync(userProfile, cancellationToken);
