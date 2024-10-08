@@ -2,7 +2,5 @@
 
 namespace CatalogueService.DAL.Repositories.IRepositories
 {
-    public interface IEstateRepository : IGenericRepository<Estate>
-    {
-    }
+    public interface IEstateRepository : IGenericRepository<Estate>;
 }

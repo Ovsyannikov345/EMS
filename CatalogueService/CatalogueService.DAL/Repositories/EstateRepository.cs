@@ -4,7 +4,5 @@ using CatalogueService.DAL.Repositories.IRepositories;
 
 namespace CatalogueService.DAL.Repositories
 {
-    public class EstateRepository(EstateDbContext context) : GenericRepository<Estate>(context), IEstateRepository
-    {
-    }
+    public class EstateRepository(EstateDbContext context) : GenericRepository<Estate>(context), IEstateRepository;
 }
