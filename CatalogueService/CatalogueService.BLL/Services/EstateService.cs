@@ -1,6 +1,7 @@
 ﻿using CatalogueService.BLL.Dto;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utitlities.Exceptions;
+using CatalogueService.BLL.Utitlities.Messages;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories;
 
@@ -19,7 +20,7 @@ namespace CatalogueService.BLL.Services
 
             if (deletedEstate is null)
             {
-                throw new NotFoundException("Estate doesn't exist");
+                throw new NotFoundException(EstateMessages.EstateNotFound);
             }
 
             return deletedEstate;
@@ -39,7 +40,7 @@ namespace CatalogueService.BLL.Services
         {
             if (!await estateRepository.Exists(e => e.Id == estate.Id, cancellationToken))
             {
-                throw new NotFoundException("Estate not found");
+                throw new NotFoundException(EstateMessages.EstateNotFound);
             }
 
             await estateRepository.UpdateAsync(estate, cancellationToken);
