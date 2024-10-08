@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProfileService.BLL.Dto;
 using ProfileService.BLL.Services.IServices;
+using ProfileService.DAL.Models;
 
 namespace ProfileService.Controllers
 {
@@ -11,11 +12,11 @@ namespace ProfileService.Controllers
     {
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> CreateProfile(UserRegistrationData userData, CancellationToken cancellationToken)
+        public async Task<UserProfile> CreateProfile(UserRegistrationData userData, CancellationToken cancellationToken)
         {
             var profile = await profileService.CreateProfileAsync(userData, cancellationToken);
 
-            return Ok(profile);
+            return profile;
         }
     }
 }
