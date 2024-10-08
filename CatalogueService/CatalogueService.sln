@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogueService", "CatalogueService\CatalogueService.csproj", "{D8317E0F-364E-451C-ACB8-147B2D408B8C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{787C1F6C-E8E1-46EF-B44A-FDAC73605E95} = {787C1F6C-E8E1-46EF-B44A-FDAC73605E95}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogueService.DAL", "CatalogueService.DAL\CatalogueService.DAL.csproj", "{740DF6F6-C4E5-4856-9B6E-8DE9D03064CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogueService.BLL", "CatalogueService.BLL\CatalogueService.BLL.csproj", "{787C1F6C-E8E1-46EF-B44A-FDAC73605E95}"
+	ProjectSection(ProjectDependencies) = postProject
+		{740DF6F6-C4E5-4856-9B6E-8DE9D03064CA} = {740DF6F6-C4E5-4856-9B6E-8DE9D03064CA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
