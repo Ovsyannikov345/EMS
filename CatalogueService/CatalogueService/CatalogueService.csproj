@@ -12,10 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\CatalogueService.BLL\CatalogueService.BLL.csproj" />
     <ProjectReference Include="..\CatalogueService.DAL\CatalogueService.DAL.csproj" />
   </ItemGroup>
 
