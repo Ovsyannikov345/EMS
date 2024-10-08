@@ -16,7 +16,7 @@ namespace ProfileService.DI
     {
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration) => services.AddDbContext<ProfileDbContext>(options =>
         {
-            var connectionString = configuration["ConnectionStrings:ProfileDatabase"];
+            var connectionString = configuration.GetConnectionString("ProfileDatabase");
 
             options.UseNpgsql(connectionString);
         });
