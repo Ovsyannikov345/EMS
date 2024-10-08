@@ -18,5 +18,11 @@ namespace ProfileService.Controllers
 
             return profile;
         }
+
+        [HttpGet("{id}")]
+        public async Task<UserProfile> GetUserProfile(Guid id, CancellationToken cancellationToken)
+        {
+            return await profileService.GetProfileAsync(id, cancellationToken);
+        }
     }
 }
