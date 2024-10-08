@@ -50,5 +50,10 @@ namespace CatalogueService.DAL.Repositories
 
             return entity;
         }
+
+        public async Task<bool> Exists(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return await context.Set<TEntity>().AnyAsync(predicate, cancellationToken);
+        }
     }
 }
