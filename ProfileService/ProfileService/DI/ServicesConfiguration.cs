@@ -10,6 +10,7 @@ namespace ProfileService.DI
         {
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddGrpc();
         }
 
         private static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)

@@ -1,4 +1,5 @@
 using ProfileService.BLL.DI;
+using ProfileService.BLL.Grpc.Services;
 using ProfileService.DI;
 using ProfileService.Middleware;
 
@@ -35,6 +36,7 @@ namespace ProfileService
 
             app.UseHttpsRedirection();
             app.MapControllers();
+            app.MapGrpcService<ProfileGrpcService>();
 
             app.UseAuthentication();
             app.UseAuthorization();
