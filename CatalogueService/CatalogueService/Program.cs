@@ -1,20 +1,26 @@
+using CatalogueService.DI;
+using CatalogueService.Middleware;
 
 namespace CatalogueService
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var services = builder.Services;
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            services.AddApiDependencies(builder.Configuration);
+
+            services.AddControllers();
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -23,12 +29,14 @@ namespace CatalogueService
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
 
+            app.UseHttpsRedirection();
+            app.MapControllers();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
-
-            app.MapControllers();
 
             app.Run();
         }
