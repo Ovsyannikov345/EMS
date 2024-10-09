@@ -14,7 +14,7 @@ namespace ProfileService.BLL.Utilities.Mapping
                 .ForMember(dest => dest.Auth0Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-            CreateMap<UserProfile, ProfileResponse>()
+            CreateMap<UserProfile, ProtoProfileModel>()
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
         }
     }

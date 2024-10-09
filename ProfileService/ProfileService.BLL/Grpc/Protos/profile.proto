@@ -11,17 +11,24 @@ service ProfileService {
     rpc GetOwnProfile (OwnProfileRequest) returns (ProfileResponse);
 }
 
-message ProfileRequest {
-    string id = 1;
-}
-
-message ProfileResponse {
+message ProtoProfileModel {
     string id = 1;
     string auth0Id = 2;
     string first_name = 3;
     string last_name = 4;
     string phone_number = 5;
     google.protobuf.Timestamp birth_date = 6;
+}
+
+message ProfileRequest {
+    string id = 1;
+}
+
+message ProfileResponse {
+    ProtoProfileModel profile = 1;
+
+    int32 statusCode = 2;
+    string message = 3;
 }
 
 message OwnProfileRequest {

@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace ProfileService.Utilities.Responses
+﻿namespace ProfileService.Utilities.Responses
 {
-    public record ExceptionResponse(HttpStatusCode StatusCode, string Message);
+    public record ExceptionResponse(int StatusCode, string Message);
 }

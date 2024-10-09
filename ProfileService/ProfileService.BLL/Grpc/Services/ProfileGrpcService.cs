@@ -17,14 +17,20 @@ namespace ProfileService.BLL.Grpc.Services
 
             var profile = await userProfileService.GetProfileAsync(profileId, context.CancellationToken);
 
-            return mapper.Map<ProfileResponse>(profile);
+            return new ProfileResponse
+            {
+                Profile = mapper.Map<ProtoProfileModel>(profile)
+            };
         }
 
         public override async Task<ProfileResponse> GetOwnProfile(OwnProfileRequest request, ServerCallContext context)
         {
             var profile = await userProfileService.GetOwnProfileAsync(request.Auth0Id, context.CancellationToken);
 
-            return mapper.Map<ProfileResponse>(profile);
+            return new ProfileResponse
+            {
+                Profile = mapper.Map<ProtoProfileModel>(profile)
+            };
         }
     }
 }

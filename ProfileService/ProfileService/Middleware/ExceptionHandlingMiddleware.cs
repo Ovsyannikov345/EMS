@@ -22,13 +22,13 @@ namespace ProfileService.Middleware
         {
             ExceptionResponse response = ex switch
             {
-                BadRequestException => new(HttpStatusCode.BadRequest, ex.Message),
-                NotFoundException => new(HttpStatusCode.NotFound, ex.Message),
-                _ => new(HttpStatusCode.InternalServerError, ex.Message),
+                BadRequestException => new((int)HttpStatusCode.BadRequest, ex.Message),
+                NotFoundException => new((int)HttpStatusCode.NotFound, ex.Message),
+                _ => new((int)HttpStatusCode.InternalServerError, ex.Message),
             };
 
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)response.StatusCode;
+            context.Response.StatusCode = response.StatusCode;
             await context.Response.WriteAsJsonAsync(response);
         }
     }
