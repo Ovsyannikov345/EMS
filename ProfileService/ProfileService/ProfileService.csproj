@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Google.Api.CommonProtos" Version="2.16.0" />
+	<PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
+	<PackageReference Include="Grpc.Core" Version="2.46.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>

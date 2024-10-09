@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ProfileService.Extensions;
 using System.Security.Claims;
 
 namespace ProfileService.DI
@@ -10,6 +11,7 @@ namespace ProfileService.DI
         {
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
         }
 
         private static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)

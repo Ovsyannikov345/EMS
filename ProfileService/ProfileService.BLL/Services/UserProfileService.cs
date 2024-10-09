@@ -21,5 +21,29 @@ namespace ProfileService.BLL.Services
 
             return await profileRepository.CreateAsync(userProfile, cancellationToken);
         }
+
+        public async Task<UserProfile> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken);
+
+            if (userProfile is null)
+            {
+                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
+            }
+
+            return userProfile;
+        }
+
+        public async Task<UserProfile> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
+        {
+            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken);
+
+            if (userProfile is null)
+            {
+                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
+            }
+
+            return userProfile;
+        }
     }
 }
