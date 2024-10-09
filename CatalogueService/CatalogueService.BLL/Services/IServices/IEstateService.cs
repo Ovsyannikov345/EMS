@@ -7,7 +7,7 @@ namespace CatalogueService.BLL.Services.IServices
     {
         public Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken = default);
 
-        public Task<Estate> GetEstateDetails(CancellationToken cancellationToken = default);
+        public Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default);
 
         public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default);
 

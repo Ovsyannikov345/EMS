@@ -1,13 +1,15 @@
-﻿using CatalogueService.BLL.Dto;
+﻿using AutoMapper;
+using CatalogueService.BLL.Dto;
+using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.BLL.Services.IServices;
-using CatalogueService.BLL.Utitlities.Exceptions;
+using CatalogueService.BLL.Utilities.Exceptions;
 using CatalogueService.BLL.Utitlities.Messages;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories;
 
 namespace CatalogueService.BLL.Services
 {
-    public class EstateService(EstateRepository estateRepository) : IEstateService
+    public class EstateService(EstateRepository estateRepository, ProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
     {
         public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default)
         {
@@ -26,9 +28,15 @@ namespace CatalogueService.BLL.Services
             return deletedEstate;
         }
 
-        public Task<Estate> GetEstateDetails(CancellationToken cancellationToken = default)
+        public async Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var estate = await estateRepository.GetByIdAsync(id, cancellationToken);
+
+            var estateFullDetails = mapper.Map<EstateFullDetails>(estate);
+
+            estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId);
+
+            return estateFullDetails;
         }
 
         public async Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken = default)
