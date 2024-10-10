@@ -7,14 +7,7 @@ namespace CatalogueService.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApiDependencies(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddApplicationDependencies(configuration);
-            services.AddAuthenticationBearer(configuration);
-            services.AddCorsPolicy(configuration);
-        }
-
-        private static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -34,7 +27,7 @@ namespace CatalogueService.DI
             });
         }
 
-        private static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
             string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? throw new InvalidOperationException("Cors origins are not defined");
 

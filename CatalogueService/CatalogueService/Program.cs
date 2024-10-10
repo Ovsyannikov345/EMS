@@ -1,5 +1,7 @@
+using CatalogueService.BLL.DI;
 using CatalogueService.DI;
 using CatalogueService.Middleware;
+using Microsoft.Extensions.Configuration;
 
 namespace CatalogueService
 {
@@ -11,7 +13,11 @@ namespace CatalogueService
 
             var services = builder.Services;
 
-            services.AddApiDependencies(builder.Configuration);
+            var configuration = builder.Configuration;
+
+            services.AddBusinessLogicDependencies(configuration);
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
 
             services.AddControllers();
 

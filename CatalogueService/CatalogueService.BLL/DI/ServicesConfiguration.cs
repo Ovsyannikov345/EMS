@@ -8,38 +8,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Grpc.Net.ClientFactory;
 using CatalogueService.BLL.Grpc.Services.IServices;
+using System.Reflection;
 
 namespace CatalogueService.BLL.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
+        public static void AddBusinessLogicDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDataAccessDependencies(configuration);
-            services.AddMapper();
-            services.AddGrpcClients(configuration);
-            services.AddBusinessLogicServices();
-        }
 
-        private static void AddMapper(this IServiceCollection services)
-        {
-            var mapperConfig = new MapperConfiguration(config =>
-            {
-                config.AddProfile(new AutoMapperProfile());
-            });
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
-            IMapper mapper = mapperConfig.CreateMapper();
-
-            services.AddSingleton(mapper);
-        }
-
-        private static void AddBusinessLogicServices(this IServiceCollection services)
-        {
             services.AddScoped<IEstateService, EstateService>();
-        }
 
-        private static void AddGrpcClients(this IServiceCollection services, IConfiguration configuration)
-        {
             services.AddGrpcClient<ProfileService.ProfileServiceClient>(options =>
             {
                 options.Address = new Uri(configuration.GetConnectionString("ProfileService")!);

@@ -14,11 +14,6 @@ namespace CatalogueService.DAL.DI
             services.AddDbContext<EstateDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DbConnection")));
 
-            services.AddRepositories();
-        }
-
-        private static void AddRepositories(this IServiceCollection services)
-        {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IEstateRepository, EstateRepository>();
         }
