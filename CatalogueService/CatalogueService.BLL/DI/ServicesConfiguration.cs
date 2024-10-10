@@ -6,6 +6,8 @@ using CatalogueService.BLL.Utilities.Mapping;
 using CatalogueService.DAL.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Grpc.Net.ClientFactory;
+using CatalogueService.BLL.Grpc.Services.IServices;
 
 namespace CatalogueService.BLL.DI
 {
@@ -42,6 +44,8 @@ namespace CatalogueService.BLL.DI
             {
                 options.Address = new Uri(configuration.GetConnectionString("ProfileService")!);
             });
+
+            services.AddScoped<IProfileGrpcClient, ProfileGrpcClient>();
         }
     }
 }
