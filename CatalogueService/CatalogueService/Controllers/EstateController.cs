@@ -11,14 +11,14 @@ namespace CatalogueService.Controllers
     public class EstateController(IEstateService estateService) : ControllerBase
     {
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken)
         {
             return await estateService.GetEstateList(cancellationToken);
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<EstateFullDetails> GetEstateData(Guid id, CancellationToken cancellationToken)
         {
             return await estateService.GetEstateDetails(id, cancellationToken);
