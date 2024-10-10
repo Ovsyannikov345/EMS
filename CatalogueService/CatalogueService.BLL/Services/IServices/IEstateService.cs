@@ -13,6 +13,6 @@ namespace CatalogueService.BLL.Services.IServices
 
         public Task<Estate> UpdateEstate(Estate estate, string ownerAuth0Id, CancellationToken cancellationToken = default);
 
-        public Task<Estate> DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default);
+        public Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default);
     }
 }

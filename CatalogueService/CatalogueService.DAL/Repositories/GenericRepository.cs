@@ -30,7 +30,7 @@ namespace CatalogueService.DAL.Repositories
             return entity;
         }
 
-        public async Task<TEntity?> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var entity = await context.Set<TEntity>().FindAsync([id], cancellationToken);
 
@@ -38,9 +38,11 @@ namespace CatalogueService.DAL.Repositories
             {
                 context.Set<TEntity>().Remove(entity);
                 await context.SaveChangesAsync(cancellationToken);
+
+                return true;
             }
 
-            return entity;
+            return false;
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)

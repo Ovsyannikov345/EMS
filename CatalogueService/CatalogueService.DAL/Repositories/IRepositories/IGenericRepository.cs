@@ -14,7 +14,7 @@ namespace CatalogueService.DAL.Repositories.IRepositories
 
         Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        Task<TEntity?> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<bool> Exists(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     }

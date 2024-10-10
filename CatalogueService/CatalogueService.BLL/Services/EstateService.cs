@@ -16,32 +16,34 @@ namespace CatalogueService.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Estate> DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
+        public async Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
             if (!await IsUserEstateOwner(id, ownerAuth0Id, cancellationToken))
             {
                 throw new ForbiddenException(EstateMessages.EstateDeleteForbidden);
             }
 
-            var deletedEstate = await estateRepository.DeleteAsync(id, cancellationToken);
-
-            return deletedEstate!;
+            if (!await estateRepository.DeleteAsync(id, cancellationToken))
+            {
+                throw new NotFoundException(EstateMessages.EstateNotFound);
+            }
         }
 
         public async Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default)
         {
             var estate = await estateRepository.GetByIdAsync(id, cancellationToken);
 
-            if (estate is null)
+            if (estate is not null)
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                var estateFullDetails = mapper.Map<EstateFullDetails>(estate);
+
+                estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId, cancellationToken);
+
+                return estateFullDetails;
             }
 
-            var estateFullDetails = mapper.Map<EstateFullDetails>(estate);
+            throw new NotFoundException(EstateMessages.EstateNotFound);
 
-            estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId, cancellationToken);
-
-            return estateFullDetails;
         }
 
         public async Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken = default)
