@@ -3,8 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogueService.DAL.Data
 {
-    public class EstateDbContext(DbContextOptions<EstateDbContext> options) : DbContext(options)
+    public class EstateDbContext : DbContext
     {
+        public EstateDbContext(DbContextOptions<EstateDbContext> options) : base(options)
+        {
+            if (Database.IsRelational())
+            {
+                Database.Migrate();
+            }
+        }
+
         public DbSet<Estate> Estates { get; set; }
     }
 }
