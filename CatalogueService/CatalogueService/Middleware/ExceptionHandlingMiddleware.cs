@@ -24,6 +24,7 @@ namespace CatalogueService.Middleware
             {
                 BadRequestException => new((int)HttpStatusCode.BadRequest, ex.Message),
                 NotFoundException => new((int)HttpStatusCode.NotFound, ex.Message),
+                ForbiddenException => new((int)HttpStatusCode.Forbidden, ex.Message),
                 _ => new((int)HttpStatusCode.InternalServerError, ex.Message),
             };
 

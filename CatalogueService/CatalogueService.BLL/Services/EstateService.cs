@@ -1,40 +1,45 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Dto;
-using CatalogueService.BLL.Grpc.Services;
+using CatalogueService.BLL.Grpc.Services.IServices;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
 using CatalogueService.BLL.Utitlities.Messages;
 using CatalogueService.DAL.Models.Entities;
-using CatalogueService.DAL.Repositories;
+using CatalogueService.DAL.Repositories.IRepositories;
 
 namespace CatalogueService.BLL.Services
 {
-    public class EstateService(EstateRepository estateRepository, ProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
+    public class EstateService(IEstateRepository estateRepository, IProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
     {
         public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Estate> DeleteEstate(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Estate> DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            var deletedEstate = await estateRepository.DeleteAsync(id, cancellationToken);
-
-            if (deletedEstate is null)
+            if (!await IsUserEstateOwner(id, ownerAuth0Id, cancellationToken))
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                throw new ForbiddenException(EstateMessages.EstateDeleteForbidden);
             }
 
-            return deletedEstate;
+            var deletedEstate = await estateRepository.DeleteAsync(id, cancellationToken);
+
+            return deletedEstate!;
         }
 
         public async Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default)
         {
             var estate = await estateRepository.GetByIdAsync(id, cancellationToken);
 
+            if (estate is null)
+            {
+                throw new NotFoundException(EstateMessages.EstateNotFound);
+            }
+
             var estateFullDetails = mapper.Map<EstateFullDetails>(estate);
 
-            estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId);
+            estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId, cancellationToken);
 
             return estateFullDetails;
         }
@@ -44,16 +49,30 @@ namespace CatalogueService.BLL.Services
             return await estateRepository.GetAllAsync(cancellationToken);
         }
 
-        public async Task<Estate> UpdateEstate(Estate estate, CancellationToken cancellationToken = default)
+        public async Task<Estate> UpdateEstate(Estate estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            if (!await estateRepository.Exists(e => e.Id == estate.Id, cancellationToken))
+            if (!await IsUserEstateOwner(estate.UserId, ownerAuth0Id, cancellationToken))
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                throw new ForbiddenException(EstateMessages.EstateUpdateForbidden);
             }
 
             await estateRepository.UpdateAsync(estate, cancellationToken);
 
             return estate;
+        }
+
+        private async Task<bool> IsUserEstateOwner(Guid estateId, string userAuth0Id, CancellationToken cancellationToken = default)
+        {
+            var estate = await estateRepository.GetByIdAsync(estateId, cancellationToken);
+
+            if (estate is null)
+            {
+                throw new NotFoundException(EstateMessages.EstateNotFound);
+            }
+
+            var owner = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
+
+            return estate.UserId == owner.Id;
         }
     }
 }
