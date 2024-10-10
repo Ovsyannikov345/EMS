@@ -1,6 +1,6 @@
-﻿using CatalogueService.BLL.Grpc.Models;
+﻿using CatalogueService.DAL.Grpc.Models;
 
-namespace CatalogueService.BLL.Grpc.Services.IServices
+namespace CatalogueService.DAL.Grpc.Services.IServices
 {
     public interface IProfileGrpcClient
     {

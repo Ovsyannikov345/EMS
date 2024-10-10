@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Dto;
-using CatalogueService.BLL.Grpc.Services.IServices;
+using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
 using CatalogueService.BLL.Utitlities.Messages;

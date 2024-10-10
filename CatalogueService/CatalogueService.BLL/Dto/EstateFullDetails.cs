@@ -1,4 +1,4 @@
-﻿using CatalogueService.BLL.Grpc.Models;
+﻿using CatalogueService.DAL.Grpc.Models;
 
 namespace CatalogueService.BLL.Dto
 {

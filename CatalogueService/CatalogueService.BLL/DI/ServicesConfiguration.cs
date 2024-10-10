@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.BLL.Services;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Mapping;
 using CatalogueService.DAL.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Grpc.Net.ClientFactory;
-using CatalogueService.BLL.Grpc.Services.IServices;
 using System.Reflection;
 
 namespace CatalogueService.BLL.DI
@@ -21,13 +18,6 @@ namespace CatalogueService.BLL.DI
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddScoped<IEstateService, EstateService>();
-
-            services.AddGrpcClient<ProfileService.ProfileServiceClient>(options =>
-            {
-                options.Address = new Uri(configuration.GetConnectionString("ProfileService")!);
-            });
-
-            services.AddScoped<IProfileGrpcClient, ProfileGrpcClient>();
         }
     }
 }
