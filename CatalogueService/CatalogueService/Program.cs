@@ -1,7 +1,9 @@
 using CatalogueService.BLL.DI;
 using CatalogueService.DI;
 using CatalogueService.Middleware;
+using CatalogueService.Utilities.Mapping;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace CatalogueService
 {
@@ -18,6 +20,7 @@ namespace CatalogueService
             services.AddBusinessLogicDependencies(configuration);
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddControllers();
 

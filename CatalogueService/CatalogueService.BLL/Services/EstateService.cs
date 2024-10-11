@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CatalogueService.BLL.Dto;
-using CatalogueService.BLL.Grpc.Services.IServices;
+using CatalogueService.BLL.Models;
+using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
 using CatalogueService.BLL.Utitlities.Messages;
@@ -11,14 +11,20 @@ namespace CatalogueService.BLL.Services
 {
     public class EstateService(IEstateRepository estateRepository, IProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
     {
-        public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default)
+        public async Task<EstateModel> CreateEstateAsync(EstateModel estateData, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var ownerProfile = await profileGrpcClient.GetOwnProfile(ownerAuth0Id, cancellationToken);
+
+            estateData.UserId = ownerProfile.Id;
+
+            var createdEstate = await estateRepository.CreateAsync(mapper.Map<Estate>(estateData), cancellationToken);
+
+            return mapper.Map<EstateModel>(createdEstate);
         }
 
-        public async Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
+        public async Task DeleteEstateAsync(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            if (!await IsUserEstateOwner(id, ownerAuth0Id, cancellationToken))
+            if (!await IsUserEstateOwnerAsync(id, ownerAuth0Id, cancellationToken))
             {
                 throw new ForbiddenException(EstateMessages.EstateDeleteForbidden);
             }
@@ -29,15 +35,17 @@ namespace CatalogueService.BLL.Services
             }
         }
 
-        public async Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default)
+        public async Task<EstateWithProfileModel> GetEstateDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var estate = await estateRepository.GetByIdAsync(id, cancellationToken);
+            var estate = await estateRepository.GetByFilterAsync(e => e.Id == id, cancellationToken);
 
             if (estate is not null)
             {
-                var estateFullDetails = mapper.Map<EstateFullDetails>(estate);
+                var estateFullDetails = mapper.Map<EstateWithProfileModel>(estate);
 
-                estateFullDetails.User = await profileGrpcClient.GetProfile(estateFullDetails.UserId, cancellationToken);
+                var estateOwnerProfile = await profileGrpcClient.GetProfile(estateFullDetails.UserId, cancellationToken);
+
+                estateFullDetails.User = mapper.Map<UserProfileModel>(estateOwnerProfile);
 
                 return estateFullDetails;
             }
@@ -46,26 +54,28 @@ namespace CatalogueService.BLL.Services
 
         }
 
-        public async Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<EstateModel>> GetEstateListAsync(CancellationToken cancellationToken = default)
         {
-            return await estateRepository.GetAllAsync(cancellationToken);
+            var estates = await estateRepository.GetAllAsync(cancellationToken);
+
+            return mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estates);
         }
 
-        public async Task<Estate> UpdateEstate(Estate estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
+        public async Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            if (!await IsUserEstateOwner(estate.UserId, ownerAuth0Id, cancellationToken))
+            if (!await IsUserEstateOwnerAsync(estate.Id, ownerAuth0Id, cancellationToken))
             {
                 throw new ForbiddenException(EstateMessages.EstateUpdateForbidden);
             }
 
-            await estateRepository.UpdateAsync(estate, cancellationToken);
+            var updatedEstate = await estateRepository.UpdateAsync(mapper.Map<Estate>(estate), cancellationToken);
 
-            return estate;
+            return mapper.Map<EstateModel>(updatedEstate);
         }
 
-        private async Task<bool> IsUserEstateOwner(Guid estateId, string userAuth0Id, CancellationToken cancellationToken = default)
+        private async Task<bool> IsUserEstateOwnerAsync(Guid estateId, string userAuth0Id, CancellationToken cancellationToken = default)
         {
-            var estate = await estateRepository.GetByIdAsync(estateId, cancellationToken);
+            var estate = await estateRepository.GetByFilterAsync(e => e.Id == estateId, cancellationToken);
 
             if (estate is null)
             {

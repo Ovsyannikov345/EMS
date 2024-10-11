@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "CatalogueService.BLL.Grpc.Services";
+option csharp_namespace = "CatalogueService.DAL.Grpc.Services";
 
 import "google/protobuf/timestamp.proto";
 

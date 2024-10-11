@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using CatalogueService.BLL.Grpc.Models;
-using CatalogueService.BLL.Grpc.Services.IServices;
+using CatalogueService.DAL.Grpc.Models;
+using CatalogueService.DAL.Grpc.Services.IServices;
 
-namespace CatalogueService.BLL.Grpc.Services
+namespace CatalogueService.DAL.Grpc.Services
 {
     public class ProfileGrpcClient(ProfileService.ProfileServiceClient client, IMapper mapper) : IProfileGrpcClient
     {
