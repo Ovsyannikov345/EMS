@@ -1,17 +1,16 @@
-﻿using CatalogueService.BLL.Dto;
-using CatalogueService.DAL.Models.Entities;
+﻿using CatalogueService.BLL.Models;
 
 namespace CatalogueService.BLL.Services.IServices
 {
     public interface IEstateService
     {
-        public Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken = default);
+        public Task<IEnumerable<EstateModel>> GetEstateList(CancellationToken cancellationToken = default);
 
-        public Task<EstateFullDetails> GetEstateDetails(Guid id, CancellationToken cancellationToken = default);
+        public Task<EstateWithProfileModel> GetEstateDetails(Guid id, CancellationToken cancellationToken = default);
 
-        public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default);
+        public Task<EstateModel> CreateEstate(EstateModel estateData, string ownerAuth0Id, CancellationToken cancellationToken = default);
 
-        public Task<Estate> UpdateEstate(Estate estate, string ownerAuth0Id, CancellationToken cancellationToken = default);
+        public Task<EstateModel> UpdateEstate(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default);
 
         public Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default);
     }

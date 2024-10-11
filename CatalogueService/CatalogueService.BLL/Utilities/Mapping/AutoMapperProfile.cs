@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using CatalogueService.BLL.Dto;
+using CatalogueService.BLL.Models;
+using CatalogueService.DAL.Grpc.Models;
 using CatalogueService.DAL.Models.Entities;
 
 namespace CatalogueService.BLL.Utilities.Mapping
@@ -8,7 +9,9 @@ namespace CatalogueService.BLL.Utilities.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<Estate, EstateFullDetails>();
+            CreateMap<Estate, EstateWithProfileModel>();
+            CreateMap<EstateModel, Estate>().ReverseMap();
+            CreateMap<UserProfile, UserProfileModel>();
         }
     }
 }

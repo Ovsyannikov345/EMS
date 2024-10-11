@@ -1,14 +1,14 @@
-﻿using CatalogueService.DAL.Grpc.Models;
+﻿using CatalogueService.DAL.Models.Enums;
 
-namespace CatalogueService.BLL.Dto
+namespace CatalogueService.BLL.Models
 {
-    public class EstateFullDetails
+    public class EstateModel
     {
         public Guid Id { get; set; }
 
         public Guid UserId { get; set; }
 
-        public string Type { get; set; } = string.Empty;
+        public EstateType Type { get; set; }
 
         public string Address { get; set; } = string.Empty;
 
@@ -17,7 +17,5 @@ namespace CatalogueService.BLL.Dto
         public short RoomsCount { get; set; }
 
         public decimal Price { get; set; }
-
-        public UserProfile User { get; set; } = null!;
     }
 }
