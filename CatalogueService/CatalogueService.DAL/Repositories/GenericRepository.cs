@@ -14,7 +14,7 @@ namespace CatalogueService.DAL.Repositories
 
         public async Task<TEntity?> GetByFilterAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return await context.Set<TEntity>().FirstOrDefaultAsync(predicate, cancellationToken);
+            return await context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
