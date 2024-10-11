@@ -1,6 +1,7 @@
-﻿using CatalogueService.BLL.Dto;
+﻿using AutoMapper;
+using CatalogueService.BLL.Models;
 using CatalogueService.BLL.Services.IServices;
-using CatalogueService.DAL.Models.Entities;
+using CatalogueService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,20 +9,24 @@ namespace CatalogueService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EstateController(IEstateService estateService) : ControllerBase
+    public class EstateController(IEstateService estateService, IMapper mapper) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IEnumerable<Estate>> GetEstateList(CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IEnumerable<EstateViewModel>> GetEstateList(CancellationToken cancellationToken)
         {
-            return await estateService.GetEstateList(cancellationToken);
+            var estateList = await estateService.GetEstateList(cancellationToken);
+
+            return mapper.Map<IEnumerable<EstateModel>, IEnumerable<EstateViewModel>>(estateList);
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
-        public async Task<EstateFullDetails> GetEstateData(Guid id, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<EstateWithProfileViewModel> GetEstateData(Guid id, CancellationToken cancellationToken)
         {
-            return await estateService.GetEstateDetails(id, cancellationToken);
+            var estate = await estateService.GetEstateDetails(id, cancellationToken);
+
+            return mapper.Map<EstateWithProfileViewModel>(estate);
         }
     }
 }
