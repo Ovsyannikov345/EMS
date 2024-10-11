@@ -16,7 +16,7 @@ namespace CatalogueService.Controllers
         [Authorize]
         public async Task<IEnumerable<EstateViewModel>> GetEstateList(CancellationToken cancellationToken)
         {
-            var estateList = await estateService.GetEstateList(cancellationToken);
+            var estateList = await estateService.GetEstateListAsync(cancellationToken);
 
             return mapper.Map<IEnumerable<EstateModel>, IEnumerable<EstateViewModel>>(estateList);
         }
@@ -25,7 +25,7 @@ namespace CatalogueService.Controllers
         [Authorize]
         public async Task<EstateWithProfileViewModel> GetEstateData(Guid id, CancellationToken cancellationToken)
         {
-            var estate = await estateService.GetEstateDetails(id, cancellationToken);
+            var estate = await estateService.GetEstateDetailsAsync(id, cancellationToken);
 
             return mapper.Map<EstateWithProfileViewModel>(estate);
         }
@@ -36,7 +36,7 @@ namespace CatalogueService.Controllers
         {
             var auth0Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-            var createdEstate = await estateService.CreateEstate(mapper.Map<EstateModel>(estateData), auth0Id, cancellationToken);
+            var createdEstate = await estateService.CreateEstateAsync(mapper.Map<EstateModel>(estateData), auth0Id, cancellationToken);
 
             return mapper.Map<EstateViewModel>(createdEstate);
         }
