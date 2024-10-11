@@ -34,7 +34,7 @@ namespace CatalogueService.Controllers
         [Authorize]
         public async Task<EstateViewModel> CreateEstate(EstateToCreateViewModel estateData, CancellationToken cancellationToken)
         {
-            var auth0Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var auth0Id = GetAuth0IdFromContext();
 
             var createdEstate = await estateService.CreateEstateAsync(mapper.Map<EstateModel>(estateData), auth0Id, cancellationToken);
 
@@ -45,11 +45,25 @@ namespace CatalogueService.Controllers
         [Authorize]
         public async Task<EstateViewModel> UpdateEstate(EstateToUpdateViewModel estateToUpdate, CancellationToken cancellationToken)
         {
-            var auth0Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var auth0Id = GetAuth0IdFromContext();
 
             var updatedEstate = await estateService.UpdateEstateAsync(mapper.Map<EstateModel>(estateToUpdate), auth0Id, cancellationToken);
 
             return mapper.Map<EstateViewModel>(updatedEstate);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task DeleteEstate(Guid id, CancellationToken cancellationToken)
+        {
+            var auth0Id = GetAuth0IdFromContext();
+
+            await estateService.DeleteEstateAsync(id, auth0Id, cancellationToken);
+        }
+
+        private string GetAuth0IdFromContext()
+        {
+            return HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
     }
 }
