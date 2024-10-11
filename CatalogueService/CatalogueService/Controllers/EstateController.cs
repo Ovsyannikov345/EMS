@@ -9,11 +9,11 @@ using System.Security.Claims;
 namespace CatalogueService.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class EstateController(IEstateService estateService, IMapper mapper) : ControllerBase
     {
         [HttpGet]
-        [Authorize]
         public async Task<IEnumerable<EstateViewModel>> GetEstateList(CancellationToken cancellationToken)
         {
             var estateList = await estateService.GetEstateListAsync(cancellationToken);
@@ -22,7 +22,6 @@ namespace CatalogueService.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<EstateWithProfileViewModel> GetEstateData(Guid id, CancellationToken cancellationToken)
         {
             var estate = await estateService.GetEstateDetailsAsync(id, cancellationToken);
@@ -31,7 +30,6 @@ namespace CatalogueService.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<EstateViewModel> CreateEstate(EstateToCreateViewModel estateData, CancellationToken cancellationToken)
         {
             var auth0Id = GetAuth0IdFromContext();
@@ -42,7 +40,6 @@ namespace CatalogueService.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         public async Task<EstateViewModel> UpdateEstate(EstateToUpdateViewModel estateToUpdate, CancellationToken cancellationToken)
         {
             var auth0Id = GetAuth0IdFromContext();
@@ -53,7 +50,6 @@ namespace CatalogueService.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
         public async Task DeleteEstate(Guid id, CancellationToken cancellationToken)
         {
             var auth0Id = GetAuth0IdFromContext();
