@@ -40,5 +40,16 @@ namespace CatalogueService.Controllers
 
             return mapper.Map<EstateViewModel>(createdEstate);
         }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<EstateViewModel> UpdateEstate(EstateToUpdateViewModel estateToUpdate, CancellationToken cancellationToken)
+        {
+            var auth0Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+            var updatedEstate = await estateService.UpdateEstateAsync(mapper.Map<EstateModel>(estateToUpdate), auth0Id, cancellationToken);
+
+            return mapper.Map<EstateViewModel>(updatedEstate);
+        }
     }
 }

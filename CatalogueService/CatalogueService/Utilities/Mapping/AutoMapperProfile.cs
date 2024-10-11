@@ -9,6 +9,7 @@ namespace CatalogueService.Utilities.Mapping
         public AutoMapperProfile()
         {
             CreateMap<EstateToCreateViewModel, EstateModel>();
+            CreateMap<EstateToUpdateViewModel, EstateModel>();
             CreateMap<EstateModel, EstateViewModel>();
             CreateMap<EstateWithProfileModel, EstateWithProfileViewModel>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
