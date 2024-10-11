@@ -10,7 +10,7 @@ namespace CatalogueService.DAL.Utilities.Mapping
         {
             CreateMap<ProtoProfileModel, UserProfile>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
-                .ForCtorParam("BirthDate", opt => opt.MapFrom(src => src.BirthDate.ToDateTime()));
+                .ForCtorParam(nameof(UserProfile.BirthDate), opt => opt.MapFrom(src => src.BirthDate.ToDateTime()));
         }
     }
 }
