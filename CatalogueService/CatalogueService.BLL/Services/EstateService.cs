@@ -37,7 +37,7 @@ namespace CatalogueService.BLL.Services
 
         public async Task<EstateWithProfileModel> GetEstateDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var estate = await estateRepository.GetByIdAsync(id, cancellationToken);
+            var estate = await estateRepository.GetByFilterAsync(e => e.Id == id, cancellationToken);
 
             if (estate is not null)
             {
@@ -63,7 +63,7 @@ namespace CatalogueService.BLL.Services
 
         public async Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            if (!await IsUserEstateOwnerAsync(estate.UserId, ownerAuth0Id, cancellationToken))
+            if (!await IsUserEstateOwnerAsync(estate.Id, ownerAuth0Id, cancellationToken))
             {
                 throw new ForbiddenException(EstateMessages.EstateUpdateForbidden);
             }
@@ -75,7 +75,7 @@ namespace CatalogueService.BLL.Services
 
         private async Task<bool> IsUserEstateOwnerAsync(Guid estateId, string userAuth0Id, CancellationToken cancellationToken = default)
         {
-            var estate = await estateRepository.GetByIdAsync(estateId, cancellationToken);
+            var estate = await estateRepository.GetByFilterAsync(e => e.Id == estateId, cancellationToken);
 
             if (estate is null)
             {
