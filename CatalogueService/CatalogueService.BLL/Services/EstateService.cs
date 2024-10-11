@@ -11,9 +11,15 @@ namespace CatalogueService.BLL.Services
 {
     public class EstateService(IEstateRepository estateRepository, IProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
     {
-        public Task<Estate> CreateEstate(EstateToCreate estateData, CancellationToken cancellationToken = default)
+        public async Task<EstateModel> CreateEstate(EstateModel estateData, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var ownerProfile = await profileGrpcClient.GetOwnProfile(ownerAuth0Id, cancellationToken);
+
+            estateData.UserId = ownerProfile.Id;
+
+            var createdEstate = await estateRepository.CreateAsync(mapper.Map<Estate>(estateData), cancellationToken);
+
+            return mapper.Map<EstateModel>(createdEstate);
         }
 
         public async Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
