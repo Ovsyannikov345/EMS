@@ -12,6 +12,6 @@ namespace CatalogueService.BLL.Services.IServices
 
         public Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default);
 
-        public Task DeleteEstate(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default);
+        public Task DeleteEstateAsync(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default);
     }
 }
