@@ -6,6 +6,8 @@
 
         public Guid EstateId { get; set; }
 
+        public Guid UserId { get; set; }
+
         public ICollection<Message> Messages { get; set; } = [];
     }
 }

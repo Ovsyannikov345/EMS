@@ -14,7 +14,5 @@ namespace ChatService.DAL.Models.Entities
         public Guid ChatId { get; set; }
 
         public Chat Chat { get; set; } = null!;
-
-        public Guid SenderId { get; set; }
     }
 }
