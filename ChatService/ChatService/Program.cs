@@ -1,3 +1,4 @@
+using ChatService.BLL.DI;
 using ChatService.DAL.DI;
 
 namespace ChatService
@@ -13,6 +14,7 @@ namespace ChatService
             var configuration = builder.Configuration;
 
             services.AddDataAccessDependencies(configuration);
+            services.AddBusinessLogicDependencies();
 
             services.AddControllers();
 
