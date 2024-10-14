@@ -1,4 +1,5 @@
 using CatalogueService.BLL.DI;
+using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.DI;
 using CatalogueService.Middleware;
 using CatalogueService.Utilities.Mapping;
@@ -21,6 +22,7 @@ namespace CatalogueService
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
+            services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
 
             services.AddControllers();
 
@@ -42,6 +44,7 @@ namespace CatalogueService
 
             app.UseHttpsRedirection();
             app.MapControllers();
+            app.MapGrpcService<EstateGrpcService>();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -7,5 +7,7 @@
         public const string EstateDeleteForbidden = "You can't delete estate of other user";
 
         public const string EstateUpdateForbidden = "You can't edit estate of other user";
+
+        public const string EstateIdIsInvalid = "Estate id is invalid";
     }
 }
