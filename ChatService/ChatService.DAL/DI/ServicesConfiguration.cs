@@ -1,9 +1,13 @@
 ﻿using ChatService.DAL.Data;
+using ChatService.DAL.Grpc.Services.IServices;
+using ChatService.DAL.Grpc.Services;
 using ChatService.DAL.Repositories;
 using ChatService.DAL.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using CatalogueService.BLL.Grpc.Services;
 
 namespace ChatService.DAL.DI
 {
@@ -17,6 +21,19 @@ namespace ChatService.DAL.DI
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IChatRepository, ChatRepository>()
                     .AddScoped<IMessageRepository, MessageRepository>();
+
+            services.AddGrpcClient<ProfileService.ProfileServiceClient>(options =>
+            {
+                options.Address = new Uri(configuration.GetConnectionString("ProfileService")!);
+            });
+
+            services.AddGrpcClient<EstateGrpcServiceProto.EstateGrpcServiceProtoClient>(options =>
+            {
+                options.Address = new Uri(configuration.GetConnectionString("CatalogueService")!);
+            });
+
+            services.AddScoped<IProfileGrpcClient, ProfileGrpcClient>()
+                    .AddScoped<IEstateGrpcClient, EstateGrpcClient>();
         }
     }
 }

@@ -5,7 +5,9 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatService", "ChatService\ChatService.csproj", "{559E3570-B7C6-4D12-BA3E-6F999D8D8D05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatService.DAL", "ChatService.DAL\ChatService.DAL.csproj", "{FCC180ED-C344-4632-849C-68030F1EB58D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatService.DAL", "ChatService.DAL\ChatService.DAL.csproj", "{FCC180ED-C344-4632-849C-68030F1EB58D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatService.BLL", "ChatService.BLL\ChatService.BLL.csproj", "{04834C90-0058-4123-A01D-84EB49C27225}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FCC180ED-C344-4632-849C-68030F1EB58D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCC180ED-C344-4632-849C-68030F1EB58D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCC180ED-C344-4632-849C-68030F1EB58D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04834C90-0058-4123-A01D-84EB49C27225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04834C90-0058-4123-A01D-84EB49C27225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04834C90-0058-4123-A01D-84EB49C27225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04834C90-0058-4123-A01D-84EB49C27225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
