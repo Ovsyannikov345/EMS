@@ -1,11 +1,17 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AutoMapper;
+using ChatService.BLL.Models;
+using ChatService.BLL.Services.IServices;
+using ChatService.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ChatService.BLL.Hubs
 {
-    public class ChatHub : Hub
+    [Authorize]
+    public class ChatHub(IChatService chatService, IMessageService messageService, IMapper mapper) : Hub
     {
-        public static Dictionary<string, List<string>> ConnectedUsers = new();
+        private static Dictionary<string, List<string>> _connectedUsers = new();
 
         private static readonly object _lock = new();
 
@@ -17,10 +23,10 @@ namespace ChatService.BLL.Hubs
 
             lock (_lock)
             {
-                if (!ConnectedUsers.TryGetValue(userId, out List<string>? connections))
+                if (!_connectedUsers.TryGetValue(userId, out List<string>? connections))
                 {
                     connections = new();
-                    ConnectedUsers[userId] = connections;
+                    _connectedUsers[userId] = connections;
                 }
 
                 connections.Add(connectionId);
@@ -29,7 +35,7 @@ namespace ChatService.BLL.Hubs
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception? exception)
         {
             var connectionId = Context.ConnectionId;
 
@@ -37,13 +43,13 @@ namespace ChatService.BLL.Hubs
 
             lock (_lock)
             {
-                if (ConnectedUsers.TryGetValue(userId, out List<string>? connections))
+                if (_connectedUsers.TryGetValue(userId, out List<string>? connections))
                 {
                     connections.Remove(connectionId);
 
                     if (connections.Count == 0)
                     {
-                        ConnectedUsers.Remove(userId);
+                        _connectedUsers.Remove(userId);
                     }
                 }
             }
@@ -51,19 +57,34 @@ namespace ChatService.BLL.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendAsync(Guid chatId, string message)
+        public async Task SendAsync(Guid chatId, string message, CancellationToken cancellationToken = default)
         {
             string auth0Id = GetAuth0IdFromContext();
 
-            
+            var chat = await chatService.GetChatAsync(chatId, cancellationToken);
 
-            // get chat
+            if (auth0Id == chat.Estate.User.Auth0Id)
+            {
+                var userConnections = _connectedUsers[chat.User.Auth0Id];
 
-            // 2 scenarios: user / estate owner
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, userConnections, cancellationToken);
+            }
+            else if (auth0Id == chat.User.Auth0Id)
+            {
+                var estateOwnerConnections = _connectedUsers[chat.Estate.User.Auth0Id];
 
-            // check if estate user / owner has online connections
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, estateOwnerConnections, cancellationToken);
+            }
+        }
 
-            // send message to all connections
+        private async Task CreateAndSendMessageAsync(MessageModel messageModel, IEnumerable<string> connectionIds, CancellationToken cancellationToken = default)
+        {
+            var createdMessage = await messageService.CreateAsync(messageModel, cancellationToken);
+
+            foreach (var connectionId in connectionIds)
+            {
+                await Clients.Client(connectionId).SendAsync("Receive", mapper.Map<MessageViewModel>(createdMessage), cancellationToken);
+            }
         }
 
         private string GetAuth0IdFromContext()
