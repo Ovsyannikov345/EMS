@@ -2,8 +2,8 @@
 {
     public interface IProfileGrpcClient
     {
-        public Task<ProfileResponse> GetProfile(Guid id, CancellationToken cancellationToken = default);
+        Task<ProfileResponse> GetProfile(Guid id, CancellationToken cancellationToken = default);
 
-        public Task<ProfileResponse> GetOwnProfile(string auth0Id, CancellationToken cancellationToken = default);
+        Task<ProfileResponse> GetOwnProfile(string auth0Id, CancellationToken cancellationToken = default);
     }
 }

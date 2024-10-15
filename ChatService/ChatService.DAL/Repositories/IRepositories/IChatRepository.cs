@@ -4,6 +4,6 @@ namespace ChatService.DAL.Repositories.IRepositories
 {
     public interface IChatRepository : IGenericRepository<Chat>
     {
-        public Task<Chat?> GetChatWithMessages(Guid chatId, CancellationToken cancellationToken = default);
+        Task<Chat?> GetChatWithMessages(Guid chatId, CancellationToken cancellationToken = default);
     }
 }

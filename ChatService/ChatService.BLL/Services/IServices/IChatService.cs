@@ -4,6 +4,6 @@ namespace ChatService.BLL.Services.IServices
 {
     public interface IChatService
     {
-        public Task<ChatModel> GetChatAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<ChatModel> GetChatAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
