@@ -15,9 +15,10 @@ namespace ChatService.BLL.Utilities.Mapping
 
             CreateMap<ProtoProfileModel, UserProfileModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
-                .ForCtorParam(nameof(UserProfileModel.BirthDate), opt => opt.MapFrom(src => src.BirthDate.ToDateTime()));
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate.ToDateTime()));
 
             CreateMap<Chat, ChatModel>();
+            CreateMap<Message, MessageModel>().ReverseMap();
         }
     }
 }
