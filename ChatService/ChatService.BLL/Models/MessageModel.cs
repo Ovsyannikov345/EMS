@@ -6,7 +6,7 @@
 
         public string Text { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid ChatId { get; set; }
     }
