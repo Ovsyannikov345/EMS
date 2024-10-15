@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace ChatService.DAL.Repositories
 {
-    public class GenericRepository<TEntity>(ChatDbContext context) : IGenericRepository<TEntity> where TEntity : class, new()
+    public class GenericRepository<TEntity>(ChatDbContext context) : IGenericRepository<TEntity> where TEntity : class
     {
         public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
