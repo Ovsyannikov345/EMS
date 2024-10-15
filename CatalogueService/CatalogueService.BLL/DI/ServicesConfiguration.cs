@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.BLL.Services;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Mapping;

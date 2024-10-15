@@ -1,18 +1,35 @@
+using ChatService.BLL.DI;
+using ChatService.BLL.Hubs;
+using ChatService.DAL.DI;
+using ChatService.DI;
+using ChatService.Utilities.Mapping;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ChatService
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var services = builder.Services;
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            var configuration = builder.Configuration;
+
+            services.AddDataAccessDependencies(configuration);
+            services.AddBusinessLogicDependencies();
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
+            services.AddSignalR();
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -29,6 +46,7 @@ namespace ChatService
 
 
             app.MapControllers();
+            app.MapHub<ChatHub>("/chat");
 
             app.Run();
         }

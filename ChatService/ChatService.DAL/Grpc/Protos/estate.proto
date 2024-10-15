@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option csharp_namespace = "ChatService.DAL.Grpc.Services.Estate";
+
+import "google/protobuf/timestamp.proto";
+
+package estate;
+
+service EstateGrpcServiceProto {
+    rpc GetEstate (EstateRequest) returns (EstateResponse);
+}
+
+enum EstateType
+{
+    Apartment = 0;
+    House = 1;
+}
+
+message ProtoProfileModel {
+    string id = 1;
+    string auth0Id = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string phone_number = 5;
+    google.protobuf.Timestamp birth_date = 6;
+}
+
+message ProtoEstateModel {
+    string id = 1;
+    ProtoProfileModel user = 2;
+    EstateType type = 3;
+    string address = 4;
+    int32 area = 5;
+    int32 rooms_count = 6;
+    string price = 7;
+}
+
+message EstateRequest {
+    string id = 1;
+}
+
+message EstateResponse {
+    ProtoEstateModel estate = 1;
+
+    int32 statusCode = 2;
+    string message = 3;
+}
