@@ -9,7 +9,5 @@
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public Guid ChatId { get; set; }
-
-        public ChatModel Chat { get; set; } = null!;
     }
 }
