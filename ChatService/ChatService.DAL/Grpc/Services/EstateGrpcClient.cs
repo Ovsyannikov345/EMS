@@ -1,4 +1,4 @@
-﻿using CatalogueService.DAL.Grpc.Services;
+﻿using ChatService.DAL.Grpc.Services.Estate;
 using ChatService.DAL.Grpc.Services.IServices;
 namespace ChatService.DAL.Grpc.Services
 {

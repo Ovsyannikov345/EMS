@@ -1,13 +1,13 @@
 ﻿using ChatService.DAL.Data;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Grpc.Services;
+using ChatService.DAL.Grpc.Services.Profile;
+using ChatService.DAL.Grpc.Services.Estate;
 using ChatService.DAL.Repositories;
 using ChatService.DAL.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using CatalogueService.DAL.Grpc.Services;
 
 namespace ChatService.DAL.DI
 {

@@ -1,4 +1,5 @@
 ﻿using ChatService.DAL.Grpc.Services.IServices;
+using ChatService.DAL.Grpc.Services.Profile;
 
 namespace ChatService.DAL.Grpc.Services
 {

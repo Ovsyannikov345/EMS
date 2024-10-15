@@ -31,15 +31,7 @@ namespace ChatService.BLL.Services
 
             var profileResponse = await profileGrpcClient.GetProfile(chat.UserId, cancellationToken);
 
-            chatModel.User = new UserProfileModel
-            {
-                Id = Guid.Parse(profileResponse.Profile.Id),
-                Auth0Id = profileResponse.Profile.Auth0Id,
-                FirstName = profileResponse.Profile.FirstName,
-                LastName = profileResponse.Profile.LastName,
-                PhoneNumber = profileResponse.Profile.PhoneNumber,
-                BirthDate = profileResponse.Profile.BirthDate.ToDateTime()
-            };
+            chatModel.User = mapper.Map<UserProfileModel>(profileResponse.Profile);
 
             return chatModel;
         }
