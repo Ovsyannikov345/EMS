@@ -1,5 +1,10 @@
 using ChatService.BLL.DI;
+using ChatService.BLL.Hubs;
 using ChatService.DAL.DI;
+using ChatService.DI;
+using ChatService.Utilities.Mapping;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ChatService
 {
@@ -15,8 +20,13 @@ namespace ChatService
 
             services.AddDataAccessDependencies(configuration);
             services.AddBusinessLogicDependencies();
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
+            services.AddSignalR();
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
@@ -36,6 +46,7 @@ namespace ChatService
 
 
             app.MapControllers();
+            app.MapHub<ChatHub>("/chat");
 
             app.Run();
         }
