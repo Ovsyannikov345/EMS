@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CatalogueService.BLL.Grpc.Services;
+using CatalogueService.DAL.Grpc.Services;
 using ChatService.BLL.Models;
 using ChatService.DAL.Models.Entities;
 

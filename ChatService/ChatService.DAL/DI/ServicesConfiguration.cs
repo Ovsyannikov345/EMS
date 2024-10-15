@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using CatalogueService.BLL.Grpc.Services;
+using CatalogueService.DAL.Grpc.Services;
 
 namespace ChatService.DAL.DI
 {

@@ -1,6 +1,5 @@
-﻿using CatalogueService.BLL.Grpc.Services;
+﻿using CatalogueService.DAL.Grpc.Services;
 using ChatService.DAL.Grpc.Services.IServices;
-using System;
 namespace ChatService.DAL.Grpc.Services
 {
     public class EstateGrpcClient(EstateGrpcServiceProto.EstateGrpcServiceProtoClient client) : IEstateGrpcClient
