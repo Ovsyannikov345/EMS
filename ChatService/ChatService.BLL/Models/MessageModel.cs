@@ -7,5 +7,9 @@
         public string Text { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public Guid ChatId { get; set; }
+
+        public ChatModel Chat { get; set; } = null!;
     }
 }

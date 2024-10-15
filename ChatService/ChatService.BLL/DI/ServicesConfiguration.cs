@@ -12,7 +12,8 @@ namespace ChatService.BLL.DI
         {
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
-            services.AddScoped<IChatService, ChatService.BLL.Services.ChatService>();
+            services.AddScoped<IChatService, ChatService.BLL.Services.ChatService>()
+                    .AddScoped<IMessageService, MessageService>();
         }
     }
 }
