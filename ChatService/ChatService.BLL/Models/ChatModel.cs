@@ -4,10 +4,10 @@
     {
         public Guid Id { get; set; }
 
-        public EstateModel Estate { get; set; } = null!;
+        public required EstateModel Estate { get; set; }
 
-        public UserProfileModel User { get; set; } = null!;
+        public required UserProfileModel User { get; set; }
 
-        public ICollection<MessageModel> Messages { get; set; } = [];
+        public required ICollection<MessageModel> Messages { get; set; }
     }
 }

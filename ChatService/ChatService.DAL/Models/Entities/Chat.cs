@@ -8,6 +8,6 @@
 
         public Guid UserId { get; set; }
 
-        public ICollection<Message> Messages { get; set; } = [];
+        public required ICollection<Message> Messages { get; set; }
     }
 }

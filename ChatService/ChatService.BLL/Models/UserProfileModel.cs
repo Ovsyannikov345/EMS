@@ -4,13 +4,13 @@
     {
         public Guid Id { get; set; }
 
-        public string Auth0Id { get; set; } = string.Empty;
+        public required string Auth0Id { get; set; }
 
-        public string FirstName { get; set; } = string.Empty;
+        public required string FirstName { get; set; }
 
-        public string LastName { get; set; } = string.Empty;
+        public required string LastName { get; set; }
 
-        public string PhoneNumber { get; set; } = string.Empty;
+        public required string PhoneNumber { get; set; }
 
         public DateTime BirthDate { get; set; }
     }

@@ -7,12 +7,12 @@ namespace ChatService.DAL.Models.Entities
         public Guid Id { get; set; }
 
         [MaxLength(300)]
-        public string Text { get; set; } = string.Empty;
+        public required string Text { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid ChatId { get; set; }
 
-        public Chat Chat { get; set; } = null!;
+        public required Chat Chat { get; set; }
     }
 }

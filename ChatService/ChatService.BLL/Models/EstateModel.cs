@@ -6,11 +6,11 @@ namespace ChatService.BLL.Models
     {
         public Guid Id { get; set; }
 
-        public UserProfileModel User { get; set; } = null!;
+        public required UserProfileModel User { get; set; }
 
         public EstateType Type { get; set; }
 
-        public string Address { get; set; } = string.Empty;
+        public required string Address { get; set; }
 
         public int Area { get; set; }
 
