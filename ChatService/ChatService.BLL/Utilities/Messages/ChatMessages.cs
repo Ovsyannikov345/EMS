@@ -4,6 +4,8 @@
     {
         public const string ChatNotFound = "Chat is not found";
 
-        public const string AccessDenied = "You can't access this chat info";
+        public const string ChatAccessDenied = "You can't access this chat info";
+
+        public const string ChatListAccessDenied = "You can't access the chat list of other person's estate";
     }
 }

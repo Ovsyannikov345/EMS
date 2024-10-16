@@ -24,7 +24,7 @@ namespace ChatService.Controllers
 
             if (userId != chat.User.Auth0Id && userId != chat.Estate.User.Auth0Id)
             {
-                throw new ForbiddenException(ChatMessages.AccessDenied);
+                throw new ForbiddenException(ChatMessages.ChatAccessDenied);
             }
 
             return mapper.Map<ChatViewModel>(chat);
