@@ -9,5 +9,7 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid ChatId { get; set; }
+
+        public Guid UserId { get; set; }
     }
 }
