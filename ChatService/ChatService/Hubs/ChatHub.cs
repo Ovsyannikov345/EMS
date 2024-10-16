@@ -2,13 +2,14 @@
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
 using ChatService.ViewModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ChatService.BLL.Hubs
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ChatHub(IChatService chatService, IMessageService messageService, IMapper mapper) : Hub
     {
         private static Dictionary<string, List<string>> _connectedUsers = new();
@@ -57,29 +58,34 @@ namespace ChatService.BLL.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendAsync(Guid chatId, string message, CancellationToken cancellationToken = default)
+        public async Task Send(Guid chatId, string message)
         {
             string auth0Id = GetAuth0IdFromContext();
 
-            var chat = await chatService.GetChatAsync(chatId, cancellationToken);
+            var chat = await chatService.GetChatAsync(chatId);
 
             if (auth0Id == chat.Estate.User.Auth0Id)
             {
-                var userConnections = _connectedUsers[chat.User.Auth0Id];
+                _connectedUsers.TryGetValue(chat.User.Auth0Id, out List<string>? userConnections);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, userConnections, cancellationToken);
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, userConnections);
             }
             else if (auth0Id == chat.User.Auth0Id)
             {
-                var estateOwnerConnections = _connectedUsers[chat.Estate.User.Auth0Id];
+                _connectedUsers.TryGetValue(chat.Estate.User.Auth0Id, out List<string>? estateOwnerConnections);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, estateOwnerConnections, cancellationToken);
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, estateOwnerConnections);
             }
         }
 
-        private async Task CreateAndSendMessageAsync(MessageModel messageModel, IEnumerable<string> connectionIds, CancellationToken cancellationToken = default)
+        private async Task CreateAndSendMessageAsync(MessageModel messageModel, IEnumerable<string>? connectionIds = default, CancellationToken cancellationToken = default)
         {
             var createdMessage = await messageService.CreateAsync(messageModel, cancellationToken);
+
+            if (connectionIds == null)
+            {
+                return;
+            }
 
             foreach (var connectionId in connectionIds)
             {

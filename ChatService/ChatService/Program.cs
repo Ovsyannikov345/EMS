@@ -40,13 +40,15 @@ namespace ChatService
                 app.UseSwaggerUI();
             }
 
+            app.UseWebSockets();
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
-            app.MapHub<ChatHub>("/chat");
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
         }
