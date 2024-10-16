@@ -68,5 +68,25 @@ namespace ChatService.BLL.Services
 
             return chatModels;
         }
+
+        public async Task<IEnumerable<ChatModel>> GetUserChatListAsync(string userAuth0Id, CancellationToken cancellationToken = default)
+        {
+            var profileResponse = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
+
+            var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile) ?? throw new NotFoundException(ProfileMessages.ProfileNotFound);
+
+            var chats = await chatRepository.GetAllAsync(c => c.UserId == currentUser.Id, cancellationToken);
+
+            var chatModels = mapper.Map<IEnumerable<Chat>, IEnumerable<ChatModel>>(chats);
+
+            foreach (var chatModel in chatModels)
+            {
+                var estateResponse = await estateGrpcClient.GetEstateAsync(chatModel.EstateId, cancellationToken);
+
+                chatModel.Estate = mapper.Map<EstateModel>(estateResponse.Estate);
+            }
+
+            return chatModels;
+        }
     }
 }
