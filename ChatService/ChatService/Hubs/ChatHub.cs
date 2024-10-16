@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
+using ChatService.BLL.Utilities.Exceptions;
+using ChatService.BLL.Utilities.Messages;
+using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +13,7 @@ using System.Security.Claims;
 namespace ChatService.BLL.Hubs
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ChatHub(IChatService chatService, IMessageService messageService, IMapper mapper) : Hub
+    public class ChatHub(IChatService chatService, IMessageService messageService, IProfileGrpcClient profileGrpcClient, IMapper mapper) : Hub
     {
         private static Dictionary<string, List<string>> _connectedUsers = new();
 
@@ -68,13 +71,17 @@ namespace ChatService.BLL.Hubs
             {
                 _connectedUsers.TryGetValue(chat.User.Auth0Id, out List<string>? userConnections);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, userConnections);
+                var profile = await GetUserProfile(auth0Id);
+
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, userConnections);
             }
             else if (auth0Id == chat.User.Auth0Id)
             {
                 _connectedUsers.TryGetValue(chat.Estate.User.Auth0Id, out List<string>? estateOwnerConnections);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId }, estateOwnerConnections);
+                var profile = await GetUserProfile(auth0Id);
+
+                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, estateOwnerConnections);
             }
         }
 
@@ -96,6 +103,13 @@ namespace ChatService.BLL.Hubs
         private string GetAuth0IdFromContext()
         {
             return Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        }
+
+        private async Task<UserProfileModel> GetUserProfile(string auth0Id)
+        {
+            var profileResponse = await profileGrpcClient.GetOwnProfile(auth0Id);
+
+            return mapper.Map<UserProfileModel>(profileResponse.Profile ?? throw new NotFoundException(ProfileMessages.ProfileNotFound));
         }
     }
 }
