@@ -31,11 +31,21 @@ namespace ChatService.Controllers
         }
 
         [HttpGet("estate/{estateId}")]
-        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(Guid estateId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(Guid estateId, CancellationToken cancellationToken)
         {
             var userId = GetAuth0IdFromContext();
 
             var chatList = await chatService.GetEstateChatListAsync(estateId, userId, cancellationToken);
+
+            return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
+        }
+
+        [HttpGet("my")]
+        public async Task<IEnumerable<ChatViewModel>> GetUserChatList(CancellationToken cancellationToken)
+        {
+            var userId = GetAuth0IdFromContext();
+
+            var chatList = await chatService.GetUserChatListAsync(userId, cancellationToken);
 
             return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
         }
