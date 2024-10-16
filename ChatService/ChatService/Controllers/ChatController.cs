@@ -30,6 +30,16 @@ namespace ChatService.Controllers
             return mapper.Map<ChatViewModel>(chat);
         }
 
+        [HttpGet("estate/{estateId}")]
+        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(Guid estateId, CancellationToken cancellationToken = default)
+        {
+            var userId = GetAuth0IdFromContext();
+
+            var chatList = await chatService.GetEstateChatListAsync(estateId, userId, cancellationToken);
+
+            return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
+        }
+
         private string GetAuth0IdFromContext()
         {
             return HttpContext.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
