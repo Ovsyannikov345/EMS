@@ -24,10 +24,30 @@ namespace ChatService.Controllers
 
             if (userId != chat.User.Auth0Id && userId != chat.Estate.User.Auth0Id)
             {
-                throw new ForbiddenException(ChatMessages.AccessDenied);
+                throw new ForbiddenException(ChatMessages.ChatAccessDenied);
             }
 
             return mapper.Map<ChatViewModel>(chat);
+        }
+
+        [HttpGet("estate/{estateId}")]
+        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(Guid estateId, CancellationToken cancellationToken)
+        {
+            var userId = GetAuth0IdFromContext();
+
+            var chatList = await chatService.GetEstateChatListAsync(estateId, userId, cancellationToken);
+
+            return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
+        }
+
+        [HttpGet("my")]
+        public async Task<IEnumerable<ChatViewModel>> GetUserChatList(CancellationToken cancellationToken)
+        {
+            var userId = GetAuth0IdFromContext();
+
+            var chatList = await chatService.GetUserChatListAsync(userId, cancellationToken);
+
+            return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
         }
 
         private string GetAuth0IdFromContext()

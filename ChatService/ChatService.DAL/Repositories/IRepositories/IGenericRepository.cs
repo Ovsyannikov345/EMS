@@ -8,7 +8,7 @@ namespace ChatService.DAL.Repositories.IRepositories
 
         Task<TEntity?> GetByFilterAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default);
 
         Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default);
 

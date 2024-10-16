@@ -4,7 +4,11 @@
     {
         public Guid Id { get; set; }
 
+        public Guid EstateId { get; set; }
+
         public required EstateModel Estate { get; set; }
+
+        public Guid UserId { get; set; }
 
         public required UserProfileModel User { get; set; }
 
