@@ -26,24 +26,16 @@ namespace ProfileService.BLL.Services
 
         public async Task<UserProfileModel> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken);
-
-            if (userProfile is null)
-            {
-                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
-            }
+            var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken)
+                ?? throw new NotFoundException(UserProfileMessages.ProfileNotFound);
 
             return mapper.Map<UserProfileModel>(userProfile);
         }
 
         public async Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken);
-
-            if (userProfile is null)
-            {
-                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
-            }
+            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken)
+                ?? throw new NotFoundException(UserProfileMessages.ProfileNotFound);
 
             return mapper.Map<UserProfileModel>(userProfile);
         }
