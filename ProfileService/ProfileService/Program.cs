@@ -20,7 +20,7 @@ namespace ProfileService
             var configuration = builder.Configuration;
 
             services.AddDataAccessDependencies(configuration);
-            services.AddApplicationDependencies(configuration);
+            services.AddApplicationDependencies();
 
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);

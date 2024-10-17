@@ -9,7 +9,7 @@ namespace ProfileService.BLL.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
+        public static void AddApplicationDependencies(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
