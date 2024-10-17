@@ -12,6 +12,7 @@ namespace ProfileService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProfileController(IUserProfileService profileService) : ControllerBase
     {
         [AllowAnonymous]
@@ -23,14 +24,12 @@ namespace ProfileService.Controllers
             return profile;
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<UserProfile> GetUserProfile(Guid id, CancellationToken cancellationToken)
         {
             return await profileService.GetProfileAsync(id, cancellationToken);
         }
 
-        [Authorize]
         [HttpGet("my")]
         public async Task<UserProfile> GetOwnProfile(CancellationToken cancellationToken)
         {
@@ -39,7 +38,6 @@ namespace ProfileService.Controllers
             return await profileService.GetOwnProfileAsync(auth0Id, cancellationToken);
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<UserProfileModel> UpdateProfile(Guid id, UserProfileModel userData, CancellationToken cancellationToken)
         {
