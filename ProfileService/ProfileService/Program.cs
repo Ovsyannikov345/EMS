@@ -1,5 +1,6 @@
 using ProfileService.BLL.DI;
 using ProfileService.BLL.Grpc.Services;
+using ProfileService.Utilities.Mapping;
 using ProfileService.DI;
 using ProfileService.Middleware;
 using System.Reflection;
@@ -24,6 +25,7 @@ namespace ProfileService
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
             services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddControllers();
 

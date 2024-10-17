@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ProfileService.BLL.Dto;
 using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
@@ -11,7 +10,7 @@ namespace ProfileService.BLL.Services
 {
     public class UserProfileService(IMapper mapper, IProfileRepository profileRepository) : IUserProfileService
     {
-        public async Task<UserProfile> CreateProfileAsync(UserRegistrationData userData, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> CreateProfileAsync(RegistrationDataModel userData, CancellationToken cancellationToken = default)
         {
             var userProfile = mapper.Map<UserProfile>(userData);
 
@@ -20,10 +19,12 @@ namespace ProfileService.BLL.Services
                 throw new BadRequestException(UserProfileMessages.ProfileAlreadyExists);
             }
 
-            return await profileRepository.CreateAsync(userProfile, cancellationToken);
+            var createdUser = await profileRepository.CreateAsync(userProfile, cancellationToken);
+
+            return mapper.Map<UserProfileModel>(createdUser);
         }
 
-        public async Task<UserProfile> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken);
 
@@ -32,10 +33,10 @@ namespace ProfileService.BLL.Services
                 throw new NotFoundException(UserProfileMessages.ProfileNotFound);
             }
 
-            return userProfile;
+            return mapper.Map<UserProfileModel>(userProfile);
         }
 
-        public async Task<UserProfile> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
         {
             var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken);
 
@@ -44,7 +45,7 @@ namespace ProfileService.BLL.Services
                 throw new NotFoundException(UserProfileMessages.ProfileNotFound);
             }
 
-            return userProfile;
+            return mapper.Map<UserProfileModel>(userProfile);
         }
 
         public async Task<UserProfileModel> UpdateProfileAsync(UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)

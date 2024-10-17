@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProfileService.BLL.Dto;
 using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Messages;
-using ProfileService.DAL.Models;
+using ProfileService.ViewModels;
 using System.Security.Claims;
 
 namespace ProfileService.Controllers
@@ -13,33 +13,38 @@ namespace ProfileService.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class ProfileController(IUserProfileService profileService) : ControllerBase
+    public class ProfileController(IUserProfileService profileService, IMapper mapper) : ControllerBase
     {
         [AllowAnonymous]
         [HttpPost]
-        public async Task<UserProfile> CreateProfile(UserRegistrationData userData, CancellationToken cancellationToken)
+        public async Task<UserProfileViewModel> CreateProfile(RegistrationDataViewModel userData, CancellationToken cancellationToken)
         {
-            var profile = await profileService.CreateProfileAsync(userData, cancellationToken);
+            var profile = await profileService.CreateProfileAsync(mapper.Map<RegistrationDataModel>(userData), cancellationToken);
 
-            return profile;
+            return mapper.Map<UserProfileViewModel>(profile);
         }
 
         [HttpGet("{id}")]
-        public async Task<UserProfile> GetUserProfile(Guid id, CancellationToken cancellationToken)
+        public async Task<UserProfileViewModel> GetUserProfile(Guid id, CancellationToken cancellationToken)
         {
-            return await profileService.GetProfileAsync(id, cancellationToken);
+            var profile = await profileService.GetProfileAsync(id, cancellationToken);
+
+            return mapper.Map<UserProfileViewModel>(profile);
+
         }
 
         [HttpGet("my")]
-        public async Task<UserProfile> GetOwnProfile(CancellationToken cancellationToken)
+        public async Task<UserProfileViewModel> GetOwnProfile(CancellationToken cancellationToken)
         {
             var auth0Id = GetAuth0IdFromContext();
 
-            return await profileService.GetOwnProfileAsync(auth0Id, cancellationToken);
+            var profile = await profileService.GetOwnProfileAsync(auth0Id, cancellationToken);
+
+            return mapper.Map<UserProfileViewModel>(profile);
         }
 
         [HttpPut("{id}")]
-        public async Task<UserProfileModel> UpdateProfile(Guid id, UserProfileModel userData, CancellationToken cancellationToken)
+        public async Task<UserProfileViewModel> UpdateProfile(Guid id, UserProfileViewModel userData, CancellationToken cancellationToken)
         {
             if (id != userData.Id)
             {
@@ -48,7 +53,9 @@ namespace ProfileService.Controllers
 
             var auth0Id = GetAuth0IdFromContext();
 
-            return await profileService.UpdateProfileAsync(userData, auth0Id, cancellationToken);
+            var updatedProfile = await profileService.UpdateProfileAsync(mapper.Map<UserProfileModel>(userData), auth0Id, cancellationToken);
+
+            return mapper.Map<UserProfileViewModel>(updatedProfile);
         }
 
         private string GetAuth0IdFromContext() => HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;

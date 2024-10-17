@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ProfileService.BLL.Dto;
 using ProfileService.DAL.Models;
 using ProfileService.BLL.Grpc.Services;
 using Google.Protobuf.WellKnownTypes;
@@ -11,7 +10,7 @@ namespace ProfileService.BLL.Utilities.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<UserRegistrationData, UserProfile>()
+            CreateMap<RegistrationDataModel, UserProfile>()
                 .ForMember(dest => dest.Auth0Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
