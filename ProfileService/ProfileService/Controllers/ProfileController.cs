@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProfileService.BLL.Dto;
+using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
+using ProfileService.BLL.Utilities.Exceptions;
+using ProfileService.BLL.Utilities.Messages;
 using ProfileService.DAL.Models;
 using System.Security.Claims;
 
@@ -31,9 +34,25 @@ namespace ProfileService.Controllers
         [HttpGet("my")]
         public async Task<UserProfile> GetOwnProfile(CancellationToken cancellationToken)
         {
-            var auth0Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var auth0Id = GetAuth0IdFromContext();
 
             return await profileService.GetOwnProfileAsync(auth0Id, cancellationToken);
         }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<UserProfileModel> UpdateProfile(Guid id, UserProfileModel userData, CancellationToken cancellationToken)
+        {
+            if (id != userData.Id)
+            {
+                throw new BadRequestException(UserProfileMessages.InvalidId);
+            }
+
+            var auth0Id = GetAuth0IdFromContext();
+
+            return await profileService.UpdateProfileAsync(userData, auth0Id, cancellationToken);
+        }
+
+        private string GetAuth0IdFromContext() => HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
     }
 }
