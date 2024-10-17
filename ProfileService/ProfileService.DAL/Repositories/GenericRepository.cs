@@ -14,12 +14,12 @@ namespace ProfileService.DAL.Repositories
 
         public async Task<TEntity?> GetByFilterAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return await context.Set<TEntity>().FirstOrDefaultAsync(predicate, cancellationToken);
+            return await context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await context.Set<TEntity>().ToListAsync(cancellationToken);
+            return await context.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken);
         }
 
         public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
