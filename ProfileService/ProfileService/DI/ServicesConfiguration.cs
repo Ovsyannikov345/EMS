@@ -1,20 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using ProfileService.Extensions;
 using System.Security.Claims;
 
 namespace ProfileService.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApiDependencies(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddAuthenticationBearer(configuration);
-            services.AddCorsPolicy(configuration);
-            services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
-        }
-
-        private static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -34,7 +26,7 @@ namespace ProfileService.DI
             });
         }
 
-        private static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
             string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? throw new InvalidOperationException("Cors origins are not defined");
 

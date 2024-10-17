@@ -7,5 +7,7 @@
         public const string ProfileNotFound = "Profile is not found";
 
         public const string InvalidId = "Provided id is not a valid guid";
+
+        public const string AccessDenied = "You can't access this profile";
     }
 }
