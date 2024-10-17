@@ -31,7 +31,7 @@ namespace ChatService.DI
 
                         var path = context.HttpContext.Request.Path;
 
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
                         {
                             context.Token = accessToken;
                         }
@@ -51,6 +51,7 @@ namespace ChatService.DI
                 options.AddPolicy("CorsPolicy",
                         builder => builder.WithOrigins(corsOrigins)
                                           .AllowAnyHeader()
+                                          .AllowAnyMethod()
                                           .AllowCredentials());
             });
         }

@@ -20,7 +20,7 @@ namespace ChatService.BLL.Services
         {
             var chat = await chatRepository.GetChatWithMessages(id, cancellationToken);
 
-            if (chat == null)
+            if (chat is null)
             {
                 throw new NotFoundException(ChatMessages.ChatNotFound);
             }

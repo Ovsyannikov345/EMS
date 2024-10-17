@@ -6,7 +6,7 @@ namespace ChatService.DAL.Models.Entities
     {
         public Guid Id { get; set; }
 
-        [MaxLength(300)]
+        [MaxLength(500)]
         public required string Text { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -14,5 +14,7 @@ namespace ChatService.DAL.Models.Entities
         public Guid ChatId { get; set; }
 
         public required Chat Chat { get; set; }
+
+        public Guid UserId { get; set; }
     }
 }
