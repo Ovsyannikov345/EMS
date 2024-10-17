@@ -8,7 +8,7 @@ using ProfileService.DAL.Repositories.IRepositories;
 
 namespace ProfileService.BLL.Services
 {
-    public class UserProfileService(IMapper mapper, IProfileRepository profileRepository) : IUserProfileService
+    public class UserProfileService(IMapper mapper, IProfileRepository profileRepository, IProfileInfoVisibilityRepository visibilityRepository) : IUserProfileService
     {
         public async Task<UserProfileModel> CreateProfileAsync(RegistrationDataModel userData, CancellationToken cancellationToken = default)
         {
@@ -20,6 +20,8 @@ namespace ProfileService.BLL.Services
             }
 
             var createdUser = await profileRepository.CreateAsync(userProfile, cancellationToken);
+
+            await visibilityRepository.CreateAsync(new ProfileInfoVisibility { UserId = createdUser.Id, User = createdUser }, cancellationToken);
 
             return mapper.Map<UserProfileModel>(createdUser);
         }

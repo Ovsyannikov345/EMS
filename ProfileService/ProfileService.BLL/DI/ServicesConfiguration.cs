@@ -13,7 +13,8 @@ namespace ProfileService.BLL.DI
         {
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
-            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserProfileService, UserProfileService>()
+                    .AddScoped<IProfileInfoVisibilityService, ProfileInfoVisibilityService>();
         }
     }
 }
