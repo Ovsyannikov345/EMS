@@ -20,7 +20,8 @@ namespace ProfileService.DAL.DI
         private static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IProfileRepository, ProfileRepository>()
+                    .AddScoped<IProfileInfoVisibilityRepository, ProfileInfoVisibilityRepository>();
         }
     }
 }
