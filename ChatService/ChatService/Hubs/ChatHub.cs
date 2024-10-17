@@ -5,14 +5,13 @@ using ChatService.BLL.Utilities.Exceptions;
 using ChatService.BLL.Utilities.Messages;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.ViewModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ChatService.BLL.Hubs
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class ChatHub(IChatService chatService, IMessageService messageService, IProfileGrpcClient profileGrpcClient, IMapper mapper) : Hub
     {
         private static Dictionary<string, List<string>> _connectedUsers = new();
