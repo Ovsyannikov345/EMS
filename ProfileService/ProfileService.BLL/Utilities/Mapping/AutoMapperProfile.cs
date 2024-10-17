@@ -3,6 +3,7 @@ using ProfileService.BLL.Dto;
 using ProfileService.DAL.Models;
 using ProfileService.BLL.Grpc.Services;
 using Google.Protobuf.WellKnownTypes;
+using ProfileService.BLL.Models;
 
 namespace ProfileService.BLL.Utilities.Mapping
 {
@@ -16,6 +17,8 @@ namespace ProfileService.BLL.Utilities.Mapping
 
             CreateMap<UserProfile, ProtoProfileModel>()
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
+
+            CreateMap<UserProfile, UserProfileModel>().ReverseMap();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ProfileService.BLL.Dto;
+using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Messages;
@@ -44,6 +45,23 @@ namespace ProfileService.BLL.Services
             }
 
             return userProfile;
+        }
+
+        public async Task<UserProfileModel> UpdateProfileAsync(UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)
+        {
+            var profile = await profileRepository.GetByFilterAsync(p => p.Id == userData.Id, cancellationToken)
+                ?? throw new NotFoundException(UserProfileMessages.ProfileNotFound);
+
+            if (currentUserAuth0Id != profile.Auth0Id)
+            {
+                throw new ForbiddenException(UserProfileMessages.AccessDenied);
+            }
+
+            var userToUpdate = mapper.Map<UserProfile>(userData);
+
+            profile = await profileRepository.UpdateAsync(userToUpdate, cancellationToken);
+
+            return mapper.Map<UserProfileModel>(profile);
         }
     }
 }
