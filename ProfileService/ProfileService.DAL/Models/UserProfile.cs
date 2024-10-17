@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ProfileService.DAL.Models
 {
@@ -7,16 +6,16 @@ namespace ProfileService.DAL.Models
     {
         public Guid Id { get; set; }
 
-        public string Auth0Id { get; set; } = string.Empty;
+        public required string Auth0Id { get; set; }
 
         [MaxLength(50)]
-        public string FirstName { get; set; } = string.Empty;
+        public required string FirstName { get; set; }
 
         [MaxLength(50)]
-        public string LastName { get; set; } = string.Empty;
+        public required string LastName { get; set; }
 
         [MaxLength(30)]
-        public string PhoneNumber { get; set; } = string.Empty;
+        public required string PhoneNumber { get; set; }
 
         public DateTime BirthDate { get; set; }
     }
