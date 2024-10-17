@@ -18,5 +18,7 @@ namespace ProfileService.DAL.Models
         public required string PhoneNumber { get; set; }
 
         public DateTime BirthDate { get; set; }
+
+        public required ProfileInfoVisibility InfoVisibility { get; set; }
     }
 }
