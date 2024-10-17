@@ -88,7 +88,7 @@ namespace ChatService.BLL.Hubs
         {
             var createdMessage = await messageService.CreateAsync(messageModel, cancellationToken);
 
-            if (connectionIds == null)
+            if (connectionIds is null)
             {
                 return;
             }
