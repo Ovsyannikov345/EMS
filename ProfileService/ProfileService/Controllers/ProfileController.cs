@@ -5,6 +5,7 @@ using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Messages;
+using ProfileService.DAL.Models.Enums;
 using ProfileService.ViewModels;
 using System.Security.Claims;
 
@@ -29,7 +30,21 @@ namespace ProfileService.Controllers
         {
             var profile = await profileService.GetProfileAsync(id, cancellationToken);
 
-            return mapper.Map<UserProfileViewModel>(profile);
+            var profileViewModel = mapper.Map<UserProfileViewModel>(profile);
+
+            var visibilityOptions = await visibilityService.GetProfileInfoVisibilityAsync(id, cancellationToken);
+
+            if (visibilityOptions.BirthDateVisibility == InfoVisibility.Private)
+            {
+                profileViewModel.BirthDate = null;
+            }
+
+            if (visibilityOptions.PhoneNumberVisibility == InfoVisibility.Private)
+            {
+                profileViewModel.PhoneNumber = null;
+            }
+
+            return profileViewModel;
         }
 
         [HttpGet("my")]

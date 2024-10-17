@@ -1,4 +1,17 @@
 ﻿namespace ProfileService.ViewModels
 {
-    public record UserProfileViewModel(Guid Id, string Auth0Id, string FirstName, string LastName, string PhoneNumber, DateTime BirthDate);
+    public class UserProfileViewModel
+    {
+        public Guid Id { get; set; }
+
+        public required string Auth0Id { get; set; }
+
+        public required string FirstName { get; set; }
+
+        public required string LastName { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
+        public DateTime? BirthDate { get; set; }
+    }
 }
