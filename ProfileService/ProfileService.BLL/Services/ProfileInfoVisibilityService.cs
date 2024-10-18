@@ -21,8 +21,13 @@ namespace ProfileService.BLL.Services
             return mapper.Map<ProfileInfoVisibilityModel>(visibility);
         }
 
-        public async Task<ProfileInfoVisibilityModel> UpdateProfileInfoVisibilityAsync(string currentUserAuth0Id, ProfileInfoVisibilityModel visibilityData, CancellationToken cancellationToken = default)
+        public async Task<ProfileInfoVisibilityModel> UpdateProfileInfoVisibilityAsync(string currentUserAuth0Id, Guid userId, ProfileInfoVisibilityModel visibilityData, CancellationToken cancellationToken = default)
         {
+            if (userId != visibilityData.UserId)
+            {
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(ProfileInfoVisibilityModel), userId));
+            }
+
             var profile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == currentUserAuth0Id, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Auth0Id), currentUserAuth0Id));
 

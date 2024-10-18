@@ -6,6 +6,6 @@ namespace ProfileService.BLL.Services.IServices
     {
         Task<ProfileInfoVisibilityModel> GetProfileInfoVisibilityAsync(Guid userId, CancellationToken cancellationToken = default);
 
-        Task<ProfileInfoVisibilityModel> UpdateProfileInfoVisibilityAsync(string currentUserAuth0Id, ProfileInfoVisibilityModel visibilityData, CancellationToken cancellationToken = default);
+        Task<ProfileInfoVisibilityModel> UpdateProfileInfoVisibilityAsync(string currentUserAuth0Id, Guid userId, ProfileInfoVisibilityModel visibilityData, CancellationToken cancellationToken = default);
     }
 }

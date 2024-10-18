@@ -18,6 +18,7 @@ namespace ProfileService.BLL.Utilities.Mapping
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
 
             CreateMap<UserProfile, UserProfileModel>().ReverseMap();
+            CreateMap<UserProfile, UserProfileModelWithPrivacy>();
             CreateMap<ProfileInfoVisibility, ProfileInfoVisibilityModel>().ReverseMap();
         }
     }

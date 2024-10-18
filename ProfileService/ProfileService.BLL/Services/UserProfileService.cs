@@ -4,6 +4,7 @@ using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Exceptions.Messages;
 using ProfileService.DAL.Models;
+using ProfileService.DAL.Models.Enums;
 using ProfileService.DAL.Repositories.IRepositories;
 
 namespace ProfileService.BLL.Services
@@ -26,12 +27,27 @@ namespace ProfileService.BLL.Services
             return mapper.Map<UserProfileModel>(createdUser);
         }
 
-        public async Task<UserProfileModel> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModelWithPrivacy> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken)
+            var userProfile = await profileRepository.GetByFilterAsync(p => p.Id == id, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), id));
 
-            return mapper.Map<UserProfileModel>(userProfile);
+            var visibilityOptions = await visibilityRepository.GetByFilterAsync(v => v.UserId == userProfile.Id, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileInfoVisibility), nameof(ProfileInfoVisibility.UserId), userProfile.Id));
+
+            var profileModel = mapper.Map<UserProfileModelWithPrivacy>(userProfile);
+
+            if (visibilityOptions.BirthDateVisibility == InfoVisibility.Private)
+            {
+                profileModel.BirthDate = null;
+            }
+
+            if (visibilityOptions.PhoneNumberVisibility == InfoVisibility.Private)
+            {
+                profileModel.PhoneNumber = null;
+            }
+
+            return profileModel;
         }
 
         public async Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
@@ -42,8 +58,13 @@ namespace ProfileService.BLL.Services
             return mapper.Map<UserProfileModel>(userProfile);
         }
 
-        public async Task<UserProfileModel> UpdateProfileAsync(UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> UpdateProfileAsync(Guid userId, UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)
         {
+            if (userId != userData.Id)
+            {
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(UserProfileModel), userId));
+            }
+
             var profile = await profileRepository.GetByFilterAsync(p => p.Id == userData.Id, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), userData.Id));
 

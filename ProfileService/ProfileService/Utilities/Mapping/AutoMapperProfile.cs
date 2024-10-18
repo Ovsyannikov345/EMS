@@ -10,6 +10,7 @@ namespace ProfileService.Utilities.Mapping
         {
             CreateMap<RegistrationDataViewModel, RegistrationDataModel>();
             CreateMap<UserProfileModel, UserProfileViewModel>();
+            CreateMap<UserProfileModelWithPrivacy, UserProfileViewModel>();
             CreateMap<ProfileInfoVisibilityModel, ProfileInfoVisibilityViewModel>().ReverseMap();
         }
     }
