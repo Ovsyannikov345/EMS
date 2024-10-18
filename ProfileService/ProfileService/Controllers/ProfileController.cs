@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
-using ProfileService.BLL.Utilities.Messages;
+using ProfileService.BLL.Utilities.Exceptions.Messages;
 using ProfileService.DAL.Models.Enums;
 using ProfileService.ViewModels;
 using System.Security.Claims;
@@ -70,7 +70,7 @@ namespace ProfileService.Controllers
         {
             if (id != userData.Id)
             {
-                throw new BadRequestException(UserProfileMessages.InvalidId);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(UserProfileViewModel), id));
             }
 
             var auth0Id = GetAuth0IdFromContext();
@@ -85,7 +85,7 @@ namespace ProfileService.Controllers
         {
             if (userId != visibilityData.UserId)
             {
-                throw new BadRequestException(ProfileVisibilityMessages.InvalidId);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(ProfileInfoVisibilityViewModel), userId));
             }
 
             var auth0Id = GetAuth0IdFromContext();
