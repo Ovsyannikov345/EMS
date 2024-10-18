@@ -1,7 +1,11 @@
 using ProfileService.BLL.DI;
 using ProfileService.BLL.Grpc.Services;
+using ProfileService.Utilities.Mapping;
 using ProfileService.DI;
 using ProfileService.Middleware;
+using System.Reflection;
+using ProfileService.DAL.DI;
+using ProfileService.Extensions;
 
 namespace ProfileService
 {
@@ -13,8 +17,15 @@ namespace ProfileService
 
             var services = builder.Services;
 
-            services.AddApplicationDependencies(builder.Configuration);
-            services.AddApiDependencies(builder.Configuration);
+            var configuration = builder.Configuration;
+
+            services.AddDataAccessDependencies(configuration);
+            services.AddApplicationDependencies();
+
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
+            services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddControllers();
 

@@ -1,14 +1,15 @@
-﻿using ProfileService.BLL.Dto;
-using ProfileService.DAL.Models;
+﻿using ProfileService.BLL.Models;
 
 namespace ProfileService.BLL.Services.IServices
 {
     public interface IUserProfileService
     {
-        Task<UserProfile> CreateProfileAsync(UserRegistrationData userData, CancellationToken cancellationToken = default);
+        Task<UserProfileModel> CreateProfileAsync(RegistrationDataModel userData, CancellationToken cancellationToken = default);
 
-        Task<UserProfile> GetProfileAsync(Guid id, CancellationToken cancellationToken = default);
-        
-        Task<UserProfile> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default);
+        Task<UserProfileModelWithPrivacy> GetProfileAsync(Guid id, CancellationToken cancellationToken = default);
+
+        Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default);
+
+        Task<UserProfileModel> UpdateProfileAsync(Guid userId, UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default);
     }
 }

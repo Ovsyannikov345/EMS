@@ -2,7 +2,7 @@
 using Grpc.Core;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
-using ProfileService.BLL.Utilities.Messages;
+using ProfileService.BLL.Utilities.Exceptions.Messages;
 
 namespace ProfileService.BLL.Grpc.Services
 {
@@ -12,7 +12,7 @@ namespace ProfileService.BLL.Grpc.Services
         {
             if (!Guid.TryParse(request.Id, out Guid profileId))
             {
-                throw new BadRequestException(UserProfileMessages.InvalidId);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(ProfileRequest), request.Id));
             }
 
             var profile = await userProfileService.GetProfileAsync(profileId, context.CancellationToken);

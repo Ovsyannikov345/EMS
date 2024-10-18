@@ -1,37 +1,20 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Services;
-using ProfileService.DAL.DI;
 using ProfileService.BLL.Utilities.Mapping;
+using System.Reflection;
 
 namespace ProfileService.BLL.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
+        public static void AddApplicationDependencies(this IServiceCollection services)
         {
-            services.AddDataAccessDependencies(configuration);
-            services.AddMapper();
-            services.AddBusinessLogicServices();
-        }
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
-        private static void AddMapper(this IServiceCollection services)
-        {
-            var mapperConfig = new MapperConfiguration(config =>
-            {
-                config.AddProfile(new AutoMapperProfile());
-            });
-
-            IMapper mapper = mapperConfig.CreateMapper();
-
-            services.AddSingleton(mapper);
-        }
-
-        private static void AddBusinessLogicServices(this IServiceCollection services)
-        {
-            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserProfileService, UserProfileService>()
+                    .AddScoped<IProfileInfoVisibilityService, ProfileInfoVisibilityService>();
         }
     }
 }

@@ -1,49 +1,83 @@
 ﻿using AutoMapper;
-using ProfileService.BLL.Dto;
+using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
-using ProfileService.BLL.Utilities.Messages;
+using ProfileService.BLL.Utilities.Exceptions.Messages;
 using ProfileService.DAL.Models;
+using ProfileService.DAL.Models.Enums;
 using ProfileService.DAL.Repositories.IRepositories;
 
 namespace ProfileService.BLL.Services
 {
-    public class UserProfileService(IMapper mapper, IProfileRepository profileRepository) : IUserProfileService
+    public class UserProfileService(IMapper mapper, IProfileRepository profileRepository, IProfileInfoVisibilityRepository visibilityRepository) : IUserProfileService
     {
-        public async Task<UserProfile> CreateProfileAsync(UserRegistrationData userData, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> CreateProfileAsync(RegistrationDataModel userData, CancellationToken cancellationToken = default)
         {
             var userProfile = mapper.Map<UserProfile>(userData);
 
             if (await profileRepository.GetByFilterAsync(p => p.Auth0Id == userProfile.Auth0Id, cancellationToken) is not null)
             {
-                throw new BadRequestException(UserProfileMessages.ProfileAlreadyExists);
+                throw new BadRequestException(ExceptionMessages.AlreadyExists(nameof(UserProfile), nameof(UserProfile.Auth0Id), userProfile.Auth0Id));
             }
 
-            return await profileRepository.CreateAsync(userProfile, cancellationToken);
+            var createdUser = await profileRepository.CreateAsync(userProfile, cancellationToken);
+
+            await visibilityRepository.CreateAsync(new ProfileInfoVisibility { UserId = createdUser.Id, User = createdUser }, cancellationToken);
+
+            return mapper.Map<UserProfileModel>(createdUser);
         }
 
-        public async Task<UserProfile> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModelWithPrivacy> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByIdAsync(id, cancellationToken);
+            var userProfile = await profileRepository.GetByFilterAsync(p => p.Id == id, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), id));
 
-            if (userProfile is null)
+            var visibilityOptions = await visibilityRepository.GetByFilterAsync(v => v.UserId == userProfile.Id, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileInfoVisibility), nameof(ProfileInfoVisibility.UserId), userProfile.Id));
+
+            var profileModel = mapper.Map<UserProfileModelWithPrivacy>(userProfile);
+
+            if (visibilityOptions.BirthDateVisibility == InfoVisibility.Private)
             {
-                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
+                profileModel.BirthDate = null;
             }
 
-            return userProfile;
+            if (visibilityOptions.PhoneNumberVisibility == InfoVisibility.Private)
+            {
+                profileModel.PhoneNumber = null;
+            }
+
+            return profileModel;
         }
 
-        public async Task<UserProfile> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken);
+            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Auth0Id), auth0Id));
 
-            if (userProfile is null)
+            return mapper.Map<UserProfileModel>(userProfile);
+        }
+
+        public async Task<UserProfileModel> UpdateProfileAsync(Guid userId, UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)
+        {
+            if (userId != userData.Id)
             {
-                throw new NotFoundException(UserProfileMessages.ProfileNotFound);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(UserProfileModel), userId));
             }
 
-            return userProfile;
+            var profile = await profileRepository.GetByFilterAsync(p => p.Id == userData.Id, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), userData.Id));
+
+            if (currentUserAuth0Id != profile.Auth0Id)
+            {
+                throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(UserProfile), profile.Id));
+            }
+
+            var userToUpdate = mapper.Map<UserProfile>(userData);
+
+            profile = await profileRepository.UpdateAsync(userToUpdate, cancellationToken);
+
+            return mapper.Map<UserProfileModel>(profile);
         }
     }
 }
