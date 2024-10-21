@@ -64,7 +64,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Sonar Scan
+    - name: Sonar Scan CatalogueService
       uses: highbyte/sonarscan-dotnet@v2.3.0
       with:
         sonarProjectKey: ${{ vars.SONARPROJECTKEY }}
@@ -73,7 +73,40 @@ jobs:
         dotnetBuildArguments: ./CatalogueService --configuration Release
         dotnetTestArguments: ./CatalogueService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
         sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="${{env.EXCLUDE_FROM_COVERAGE}}" /d:sonar.exclusions="${{env.EXCLUDE_FROM_SONAR}}" 
+    
+    - name: Sonar Scan ChatService
+      uses: highbyte/sonarscan-dotnet@v2.3.0
+      with:
+        sonarProjectKey: ${{ vars.SONARPROJECTKEY }}
+        sonarProjectName: ${{ vars.SONARPROJECTNAME }}
+        sonarOrganization: ${{ vars.SONARORGANIZATION }}
+        dotnetBuildArguments: ./ChatService --configuration Release
+        dotnetTestArguments: ./ChatService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="${{env.EXCLUDE_FROM_COVERAGE}}" /d:sonar.exclusions="${{env.EXCLUDE_FROM_SONAR}}" 
+
+    - name: Sonar Scan NotificationService
+      uses: highbyte/sonarscan-dotnet@v2.3.0
+      with:
+        sonarProjectKey: ${{ vars.SONARPROJECTKEY }}
+        sonarProjectName: ${{ vars.SONARPROJECTNAME }}
+        sonarOrganization: ${{ vars.SONARORGANIZATION }}
+        dotnetBuildArguments: ./NotificationService --configuration Release
+        dotnetTestArguments: ./NotificationService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="${{env.EXCLUDE_FROM_COVERAGE}}" /d:sonar.exclusions="${{env.EXCLUDE_FROM_SONAR}}" 
+
+    - name: Sonar Scan ProfileService
+      uses: highbyte/sonarscan-dotnet@v2.3.0
+      with:
+        sonarProjectKey: ${{ vars.SONARPROJECTKEY }}
+        sonarProjectName: ${{ vars.SONARPROJECTNAME }}
+        sonarOrganization: ${{ vars.SONARORGANIZATION }}
+        dotnetBuildArguments: ./ProfileService --configuration Release
+        dotnetTestArguments: ./ProfileService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="${{env.EXCLUDE_FROM_COVERAGE}}" /d:sonar.exclusions="${{env.EXCLUDE_FROM_SONAR}}" 
+    
+    
     env:
         EXCLUDE_FROM_COVERAGE: "**/Program.cs"
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         EXCLUDE_FROM_SONAR: "**/Migrations/*, **/Dockerfile"
+        
