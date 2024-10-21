@@ -2,5 +2,5 @@
 
 namespace NotificationService.DAL.Repositories.IRepositories
 {
-    public interface INotificationRepository : GenericRepository<Notification>;
+    public interface INotificationRepository : IGenericRepository<Notification>;
 }
