@@ -19,14 +19,41 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
+    - name: Restore dependencies for CatalogueService
       run: dotnet restore ./CatalogueService
 
-    - name: Build
+    - name: Restore dependencies for ChatService
+      run: dotnet restore ./ChatService
+
+    - name: Restore dependencies for NotificationService
+      run: dotnet restore ./NotificationService
+
+    - name: Restore dependencies for ProfileService
+      run: dotnet restore ./ProfileService
+
+    - name: Build CatalogueService
       run: dotnet build ./CatalogueService --no-restore --configuration Release
 
-    - name: Test
+    - name: Build ChatService
+      run: dotnet build ./ChatService --no-restore --configuration Release
+
+    - name: Build NotificationService
+      run: dotnet build ./NotificationService --no-restore --configuration Release
+
+    - name: Build ProfileService
+      run: dotnet build ./ProfileService --no-restore --configuration Release
+
+    - name: Test CatalogueService
       run: dotnet test ./CatalogueService --no-build --verbosity normal --configuration Release
+
+    - name: Test ChatService
+      run: dotnet test ./ChatService --no-build --verbosity normal --configuration Release
+
+    - name: Test NotificationService
+      run: dotnet test ./NotificationService --no-build --verbosity normal --configuration Release
+
+    - name: Test ProfileService
+      run: dotnet test ./ProfileService --no-build --verbosity normal --configuration Release
 
   analyze:
 
