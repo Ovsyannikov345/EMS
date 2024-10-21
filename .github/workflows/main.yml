@@ -20,13 +20,13 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./CatalogueService
 
     - name: Build
-      run: dotnet build ./CatalogueService/CatalogueService/CatalogueService.csproj --no-restore --configuration Release
+      run: dotnet build ./CatalogueService --no-restore --configuration Release
 
     - name: Test
-      run: dotnet test ./CatalogueService/CatalogueService/CatalogueService.csproj --no-build --verbosity normal --configuration Release
+      run: dotnet test ./CatalogueService --no-build --verbosity normal --configuration Release
 
   analyze:
 
