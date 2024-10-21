@@ -18,7 +18,6 @@ namespace ChatService.DAL.DI
             services.AddDbContext<ChatDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DbConnection")));
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IChatRepository, ChatRepository>()
                     .AddScoped<IMessageRepository, MessageRepository>();
 

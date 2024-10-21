@@ -4,7 +4,6 @@ using ProfileService.Utilities.Mapping;
 using ProfileService.DI;
 using ProfileService.Middleware;
 using System.Reflection;
-using ProfileService.DAL.DI;
 using ProfileService.Extensions;
 
 namespace ProfileService
@@ -19,8 +18,7 @@ namespace ProfileService
 
             var configuration = builder.Configuration;
 
-            services.AddDataAccessDependencies(configuration);
-            services.AddApplicationDependencies();
+            services.AddApplicationDependencies(configuration);
 
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);

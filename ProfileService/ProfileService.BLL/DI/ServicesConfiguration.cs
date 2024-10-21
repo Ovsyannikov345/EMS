@@ -4,13 +4,16 @@ using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Services;
 using ProfileService.BLL.Utilities.Mapping;
 using System.Reflection;
+using ProfileService.DAL.DI;
 
 namespace ProfileService.BLL.DI
 {
     public static class ServicesConfiguration
     {
-        public static void AddApplicationDependencies(this IServiceCollection services)
+        public static void AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddDataAccessDependencies(configuration);
+
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddScoped<IUserProfileService, UserProfileService>()
