@@ -18,11 +18,11 @@ namespace NotificationService.Middleware
             }
             catch (Exception e)
             {
-                return MapResponse<TRequest, TResponse>(e);
+                return MapResponse<TResponse>(e);
             }
         }
 
-        private static TResponse MapResponse<TRequest, TResponse>(Exception ex)
+        private static TResponse MapResponse<TResponse>(Exception ex)
         {
             var status = ex switch
             {
