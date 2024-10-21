@@ -17,7 +17,6 @@ namespace NotificationService.DAL.DI
             services.AddDbContext<NotificationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DbConnection")));
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.AddGrpcClient<ProfileService.ProfileServiceClient>(options =>
