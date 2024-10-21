@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace NotificationService.DAL.Repositories
 {
-    public class GenericRepository<TEntity>(NotificationDbContext context) : IRepositories.GenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity>(NotificationDbContext context) : IGenericRepository<TEntity> where TEntity : class
     {
         public async Task<TEntity?> GetByFilterAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
