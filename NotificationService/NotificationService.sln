@@ -5,9 +5,11 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService", "NotificationService\NotificationService.csproj", "{C7BF3328-0D8A-403C-BB63-9502E6C73BB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.DAL", "NotificationService.DAL\NotificationService.DAL.csproj", "{35598903-CCF8-4D7E-91C4-BEF49156622F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService.DAL", "NotificationService.DAL\NotificationService.DAL.csproj", "{35598903-CCF8-4D7E-91C4-BEF49156622F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.BLL", "NotificationService.BLL\NotificationService.BLL.csproj", "{6B5BE8DB-C8A6-4A8F-9513-51D75EC53C6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService.BLL", "NotificationService.BLL\NotificationService.BLL.csproj", "{6B5BE8DB-C8A6-4A8F-9513-51D75EC53C6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBus", "MessageBus\MessageBus.csproj", "{5C900C19-DDC0-40CD-9E37-4AAE5F399793}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{6B5BE8DB-C8A6-4A8F-9513-51D75EC53C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B5BE8DB-C8A6-4A8F-9513-51D75EC53C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B5BE8DB-C8A6-4A8F-9513-51D75EC53C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C900C19-DDC0-40CD-9E37-4AAE5F399793}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C900C19-DDC0-40CD-9E37-4AAE5F399793}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C900C19-DDC0-40CD-9E37-4AAE5F399793}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C900C19-DDC0-40CD-9E37-4AAE5F399793}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

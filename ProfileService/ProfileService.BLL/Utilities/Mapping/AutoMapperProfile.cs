@@ -20,6 +20,16 @@ namespace ProfileService.BLL.Utilities.Mapping
             CreateMap<UserProfile, UserProfileModel>().ReverseMap();
             CreateMap<UserProfile, UserProfileModelWithPrivacy>();
             CreateMap<ProfileInfoVisibility, ProfileInfoVisibilityModel>().ReverseMap();
+
+            CreateMap<UserProfileModel, ProtoProfileModel>()
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
+            CreateMap<UserProfileModelWithPrivacy, ProtoProfileModel>()
+                .ForMember(dest => dest.BirthDate, opt =>
+                {
+                    opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate.GetValueOrDefault(), DateTimeKind.Utc)));
+                    opt.Condition(src => src.BirthDate is not null);
+                })
+            .ForMember(dest => dest.PhoneNumber, opt => opt.Condition(src => src.BirthDate is not null));
         }
     }
 }

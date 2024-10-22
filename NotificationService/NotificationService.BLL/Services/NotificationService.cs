@@ -34,13 +34,17 @@ namespace NotificationService.BLL.Services
 
         public async Task<NotificationModel> MarkNotificationAsReadAsync(Guid notificationId, string userAuth0Id, CancellationToken cancellationToken = default)
         {
-            var profile = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken)
-                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileResponse.Profile), nameof(ProfileResponse.Profile.Auth0Id), userAuth0Id));
+            var profileResponse = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
+
+            if (profileResponse.Profile is null)
+            {
+                throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileResponse.Profile), nameof(ProfileResponse.Profile.Auth0Id), userAuth0Id));
+            }
 
             var notification = await notificationRepository.GetByFilterAsync(n => n.Id == notificationId, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(Notification), nameof(Notification.Id), notificationId));
 
-            if (notification.UserId != Guid.Parse(profile.Profile.Id))
+            if (notification.UserId != Guid.Parse(profileResponse.Profile.Id))
             {
                 throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(Notification), notificationId));
             }

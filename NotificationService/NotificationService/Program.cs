@@ -1,3 +1,12 @@
+using MassTransit;
+using NotificationService.BLL.DI;
+using NotificationService.Consumers;
+using NotificationService.DAL.DI;
+using NotificationService.DI;
+using NotificationService.Middleware;
+using NotificationService.Utilities.Mapping;
+using System.Reflection;
+
 namespace NotificationService
 {
     public static class Program
@@ -6,14 +15,36 @@ namespace NotificationService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var services = builder.Services;
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            var configuration = builder.Configuration;
+
+            services.AddDataAccessDependencies(configuration);
+            services.AddBusinessLogicDependencies();
+            services.AddAuthenticationBearer(configuration);
+            services.AddCorsPolicy(configuration);
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
+            services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(configuration["RabbitMQ:Host"]);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            services.AddControllers();
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -22,12 +53,13 @@ namespace NotificationService
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("CorsPolicy");
+
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
-
             app.MapControllers();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.Run();
         }
