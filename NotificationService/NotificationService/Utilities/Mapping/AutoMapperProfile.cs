@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using MessageBus.Messages;
 using NotificationService.BLL.Models;
-using NotificationService.Consumers.Messages;
 using NotificationService.ViewModels;
 
 namespace NotificationService.Utilities.Mapping

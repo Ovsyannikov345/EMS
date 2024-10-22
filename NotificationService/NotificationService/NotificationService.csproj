@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
     <ProjectReference Include="..\NotificationService.BLL\NotificationService.BLL.csproj" />
     <ProjectReference Include="..\NotificationService.DAL\NotificationService.DAL.csproj" />
   </ItemGroup>

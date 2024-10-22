@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MassTransit;
+using MessageBus.Messages;
 using NotificationService.BLL.Models;
 using NotificationService.BLL.Services.IServices;
-using NotificationService.Consumers.Messages;
 
 namespace NotificationService.Consumers
 {

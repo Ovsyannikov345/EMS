@@ -1,4 +1,4 @@
-﻿namespace NotificationService.Consumers.Messages
+﻿namespace MessageBus.Messages
 {
     public record CreateNotification
     {
