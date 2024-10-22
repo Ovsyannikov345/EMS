@@ -19,7 +19,7 @@ namespace ChatService
             var configuration = builder.Configuration;
 
             services.AddDataAccessDependencies(configuration);
-            services.AddBusinessLogicDependencies();
+            services.AddBusinessLogicDependencies(configuration);
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
