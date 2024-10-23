@@ -18,7 +18,8 @@ namespace CatalogueService.DAL.DI
             services.AddDbContext<EstateDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DbConnection")));
 
-            services.AddScoped<IEstateRepository, EstateRepository>();
+            services.AddScoped<IEstateRepository, EstateRepository>()
+                    .AddScoped<IEstateFilterRepository, EstateFilterRepository>();
 
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
-using CatalogueService.BLL.Utitlities.Messages;
+using CatalogueService.BLL.Utilities.Messages;
 using Grpc.Core;
 
 namespace CatalogueService.BLL.Grpc.Services

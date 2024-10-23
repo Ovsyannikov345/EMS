@@ -17,9 +17,15 @@ namespace CatalogueService.DAL.Repositories
             return await context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
-            return await context.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken);
+            var entities = predicate switch
+            {
+                null => context.Set<TEntity>(),
+                not null => context.Set<TEntity>().Where(predicate),
+            };
+
+            return await entities.AsNoTracking().ToListAsync(cancellationToken);
         }
 
         public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)

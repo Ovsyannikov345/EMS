@@ -3,13 +3,20 @@ using CatalogueService.BLL.Models;
 using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
-using CatalogueService.BLL.Utitlities.Messages;
+using CatalogueService.BLL.Utilities.Messages;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
+using CatalogueService.BLL.Producers.IProducers;
+using MessageBus.Messages;
 
 namespace CatalogueService.BLL.Services
 {
-    public class EstateService(IEstateRepository estateRepository, IProfileGrpcClient profileGrpcClient, IMapper mapper) : IEstateService
+    public class EstateService(
+        IEstateRepository estateRepository,
+        IProfileGrpcClient profileGrpcClient,
+        IEstateFilterService estateFilterService,
+        INotificationProducer notificationProducer,
+        IMapper mapper) : IEstateService
     {
         public async Task<EstateModel> CreateEstateAsync(EstateModel estateData, string ownerAuth0Id, CancellationToken cancellationToken = default)
         {
@@ -19,7 +26,20 @@ namespace CatalogueService.BLL.Services
 
             var createdEstate = await estateRepository.CreateAsync(mapper.Map<Estate>(estateData), cancellationToken);
 
-            return mapper.Map<EstateModel>(createdEstate);
+            var estateModel = mapper.Map<EstateModel>(createdEstate);
+
+            var userFilters = await estateFilterService.GetEstateFiltersAsync(estateModel, cancellationToken);
+
+            foreach (var filter in userFilters)
+            {
+                await notificationProducer.SendNotification(new CreateNotification
+                {
+                    Title = NotificationMessages.NewEstate,
+                    UserId = filter.UserId,
+                }, cancellationToken);
+            }
+
+            return estateModel;
         }
 
         public async Task DeleteEstateAsync(Guid id, string ownerAuth0Id, CancellationToken cancellationToken = default)
@@ -56,7 +76,7 @@ namespace CatalogueService.BLL.Services
 
         public async Task<IEnumerable<EstateModel>> GetEstateListAsync(CancellationToken cancellationToken = default)
         {
-            var estates = await estateRepository.GetAllAsync(cancellationToken);
+            var estates = await estateRepository.GetAllAsync(cancellationToken: cancellationToken);
 
             return mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estates);
         }

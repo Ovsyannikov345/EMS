@@ -14,5 +14,7 @@ namespace CatalogueService.DAL.Data
         }
 
         public DbSet<Estate> Estates { get; set; }
+
+        public DbSet<EstateFilter> EstateFilters { get; set; }
     }
 }

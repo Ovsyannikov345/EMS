@@ -3,6 +3,7 @@ using System;
 using CatalogueService.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CatalogueService.DAL.Migrations
 {
     [DbContext(typeof(EstateDbContext))]
-    partial class EstateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023082850_CreateEstateFiltersTable")]
+    partial class CreateEstateFiltersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,8 +62,9 @@ namespace CatalogueService.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("EstateTypes")
-                        .HasColumnType("integer");
+                    b.Property<int[]>("EstateTypes")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
 
                     b.Property<int>("MaxArea")
                         .HasColumnType("integer");

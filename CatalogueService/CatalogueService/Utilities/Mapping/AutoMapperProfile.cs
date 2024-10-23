@@ -14,6 +14,8 @@ namespace CatalogueService.Utilities.Mapping
             CreateMap<EstateWithProfileModel, EstateWithProfileViewModel>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
             CreateMap<UserProfileModel, UserProfileViewModel>();
+            CreateMap<EstateFilterModel, EstateFilterViewModel>().ReverseMap();
+            CreateMap<EstateFilterToCreateViewModel, EstateFilterModel>();
         }
     }
 }

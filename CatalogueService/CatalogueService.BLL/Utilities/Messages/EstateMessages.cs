@@ -1,4 +1,4 @@
-﻿namespace CatalogueService.BLL.Utitlities.Messages
+﻿namespace CatalogueService.BLL.Utilities.Messages
 {
     public static class EstateMessages
     {
