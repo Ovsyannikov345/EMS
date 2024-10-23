@@ -23,7 +23,8 @@ namespace CatalogueService.BLL.DI
 
             services.AddMassTransit(configuration);
 
-            services.AddScoped<IEstateService, EstateService>();
+            services.AddScoped<IEstateService, EstateService>()
+                    .AddScoped<IEstateFilterService, EstateFilterService>();
         }
 
         public static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
