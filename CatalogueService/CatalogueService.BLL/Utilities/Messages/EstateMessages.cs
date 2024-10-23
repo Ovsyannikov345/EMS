@@ -2,7 +2,6 @@
 {
     public static class EstateMessages
     {
-        // TODO create single message class
         public const string EstateNotFound = "Estate is not found";
 
         public const string EstateDeleteForbidden = "You can't delete estate of other user";
