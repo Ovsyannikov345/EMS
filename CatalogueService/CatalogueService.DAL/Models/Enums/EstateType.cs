@@ -1,8 +1,10 @@
 ﻿namespace CatalogueService.DAL.Models.Enums
 {
+    [Flags]
     public enum EstateType
     {
-        Apartment = 0,
-        House = 1,
+        None = 0,
+        Apartment = 1,
+        House = 2,
     }
 }

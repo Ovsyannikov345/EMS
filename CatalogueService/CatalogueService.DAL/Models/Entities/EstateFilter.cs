@@ -8,7 +8,7 @@ namespace CatalogueService.DAL.Models.Entities
 
         public Guid UserId { get; set; }
 
-        public ICollection<EstateType> EstateTypes { get; set; } = [];
+        public EstateType EstateTypes { get; set; }
 
         public int MinArea { get; set; }
 
