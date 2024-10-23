@@ -6,6 +6,7 @@ using CatalogueService.BLL.Utilities.Messages;
 using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
+using System.Linq.Expressions;
 
 namespace CatalogueService.BLL.Services
 {
@@ -26,11 +27,13 @@ namespace CatalogueService.BLL.Services
 
         public async Task<IEnumerable<EstateFilterModel>> GetEstateFiltersAsync(EstateModel estate, CancellationToken cancellationToken = default)
         {
-            var filters = await estateFilterRepository.GetAllAsync(e =>
+            Expression<Func<EstateFilter, bool>> query = (EstateFilter e) =>
                 estate.Price >= e.MinPrice && estate.Price <= e.MaxPrice &&
                 estate.RoomsCount >= e.MinRoomsCount && estate.RoomsCount <= e.MaxRoomsCount &&
                 estate.Area >= e.MinArea && estate.Area <= e.MaxArea &&
-                e.EstateTypes.HasFlag(estate.Type), cancellationToken);
+                e.EstateTypes.HasFlag(estate.Type);
+
+            var filters = await estateFilterRepository.GetAllAsync(query, cancellationToken);
 
             return mapper.Map<IEnumerable<EstateFilter>, IEnumerable<EstateFilterModel>>(filters);
         }
