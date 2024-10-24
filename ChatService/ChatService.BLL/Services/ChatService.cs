@@ -2,10 +2,11 @@
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
 using ChatService.BLL.Utilities.Exceptions;
-using ChatService.BLL.Utilities.Messages;
+using ChatService.DAL.Grpc.Services.Estate;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Models.Entities;
 using ChatService.DAL.Repositories.IRepositories;
+using ProfileService.BLL.Utilities.Exceptions.Messages;
 
 namespace ChatService.BLL.Services
 {
@@ -15,10 +16,10 @@ namespace ChatService.BLL.Services
         IProfileGrpcClient profileGrpcClient,
         IMapper mapper) : IChatService
     {
-        public async Task<ChatModel> GetChatAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ChatModel> GetChatAsync(Guid id, string userAuth0Id, CancellationToken cancellationToken = default)
         {
             var chat = await chatRepository.GetChatWithMessages(id, cancellationToken)
-                ?? throw new NotFoundException(ChatMessages.ChatNotFound);
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(Chat), nameof(Chat.Id), id));
 
             var estateResponse = await estateGrpcClient.GetEstateAsync(chat.EstateId, cancellationToken);
 
@@ -30,6 +31,11 @@ namespace ChatService.BLL.Services
 
             chatModel.User = mapper.Map<UserProfileModel>(profileResponse.Profile);
 
+            if (userAuth0Id != chatModel.User.Auth0Id && userAuth0Id != chatModel.Estate.User.Auth0Id)
+            {
+                throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(Chat), chatModel.Id));
+            }
+
             return chatModel;
         }
 
@@ -37,15 +43,17 @@ namespace ChatService.BLL.Services
         {
             var profileResponse = await profileGrpcClient.GetOwnProfile(currentUserAuth0Id, cancellationToken);
 
-            var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile) ?? throw new NotFoundException(ProfileMessages.ProfileNotFound);
+            var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfileModel), nameof(UserProfileModel.Auth0Id), currentUserAuth0Id));
 
             var estateResponse = await estateGrpcClient.GetEstateAsync(estateId, cancellationToken);
 
-            var estate = mapper.Map<EstateModel>(estateResponse.Estate) ?? throw new NotFoundException(EstateMessages.EstateNotFound);
+            var estate = mapper.Map<EstateModel>(estateResponse.Estate)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(EstateModel), nameof(EstateModel.Id), estateId));
 
             if (estate.User.Id != currentUser.Id)
             {
-                throw new ForbiddenException(ChatMessages.ChatListAccessDenied);
+                throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(UserProfileModel), estate.User.Id));
             }
 
             var chats = await chatRepository.GetAllAsync(c => c.EstateId == estateId, cancellationToken);
@@ -68,7 +76,8 @@ namespace ChatService.BLL.Services
         {
             var profileResponse = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
-            var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile) ?? throw new NotFoundException(ProfileMessages.ProfileNotFound);
+            var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProtoProfileModel), nameof(ProtoProfileModel.Auth0Id), userAuth0Id));
 
             var chats = await chatRepository.GetAllAsync(c => c.UserId == currentUser.Id, cancellationToken);
 
@@ -90,24 +99,24 @@ namespace ChatService.BLL.Services
 
             if (profile.Profile is null)
             {
-                throw new NotFoundException(ProfileMessages.ProfileNotFound);
+                throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProtoProfileModel), nameof(ProtoProfileModel.Auth0Id), userAuth0Id));
             }
 
             var estate = await estateGrpcClient.GetEstateAsync(estateId, cancellationToken);
 
             if (estate.Estate is null)
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProtoEstateModel), nameof(ProtoEstateModel.Id), estateId));
             }
 
             if (estate.Estate.User.Id == profile.Profile.Id)
             {
-                throw new BadRequestException(ChatMessages.ChatWithYourself);
+                throw new BadRequestException(ExceptionMessages.SelfChatCreation);
             }
 
             if (await chatRepository.Exists(c => c.UserId == Guid.Parse(profile.Profile.Id) && c.EstateId == estateId, cancellationToken))
             {
-                throw new BadRequestException(ChatMessages.ChatAlreadyExists);
+                throw new BadRequestException(ExceptionMessages.AlreadyExists(nameof(Chat), nameof(Chat.UserId), profile.Profile.Id));
             }
 
             var createdChat = await chatRepository.CreateAsync(new Chat

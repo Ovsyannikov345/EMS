@@ -18,14 +18,7 @@ namespace ChatService.Controllers
         [HttpGet("{id}")]
         public async Task<ChatViewModel> GetChat(Guid id, CancellationToken cancellationToken)
         {
-            var chat = await chatService.GetChatAsync(id, cancellationToken);
-
-            var userId = GetAuth0IdFromContext();
-
-            if (userId != chat.User.Auth0Id && userId != chat.Estate.User.Auth0Id)
-            {
-                throw new ForbiddenException(ChatMessages.ChatAccessDenied);
-            }
+            var chat = await chatService.GetChatAsync(id, GetAuth0IdFromContext(), cancellationToken);
 
             return mapper.Map<ChatViewModel>(chat);
         }
