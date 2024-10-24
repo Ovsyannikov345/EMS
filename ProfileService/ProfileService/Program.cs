@@ -27,6 +27,7 @@ namespace ProfileService
 
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddAutoValidation();
             services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
