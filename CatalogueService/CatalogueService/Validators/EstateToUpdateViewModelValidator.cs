@@ -1,4 +1,5 @@
-﻿using CatalogueService.Utilities.Messages;
+﻿using CatalogueService.DAL.Models.Enums;
+using CatalogueService.Utilities.Messages;
 using CatalogueService.ViewModels;
 using FluentValidation;
 
