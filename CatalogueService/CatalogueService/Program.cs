@@ -3,7 +3,7 @@ using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.DI;
 using CatalogueService.Middleware;
 using CatalogueService.Utilities.Mapping;
-using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Reflection;
 
 namespace CatalogueService
@@ -13,6 +13,10 @@ namespace CatalogueService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
 
             var services = builder.Services;
 

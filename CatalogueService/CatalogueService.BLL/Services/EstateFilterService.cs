@@ -2,7 +2,7 @@
 using CatalogueService.BLL.Models;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
-using CatalogueService.BLL.Utilities.Messages;
+using CatalogueService.BLL.Utilities.Exceptions.Messages;
 using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
@@ -20,7 +20,7 @@ namespace CatalogueService.BLL.Services
             var profile = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
             var filter = await estateFilterRepository.GetByFilterAsync(e => e.UserId == profile.Id, cancellationToken)
-                ?? throw new NotFoundException(EstateFilterMessages.NotFound);
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(EstateFilter), nameof(EstateFilter.UserId), profile.Id));
 
             return mapper.Map<EstateFilterModel>(filter);
         }
@@ -46,7 +46,7 @@ namespace CatalogueService.BLL.Services
 
             if (filter is not null)
             {
-                throw new BadRequestException(EstateFilterMessages.AlreadyExists);
+                throw new BadRequestException(ExceptionMessages.AlreadyExists(nameof(EstateFilter), nameof(EstateFilter.UserId), profile.Id));
             }
 
             var filterToCreate = mapper.Map<EstateFilter>(filterData);
@@ -62,17 +62,17 @@ namespace CatalogueService.BLL.Services
         {
             if (id != filterData.Id)
             {
-                throw new BadRequestException(EstateFilterMessages.InvalidId);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(EstateFilter), id));
             }
 
             var filter = await estateFilterRepository.GetByFilterAsync(e => e.Id == filterData.Id, cancellationToken)
-                ?? throw new NotFoundException(EstateFilterMessages.NotFound);
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(EstateFilter), nameof(EstateFilter.UserId), filterData.Id));
 
             var profile = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
             if (filter.UserId != profile.Id)
             {
-                throw new ForbiddenException(EstateFilterMessages.AccessDenied);
+                throw new ForbiddenException(ExceptionMessages.UpdateDenied(nameof(EstateFilter), filter.Id));
             }
 
             var updatedFilter = await estateFilterRepository.UpdateAsync(mapper.Map<EstateFilter>(filterData), cancellationToken);

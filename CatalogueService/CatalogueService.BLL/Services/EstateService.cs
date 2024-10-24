@@ -8,6 +8,7 @@ using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
 using CatalogueService.BLL.Producers.IProducers;
 using MessageBus.Messages;
+using CatalogueService.BLL.Utilities.Exceptions.Messages;
 
 namespace CatalogueService.BLL.Services
 {
@@ -46,12 +47,12 @@ namespace CatalogueService.BLL.Services
         {
             if (!await IsUserEstateOwnerAsync(id, ownerAuth0Id, cancellationToken))
             {
-                throw new ForbiddenException(EstateMessages.EstateDeleteForbidden);
+                throw new ForbiddenException(ExceptionMessages.DeleteDenied(nameof(Estate), id));
             }
 
             if (!await estateRepository.DeleteAsync(id, cancellationToken))
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), id));
             }
         }
 
@@ -70,8 +71,7 @@ namespace CatalogueService.BLL.Services
                 return estateFullDetails;
             }
 
-            throw new NotFoundException(EstateMessages.EstateNotFound);
-
+            throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), id));
         }
 
         public async Task<IEnumerable<EstateModel>> GetEstateListAsync(CancellationToken cancellationToken = default)
@@ -85,7 +85,7 @@ namespace CatalogueService.BLL.Services
         {
             if (!await IsUserEstateOwnerAsync(estate.Id, ownerAuth0Id, cancellationToken))
             {
-                throw new ForbiddenException(EstateMessages.EstateUpdateForbidden);
+                throw new ForbiddenException(ExceptionMessages.UpdateDenied(nameof(Estate), estate.Id));
             }
 
             var updatedEstate = await estateRepository.UpdateAsync(mapper.Map<Estate>(estate), cancellationToken);
@@ -99,7 +99,7 @@ namespace CatalogueService.BLL.Services
 
             if (estate is null)
             {
-                throw new NotFoundException(EstateMessages.EstateNotFound);
+                throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), estateId));
             }
 
             var owner = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
