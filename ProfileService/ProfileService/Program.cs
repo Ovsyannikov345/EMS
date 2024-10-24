@@ -4,6 +4,7 @@ using ProfileService.Utilities.Mapping;
 using ProfileService.DI;
 using ProfileService.Middleware;
 using System.Reflection;
+using Serilog;
 using ProfileService.Extensions;
 
 namespace ProfileService
@@ -13,6 +14,10 @@ namespace ProfileService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
 
             var services = builder.Services;
 
