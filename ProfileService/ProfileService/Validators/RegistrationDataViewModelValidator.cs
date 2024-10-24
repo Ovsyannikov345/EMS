@@ -26,7 +26,7 @@ namespace ProfileService.Validators
 
             RuleFor(x => x.BirthDate)
                 .NotEmpty().WithMessage(ExceptionMessages.FieldIsRequired(nameof(RegistrationDataViewModel.BirthDate)))
-                .LessThanOrEqualTo(DateTime.Today).WithMessage(ExceptionMessages.DateFieldIsFuture(nameof(RegistrationDataViewModel.BirthDate)));
+                .LessThanOrEqualTo(DateTime.UtcNow).WithMessage(ExceptionMessages.DateFieldIsFuture(nameof(RegistrationDataViewModel.BirthDate)));
         }
     }
 }
