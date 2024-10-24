@@ -51,10 +51,9 @@ namespace ChatService.Controllers
         }
 
         [HttpPost("estate/{estateId}")]
-        [AllowAnonymous]
         public async Task<ChatViewModel> CreateChat(Guid estateId, CancellationToken cancellationToken)
         {
-            var id = "auth0|670e4910790cc3882064afbe";//GetAuth0IdFromContext();
+            var id = GetAuth0IdFromContext();
 
             var createdChat = await chatService.CreateChatAsync(id, estateId, cancellationToken);
 
