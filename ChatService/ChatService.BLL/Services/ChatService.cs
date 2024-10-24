@@ -6,7 +6,6 @@ using ChatService.BLL.Utilities.Messages;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Models.Entities;
 using ChatService.DAL.Repositories.IRepositories;
-using System;
 
 namespace ChatService.BLL.Services
 {
@@ -18,12 +17,8 @@ namespace ChatService.BLL.Services
     {
         public async Task<ChatModel> GetChatAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var chat = await chatRepository.GetChatWithMessages(id, cancellationToken);
-
-            if (chat is null)
-            {
-                throw new NotFoundException(ChatMessages.ChatNotFound);
-            }
+            var chat = await chatRepository.GetChatWithMessages(id, cancellationToken)
+                ?? throw new NotFoundException(ChatMessages.ChatNotFound);
 
             var estateResponse = await estateGrpcClient.GetEstateAsync(chat.EstateId, cancellationToken);
 
@@ -87,6 +82,42 @@ namespace ChatService.BLL.Services
             }
 
             return chatModels;
+        }
+
+        public async Task<ChatModel> CreateChatAsync(string userAuth0Id, Guid estateId, CancellationToken cancellationToken = default)
+        {
+            var profile = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
+
+            if (profile.Profile is null)
+            {
+                throw new NotFoundException(ProfileMessages.ProfileNotFound);
+            }
+
+            var estate = await estateGrpcClient.GetEstateAsync(estateId, cancellationToken);
+
+            if (estate.Estate is null)
+            {
+                throw new NotFoundException(EstateMessages.EstateNotFound);
+            }
+
+            if (estate.Estate.User.Id == profile.Profile.Id)
+            {
+                throw new BadRequestException(ChatMessages.ChatWithYourself);
+            }
+
+            if (await chatRepository.Exists(c => c.UserId == Guid.Parse(profile.Profile.Id) && c.EstateId == estateId, cancellationToken))
+            {
+                throw new BadRequestException(ChatMessages.ChatAlreadyExists);
+            }
+
+            var createdChat = await chatRepository.CreateAsync(new Chat
+            {
+                UserId = Guid.Parse(profile.Profile.Id),
+                EstateId = estateId,
+                Messages = [],
+            }, cancellationToken);
+
+            return mapper.Map<ChatModel>(createdChat);
         }
     }
 }
