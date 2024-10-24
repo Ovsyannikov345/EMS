@@ -25,6 +25,7 @@ namespace CatalogueService
             services.AddBusinessLogicDependencies(configuration);
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddAutoValidation();
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
             services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
 
