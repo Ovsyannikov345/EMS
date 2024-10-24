@@ -1,8 +1,8 @@
-﻿using NotificationService.BLL.Utilities.Exceptions;
-using NotificationService.Utilities.Responses;
+﻿using ChatService.BLL.Utilities.Exceptions;
+using ChatService.Utilities.Responses;
 using System.Net;
 
-namespace NotificationService.Middleware
+namespace ChatService.Middleware
 {
     public class ExceptionHandlingMiddleware(RequestDelegate next, Serilog.ILogger logger)
     {
@@ -24,6 +24,7 @@ namespace NotificationService.Middleware
 
             ExceptionResponse response = ex switch
             {
+                BadRequestException => new((int)HttpStatusCode.BadRequest, ex.Message),
                 NotFoundException => new((int)HttpStatusCode.NotFound, ex.Message),
                 ForbiddenException => new((int)HttpStatusCode.Forbidden, ex.Message),
                 _ => new((int)HttpStatusCode.InternalServerError, ex.Message),

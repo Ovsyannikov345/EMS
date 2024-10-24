@@ -4,6 +4,7 @@ using ProfileService.Utilities.Mapping;
 using ProfileService.DI;
 using ProfileService.Middleware;
 using System.Reflection;
+using Serilog;
 using ProfileService.Extensions;
 
 namespace ProfileService
@@ -14,6 +15,10 @@ namespace ProfileService
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
+
             var services = builder.Services;
 
             var configuration = builder.Configuration;
@@ -22,6 +27,7 @@ namespace ProfileService
 
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddAutoValidation();
             services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 

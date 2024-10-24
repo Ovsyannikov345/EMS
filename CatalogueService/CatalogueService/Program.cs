@@ -3,7 +3,7 @@ using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.DI;
 using CatalogueService.Middleware;
 using CatalogueService.Utilities.Mapping;
-using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Reflection;
 
 namespace CatalogueService
@@ -14,6 +14,10 @@ namespace CatalogueService
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
+
             var services = builder.Services;
 
             var configuration = builder.Configuration;
@@ -21,6 +25,7 @@ namespace CatalogueService
             services.AddBusinessLogicDependencies(configuration);
             services.AddAuthenticationBearer(configuration);
             services.AddCorsPolicy(configuration);
+            services.AddAutoValidation();
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
             services.AddGrpc(_ => _.Interceptors.Add<GrpcExceptionHandlingInterceptor>());
 

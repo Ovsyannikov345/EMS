@@ -4,9 +4,11 @@ using ChatService.BLL.Services.IServices;
 using ChatService.BLL.Utilities.Exceptions;
 using ChatService.BLL.Utilities.Messages;
 using ChatService.DAL.Grpc.Services.IServices;
+using ChatService.DAL.Grpc.Services.Profile;
 using ChatService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using ProfileService.BLL.Utilities.Exceptions.Messages;
 using System.Security.Claims;
 
 namespace ChatService.BLL.Hubs
@@ -64,7 +66,7 @@ namespace ChatService.BLL.Hubs
         {
             string auth0Id = GetAuth0IdFromContext();
 
-            var chat = await chatService.GetChatAsync(chatId);
+            var chat = await chatService.GetChatAsync(chatId, auth0Id);
 
             if (auth0Id == chat.Estate.User.Auth0Id)
             {
@@ -108,7 +110,8 @@ namespace ChatService.BLL.Hubs
         {
             var profileResponse = await profileGrpcClient.GetOwnProfile(auth0Id);
 
-            return mapper.Map<UserProfileModel>(profileResponse.Profile ?? throw new NotFoundException(ProfileMessages.ProfileNotFound));
+            return mapper.Map<UserProfileModel>(profileResponse.Profile
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProtoProfileModel), nameof(ProtoProfileModel.Auth0Id), auth0Id)));
         }
     }
 }

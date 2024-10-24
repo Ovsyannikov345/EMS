@@ -1,6 +1,8 @@
-﻿using CatalogueService.BLL.DI;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace CatalogueService.DI
@@ -38,6 +40,12 @@ namespace CatalogueService.DI
                                           .AllowAnyHeader()
                                           .AllowCredentials());
             });
+        }
+
+        public static void AddAutoValidation(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddFluentValidationAutoValidation();
         }
     }
 }

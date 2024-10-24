@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
-using CatalogueService.BLL.Utilities.Messages;
+using CatalogueService.BLL.Utilities.Exceptions.Messages;
+using CatalogueService.DAL.Models.Entities;
 using Grpc.Core;
 
 namespace CatalogueService.BLL.Grpc.Services
@@ -12,7 +13,7 @@ namespace CatalogueService.BLL.Grpc.Services
         {
             if (!Guid.TryParse(request.Id, out Guid estateId))
             {
-                throw new BadRequestException(EstateMessages.EstateIdIsInvalid);
+                throw new BadRequestException(ExceptionMessages.InvalidId(nameof(Estate), request.Id));
             }
 
             var estate = await estateService.GetEstateDetailsAsync(estateId, context.CancellationToken);
