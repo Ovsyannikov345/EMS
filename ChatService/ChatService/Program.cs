@@ -3,7 +3,7 @@ using ChatService.BLL.Hubs;
 using ChatService.DAL.DI;
 using ChatService.DI;
 using ChatService.Utilities.Mapping;
-using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System.Reflection;
 
 namespace ChatService
@@ -13,6 +13,10 @@ namespace ChatService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
 
             var services = builder.Services;
 
