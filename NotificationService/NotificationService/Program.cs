@@ -1,10 +1,10 @@
 using MassTransit;
 using NotificationService.BLL.DI;
-using NotificationService.Consumers;
 using NotificationService.DAL.DI;
 using NotificationService.DI;
 using NotificationService.Middleware;
 using NotificationService.Utilities.Mapping;
+using Serilog;
 using System.Reflection;
 
 namespace NotificationService
@@ -14,6 +14,10 @@ namespace NotificationService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.WriteTo.Console()
+                            .WriteTo.File("log.txt"));
 
             var services = builder.Services;
 

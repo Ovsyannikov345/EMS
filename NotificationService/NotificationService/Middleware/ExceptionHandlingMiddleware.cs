@@ -4,7 +4,7 @@ using System.Net;
 
 namespace NotificationService.Middleware
 {
-    public class ExceptionHandlingMiddleware(RequestDelegate next)
+    public class ExceptionHandlingMiddleware(RequestDelegate next, Serilog.ILogger logger)
     {
         public async Task InvokeAsync(HttpContext httpContext)
         {
@@ -18,8 +18,10 @@ namespace NotificationService.Middleware
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
+            logger.Error(ex.Message);
+
             ExceptionResponse response = ex switch
             {
                 NotFoundException => new((int)HttpStatusCode.NotFound, ex.Message),
