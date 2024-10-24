@@ -10,7 +10,6 @@ namespace NotificationService.Utilities.Mapping
         public AutoMapperProfile()
         {
             CreateMap<NotificationModel, NotificationViewModel>();
-            CreateMap<NotificationToCreateViewModel, NotificationModel>();
 
             CreateMap<CreateNotification, NotificationModel>();
         }
