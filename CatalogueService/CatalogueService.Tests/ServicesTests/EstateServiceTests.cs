@@ -16,7 +16,7 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using System.Linq.Expressions;
 
-namespace CatalogueService.Tests
+namespace CatalogueService.Tests.ServicesTests
 {
     public class EstateServiceTests
     {
