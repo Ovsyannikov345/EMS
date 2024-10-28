@@ -167,5 +167,23 @@ namespace CatalogueService.Tests
             // Assert
             result.Should().BeEquivalentTo(estate);
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateListAsync__ReturnsEstateList(
+            [Frozen] IEstateRepository estateRepositoryMock,
+            IEnumerable<Estate> estateList,
+            EstateService sut)
+        {
+            // Arrange
+            estateRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .Returns(estateList);
+
+            // Act
+            var result = await sut.GetEstateListAsync(default);
+
+            // Assert
+            result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estateList));
+        }
     }
 }
