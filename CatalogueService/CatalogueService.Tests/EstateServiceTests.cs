@@ -185,5 +185,71 @@ namespace CatalogueService.Tests
             // Assert
             result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estateList));
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task UpdateEstateAsync_NonExistentEstate_ThrowsNotFoundException(
+            [Frozen] IEstateRepository estateRepositoryMock,
+            EstateModel estate,
+            EstateService sut)
+        {
+            // Arrange
+            estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .ReturnsNull();
+
+            // Act
+            var result = async () => await sut.UpdateEstateAsync(estate, "", default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task UpdateEstateAsync_OtherPersonsEstate_ThrowsForbiddenException(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateRepository estateRepositoryMock,
+            Estate estate,
+            UserProfile userProfile,
+            EstateService sut)
+        {
+            // Arrange
+            estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .Returns(estate);
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(userProfile);
+
+            // Act
+            var result = async () => await sut.UpdateEstateAsync(_mapper.Map<EstateModel>(estate), "", default);
+
+            // Assert
+            await result.Should().ThrowAsync<ForbiddenException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task UpdateEstateAsync_ValidEstate_ReturnsUpdatedEstate(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateRepository estateRepositoryMock,
+            Estate estate,
+            UserProfile userProfile,
+            EstateService sut)
+        {
+            // Arrange
+            estate.UserId = userProfile.Id;
+
+            estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .Returns(estate);
+            estateRepositoryMock.UpdateAsync(Arg.Any<Estate>(), Arg.Any<CancellationToken>())
+                .Returns(estate);
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(userProfile);
+
+            // Act
+            var result = await sut.UpdateEstateAsync(_mapper.Map<EstateModel>(estate), userProfile.Auth0Id, default);
+
+            // Assert
+            result.Should().BeEquivalentTo(_mapper.Map<EstateModel>(estate));
+        }
     }
 }
