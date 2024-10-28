@@ -10,6 +10,7 @@ using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
 using CatalogueService.Tests.DataInjection;
+using CatalogueService.Tests.Mapping;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -20,7 +21,7 @@ namespace CatalogueService.Tests
     public class EstateServiceTests
     {
         private readonly Mapper _mapper = new(new MapperConfiguration(mc =>
-            mc.AddProfile(new AutoMapperProfile())));
+            mc.AddProfiles([new AutoMapperProfile(), new TestMapperProfile()])));
 
         [Theory]
         [AutoDomainData]
@@ -123,6 +124,48 @@ namespace CatalogueService.Tests
 
             // Assert
             await result.Should().NotThrowAsync();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateDetailsAsync_NonExistentEstate_ThrowsNotFoundException(
+            [Frozen] IEstateRepository estateRepositoryMock,
+            Estate estate,
+            UserProfile userProfile,
+            EstateService sut)
+        {
+            // Arrange
+            estate.UserId = userProfile.Id;
+
+            estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .ReturnsNull();
+
+            // Act
+            var result = async () => await sut.GetEstateDetailsAsync(estate.Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateDetailsAsync_ValidEstateId_ReturnsEstateDetails(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateRepository estateRepositoryMock,
+            EstateWithProfileModel estate,
+            EstateService sut)
+        {
+            // Arrange
+            estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+                .Returns(_mapper.Map<Estate>(estate));
+            profileGrpcClientMock.GetProfile(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(_mapper.Map<UserProfile>(estate.User));
+
+            // Act
+            var result = await sut.GetEstateDetailsAsync(estate.Id, default);
+
+            // Assert
+            result.Should().BeEquivalentTo(estate);
         }
     }
 }
