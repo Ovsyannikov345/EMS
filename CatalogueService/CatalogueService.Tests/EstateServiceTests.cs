@@ -29,27 +29,37 @@ namespace CatalogueService.Tests
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             [Frozen] IEstateRepository estateRepositoryMock,
             [Frozen] IEstateFilterService estateFilterServiceMock,
-            EstateModel estateModel,
+            EstateModel estate,
             UserProfile userProfile,
             EstateService sut)
         {
             // Arrange
-            estateModel.UserId = userProfile.Id;
+            estate.UserId = userProfile.Id;
 
-            var estateEntity = _mapper.Map<Estate>(estateModel);
+            var estateFilter = new EstateFilterModel
+            {
+                UserId = userProfile.Id,
+                MinPrice = estate.Price,
+                MaxPrice = estate.Price,
+                MinArea = estate.Area,
+                MaxArea = estate.Area,
+                MinRoomsCount = estate.RoomsCount,
+                MaxRoomsCount = estate.RoomsCount,
+                EstateTypes = estate.Type,
+            };
 
             profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(userProfile);
             estateRepositoryMock.CreateAsync(Arg.Any<Estate>())
-                .Returns(estateEntity);
+                .Returns(_mapper.Map<Estate>(estate));
             estateFilterServiceMock.GetEstateFiltersAsync(Arg.Any<EstateModel>())
-                .Returns([]);
+                .Returns([estateFilter]);
 
             // Act
-            var result = await sut.CreateEstateAsync(estateModel, "", default);
+            var result = await sut.CreateEstateAsync(estate, "", default);
 
             // Assert
-            result.Should().BeEquivalentTo(estateModel);
+            result.Should().BeEquivalentTo(estate);
         }
 
         [Theory]
