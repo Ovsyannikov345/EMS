@@ -40,7 +40,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = async () => await sut.GetEstateFilterAsync(userProfile.Auth0Id, default);
 
-            // TODO add asserts
+            // Assert
             await result.Should().ThrowAsync<NotFoundException>();
         }
 
@@ -62,6 +62,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = await sut.GetEstateFilterAsync(userProfile.Auth0Id, default);
 
+            // Assert
             result.Should().BeEquivalentTo(_mapper.Map<EstateFilterModel>(estateFilter));
         }
 
@@ -80,6 +81,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = await sut.GetEstateFiltersAsync(_mapper.Map<EstateModel>(estate), default);
 
+            // Assert
             result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<EstateFilter>, IEnumerable<EstateFilterModel>>(estateFilters));
         }
 
@@ -103,6 +105,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = async () => await sut.CreateEstateFilterAsync(userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             await result.Should().ThrowAsync<BadRequestException>();
         }
 
@@ -128,6 +131,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = await sut.CreateEstateFilterAsync(userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             result.Should().BeEquivalentTo(_mapper.Map<EstateFilterModel>(estateFilter));
         }
 
@@ -149,6 +153,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = async () => await sut.UpdateEstateFilterAsync(Guid.NewGuid(), userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             await result.Should().ThrowAsync<BadRequestException>();
         }
 
@@ -170,6 +175,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = async () => await sut.UpdateEstateFilterAsync(estateFilter.Id, userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             await result.Should().ThrowAsync<NotFoundException>();
         }
 
@@ -191,6 +197,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = async () => await sut.UpdateEstateFilterAsync(estateFilter.Id, userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             await result.Should().ThrowAsync<ForbiddenException>();
         }
 
@@ -216,6 +223,7 @@ namespace CatalogueService.Tests.ServicesTests
             // Act
             var result = await sut.UpdateEstateFilterAsync(estateFilter.Id, userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
 
+            // Assert
             result.Should().BeEquivalentTo(estateFilter);
         }
     }
