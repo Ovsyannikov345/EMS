@@ -7,6 +7,7 @@ using CatalogueService.BLL.Utilities.Mapping;
 using CatalogueService.DAL.Grpc.Models;
 using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.DAL.Models.Entities;
+using CatalogueService.DAL.Models.Enums;
 using CatalogueService.DAL.Repositories.IRepositories;
 using CatalogueService.Tests.DataInjection;
 using CatalogueService.Tests.Mapping;
@@ -61,6 +62,24 @@ namespace CatalogueService.Tests.ServicesTests
             var result = await sut.GetEstateFilterAsync(userProfile.Auth0Id, default);
 
             result.Should().BeEquivalentTo(_mapper.Map<EstateFilterModel>(estateFilter));
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateFiltersAsync__ReturnsFilterList(
+            [Frozen] IEstateFilterRepository estateFilterRepositoryMock,
+            Estate estate,
+            List<EstateFilter> estateFilters,
+            EstateFilterService sut)
+        {
+            // Arrange
+            estateFilterRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<EstateFilter, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(estateFilters);
+
+            // Act
+            var result = await sut.GetEstateFiltersAsync(_mapper.Map<EstateModel>(estate), default);
+
+            result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<EstateFilter>, IEnumerable<EstateFilterModel>>(estateFilters));
         }
     }
 }
