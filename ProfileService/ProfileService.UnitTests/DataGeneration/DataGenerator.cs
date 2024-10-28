@@ -24,6 +24,9 @@ namespace ProfileService.UnitTests.Datageneration
             return profiles;
         }
 
+        public static List<ProfileInfoVisibility> GenerateProfileInfoVisibilities(int count) =>
+            GetProfileVisibilityFaker().Generate(count);
+
         private static Faker<UserProfile> GetProfileFaker() =>
             new Faker<UserProfile>()
                 .RuleFor(p => p.Id, _ => Guid.NewGuid())
