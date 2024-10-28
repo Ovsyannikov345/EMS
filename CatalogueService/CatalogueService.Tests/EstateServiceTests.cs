@@ -83,8 +83,12 @@ namespace CatalogueService.Tests
             EstateService sut)
         {
             // Arrange
+            estate.UserId = userProfile.Id;
+
             estateRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Estate, bool>>>())
-                .ReturnsNull();
+                .Returns(estate);
+            estateRepositoryMock.DeleteAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(false);
             profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(userProfile);
 
