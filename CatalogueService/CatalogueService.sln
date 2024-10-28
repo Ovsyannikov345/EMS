@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogueService.BLL", "Cat
 		{740DF6F6-C4E5-4856-9B6E-8DE9D03064CA} = {740DF6F6-C4E5-4856-9B6E-8DE9D03064CA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBus", "MessageBus\MessageBus.csproj", "{A089036E-1EDD-46B1-AED5-46F6246128D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "MessageBus\MessageBus.csproj", "{A089036E-1EDD-46B1-AED5-46F6246128D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogueService.Tests", "CatalogueService.Tests\CatalogueService.Tests.csproj", "{1B27A63D-0E6D-465D-A395-5FFC538454F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A089036E-1EDD-46B1-AED5-46F6246128D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A089036E-1EDD-46B1-AED5-46F6246128D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A089036E-1EDD-46B1-AED5-46F6246128D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B27A63D-0E6D-465D-A395-5FFC538454F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B27A63D-0E6D-465D-A395-5FFC538454F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B27A63D-0E6D-465D-A395-5FFC538454F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B27A63D-0E6D-465D-A395-5FFC538454F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
