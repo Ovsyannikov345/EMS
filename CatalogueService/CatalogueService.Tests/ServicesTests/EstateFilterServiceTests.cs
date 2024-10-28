@@ -81,5 +81,53 @@ namespace CatalogueService.Tests.ServicesTests
 
             result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<EstateFilter>, IEnumerable<EstateFilterModel>>(estateFilters));
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task CreateEstateFilterAsync_FilterExists_ThrowsBadRequestException(
+            [Frozen] IEstateFilterRepository estateFilterRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            EstateFilter estateFilter,
+            UserProfile userProfile,
+            EstateFilterService sut)
+        {
+            // Arrange
+            estateFilter.UserId = userProfile.Id;
+
+            estateFilterRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<EstateFilter, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(estateFilter);
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(userProfile);
+
+            // Act
+            var result = async () => await sut.CreateEstateFilterAsync(userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
+
+            await result.Should().ThrowAsync<BadRequestException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task CreateEstateFilterAsync_FilterNotExists_ReturnsCreatedFilter(
+            [Frozen] IEstateFilterRepository estateFilterRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            EstateFilter estateFilter,
+            UserProfile userProfile,
+            EstateFilterService sut)
+        {
+            // Arrange
+            estateFilter.UserId = userProfile.Id;
+
+            estateFilterRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<EstateFilter, bool>>>(), Arg.Any<CancellationToken>())
+                .ReturnsNull();
+            estateFilterRepositoryMock.CreateAsync(Arg.Any<EstateFilter>(), Arg.Any<CancellationToken>())
+                .Returns(estateFilter);
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(userProfile);
+
+            // Act
+            var result = await sut.CreateEstateFilterAsync(userProfile.Auth0Id, _mapper.Map<EstateFilterModel>(estateFilter), default);
+
+            result.Should().BeEquivalentTo(_mapper.Map<EstateFilterModel>(estateFilter));
+        }
     }
 }
