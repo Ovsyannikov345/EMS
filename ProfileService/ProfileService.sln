@@ -5,9 +5,11 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileService", "ProfileService\ProfileService.csproj", "{0E581F32-2B1F-4E58-BD3A-F53F89643287}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileService.DAL", "ProfileService.DAL\ProfileService.DAL.csproj", "{00F030DD-C37B-4F10-99C9-A7A4134A7674}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileService.DAL", "ProfileService.DAL\ProfileService.DAL.csproj", "{00F030DD-C37B-4F10-99C9-A7A4134A7674}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileService.BLL", "ProfileService.BLL\ProfileService.BLL.csproj", "{858BA2F9-56FA-4954-9724-AF54D9B767D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileService.BLL", "ProfileService.BLL\ProfileService.BLL.csproj", "{858BA2F9-56FA-4954-9724-AF54D9B767D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileService.UnitTests", "ProfileService.UnitTests\ProfileService.UnitTests.csproj", "{BF1F842E-AC51-4E84-8E6A-34D63D8BAACB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{858BA2F9-56FA-4954-9724-AF54D9B767D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{858BA2F9-56FA-4954-9724-AF54D9B767D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{858BA2F9-56FA-4954-9724-AF54D9B767D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF1F842E-AC51-4E84-8E6A-34D63D8BAACB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF1F842E-AC51-4E84-8E6A-34D63D8BAACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF1F842E-AC51-4E84-8E6A-34D63D8BAACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF1F842E-AC51-4E84-8E6A-34D63D8BAACB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
