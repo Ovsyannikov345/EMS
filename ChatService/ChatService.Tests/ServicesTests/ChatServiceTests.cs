@@ -97,5 +97,105 @@ namespace ChatService.Tests.ServicesTests
             // Assert
             result.Should().BeEquivalentTo(chatModel);
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateChatListAsync_UserNotExists_ThrowsNotFoundException(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            EstateModel estateModel,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(new ProfileResponse());
+
+            // Act
+            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateChatListAsync_EstateNotExists_ThrowsNotFoundException(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateGrpcClient estateGrpcClientMock,
+            EstateModel estateModel,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            estateGrpcClientMock.GetEstateAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(new EstateResponse());
+
+            // Act
+            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateChatListAsync_OtherPersonsEstate_ThrowsForbiddenException(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateGrpcClient estateGrpcClientMock,
+            EstateModel estateModel,
+            EstateResponse estateResponse,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            estateGrpcClientMock.GetEstateAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(estateResponse);
+
+            // Act
+            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<ForbiddenException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetEstateChatListAsync_ValidEstate_ReturnsChatList(
+            [Frozen] IChatRepository chatRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateGrpcClient estateGrpcClientMock,
+            List<ChatModel> chatModels,
+            EstateResponse estateResponse,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+            estateResponse.Estate.User = _mapper.Map<DAL.Grpc.Services.Estate.ProtoProfileModel>(profileResponse.Profile);
+
+            for (var i = 0; i < chatModels.Count; i++)
+            {
+                chatModels[i].Estate = _mapper.Map<EstateModel>(estateResponse.Estate);
+                chatModels[i].User = _mapper.Map<UserProfileModel>(profileResponse.Profile);
+            }
+
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            profileGrpcClientMock.GetProfile(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            estateGrpcClientMock.GetEstateAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(estateResponse);
+            chatRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Chat, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(_mapper.Map<IEnumerable<ChatModel>, IEnumerable<Chat>>(chatModels));
+
+            // Act
+            var result = await sut.GetEstateChatListAsync(Guid.Parse(estateResponse.Estate.Id), profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            result.Should().BeEquivalentTo(chatModels);
+        }
     }
 }
