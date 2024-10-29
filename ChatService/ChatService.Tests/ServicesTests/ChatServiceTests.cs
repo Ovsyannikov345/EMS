@@ -197,5 +197,57 @@ namespace ChatService.Tests.ServicesTests
             // Assert
             result.Should().BeEquivalentTo(chatModels);
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetUserChatListAsync_UserNotExists_ThrowsNotFoundException(
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            EstateModel estateModel,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(new ProfileResponse());
+
+            // Act
+            var result = async () => await sut.GetUserChatListAsync(profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task GetUserChatListAsync_ValidUser_ReturnsChatList(
+            [Frozen] IChatRepository chatRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            [Frozen] IEstateGrpcClient estateGrpcClientMock,
+            List<ChatModel> chatModels,
+            EstateResponse estateResponse,
+            ProfileResponse profileResponse,
+            ChatService.BLL.Services.ChatService sut)
+        {
+            // Arrange
+
+            for (var i = 0; i < chatModels.Count; i++)
+            {
+                chatModels[i].Estate = _mapper.Map<EstateModel>(estateResponse.Estate);
+                chatModels[i].User = null!;
+            }
+
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            estateGrpcClientMock.GetEstateAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(estateResponse);
+            chatRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Chat, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(_mapper.Map<IEnumerable<ChatModel>, IEnumerable<Chat>>(chatModels));
+
+            // Act
+            var result = await sut.GetUserChatListAsync(profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            result.Should().BeEquivalentTo(chatModels);
+        }
     }
 }
