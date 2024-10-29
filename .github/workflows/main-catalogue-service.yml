@@ -1,4 +1,4 @@
-name: .NET with SonarCloud
+name: Catalogue Service
 
 on:
   push:
