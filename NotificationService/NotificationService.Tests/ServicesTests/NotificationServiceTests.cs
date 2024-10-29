@@ -76,5 +76,107 @@ namespace NotificationService.Tests.ServicesTests
             // Assert
             result.Should().BeEquivalentTo(notificationModelList);
         }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task MarkNotificationAsReadAsync_ProfileNotExists_ThrowsNotFoundException(
+            [Frozen] INotificationRepository notificationRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            NotificationModel notificationModel,
+            ProfileResponse profileResponse,
+            NotificationService.BLL.Services.NotificationService sut)
+        {
+            // Arrange
+            profileResponse.Profile = null;
+
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+
+            // Act
+            var result = async () => await sut.MarkNotificationAsReadAsync(notificationModel.Id, "", default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task MarkNotificationAsReadAsync_NotificationNotExists_ThrowsNotFoundException(
+            [Frozen] INotificationRepository notificationRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            NotificationModel notificationModel,
+            ProfileResponse profileResponse,
+            NotificationService.BLL.Services.NotificationService sut)
+        {
+            // Arrange
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            notificationRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Notification, bool>>>(), Arg.Any<CancellationToken>())
+                .ReturnsNull();
+
+            // Act
+            var result = async () => await sut.MarkNotificationAsReadAsync(notificationModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task MarkNotificationAsReadAsync_OtherPersonsNotification_ThrowsForbiddenException(
+            [Frozen] INotificationRepository notificationRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            NotificationModel notificationModel,
+            ProfileResponse profileResponse,
+            NotificationService.BLL.Services.NotificationService sut)
+        {
+            // Arrange
+            profileResponse.Profile.Id = Guid.NewGuid().ToString();
+
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            notificationRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Notification, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(_mapper.Map<Notification>(notificationModel));
+
+            // Act
+            var result = async () => await sut.MarkNotificationAsReadAsync(notificationModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            await result.Should().ThrowAsync<ForbiddenException>();
+        }
+
+        [Theory]
+        [AutoDomainData]
+        public async Task MarkNotificationAsReadAsync_ValidNotification_ReturnsReadNotification(
+            [Frozen] INotificationRepository notificationRepositoryMock,
+            [Frozen] IProfileGrpcClient profileGrpcClientMock,
+            NotificationModel notificationModel,
+            ProfileResponse profileResponse,
+            NotificationService.BLL.Services.NotificationService sut)
+        {
+            // Arrange
+            profileResponse.Profile.Id = Guid.NewGuid().ToString();
+            notificationModel.UserId = Guid.Parse(profileResponse.Profile.Id);
+
+            var expected = new NotificationModel
+            {
+                Id = notificationModel.Id,
+                UserId = notificationModel.UserId,
+                Title = notificationModel.Title,
+                CreatedAt = notificationModel.CreatedAt,
+                IsRead = true
+            };
+
+            profileGrpcClientMock.GetOwnProfile(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(profileResponse);
+            notificationRepositoryMock.GetByFilterAsync(Arg.Any<Expression<Func<Notification, bool>>>(), Arg.Any<CancellationToken>())
+                .Returns(_mapper.Map<Notification>(notificationModel));
+
+            // Act
+            var result = await sut.MarkNotificationAsReadAsync(notificationModel.Id, profileResponse.Profile.Auth0Id, default);
+
+            // Assert
+            result.Should().BeEquivalentTo(expected);
+        }
     }
 }
