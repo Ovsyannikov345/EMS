@@ -1,4 +1,7 @@
 ﻿using Bogus;
+using Grpc.Core;
+using Grpc.Core.Testing;
+using ProfileService.BLL.Grpc.Services;
 using ProfileService.DAL.Models;
 using ProfileService.DAL.Models.Enums;
 
@@ -26,6 +29,21 @@ namespace ProfileService.UnitTests.Datageneration
 
         public static List<ProfileInfoVisibility> GenerateProfileInfoVisibilities(int count) =>
             GetProfileVisibilityFaker().Generate(count);
+
+        public static ServerCallContext GenerateServerCallContext(string method) =>
+            TestServerCallContext.Create(
+                method: method,
+                host: "localhost",
+                deadline: DateTime.Now.AddMinutes(30),
+                requestHeaders: new Metadata(),
+                cancellationToken: CancellationToken.None,
+                peer: "10.0.0.25:5001",
+                authContext: null,
+                contextPropagationToken: null,
+                writeHeadersFunc: (metadata) => Task.CompletedTask,
+                writeOptionsGetter: () => new WriteOptions(),
+                writeOptionsSetter: (writeOptions) => { }
+            );
 
         private static Faker<UserProfile> GetProfileFaker() =>
             new Faker<UserProfile>()
