@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatService.DAL", "ChatServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatService.BLL", "ChatService.BLL\ChatService.BLL.csproj", "{04834C90-0058-4123-A01D-84EB49C27225}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBus", "MessageBus\MessageBus.csproj", "{CE46807A-56FD-4981-886C-0F7C2B4BB840}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "MessageBus\MessageBus.csproj", "{CE46807A-56FD-4981-886C-0F7C2B4BB840}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatService.Tests", "ChatService.Tests\ChatService.Tests.csproj", "{C74F7108-F702-412F-A358-9C83C654BE03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CE46807A-56FD-4981-886C-0F7C2B4BB840}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE46807A-56FD-4981-886C-0F7C2B4BB840}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE46807A-56FD-4981-886C-0F7C2B4BB840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C74F7108-F702-412F-A358-9C83C654BE03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C74F7108-F702-412F-A358-9C83C654BE03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C74F7108-F702-412F-A358-9C83C654BE03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C74F7108-F702-412F-A358-9C83C654BE03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
