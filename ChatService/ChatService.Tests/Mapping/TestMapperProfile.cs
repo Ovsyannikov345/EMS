@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ChatService.BLL.Models;
 using ChatService.DAL.Models.Entities;
+using ProtoProfileModel = ChatService.DAL.Grpc.Services.Profile.ProtoProfileModel;
+using ProtoEstateProfileModel = ChatService.DAL.Grpc.Services.Estate.ProtoProfileModel;
 
 namespace ChatService.Tests.Mapping
 {
@@ -9,7 +11,7 @@ namespace ChatService.Tests.Mapping
         public TestMapperProfile()
         {
             CreateMap<ChatModel, Chat>();
-            CreateMap<DAL.Grpc.Services.Profile.ProtoProfileModel, DAL.Grpc.Services.Estate.ProtoProfileModel>();
+            CreateMap<ProtoProfileModel, ProtoEstateProfileModel>();
         }
     }
 }

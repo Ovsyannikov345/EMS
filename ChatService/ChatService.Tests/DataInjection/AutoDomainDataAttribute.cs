@@ -2,8 +2,9 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Community.AutoMapper;
 using AutoFixture.Xunit2;
-using ChatService.BLL.Utilities.Mapping;
 using ChatService.Tests.Customizations;
+using ApiAutoMapperProfile = ChatService.Utilities.Mapping.AutoMapperProfile;
+using BLLAutoMapperProfile = ChatService.BLL.Utilities.Mapping.AutoMapperProfile;
 
 namespace ChatService.Tests.DataInjection
 {
@@ -12,7 +13,8 @@ namespace ChatService.Tests.DataInjection
         public AutoDomainDataAttribute()
                 : base(() => new Fixture()
                     .Customize(new AutoNSubstituteCustomization())
-                    .Customize(new AutoMapperCustomization(x => x.AddMaps(typeof(AutoMapperProfile))))
+                    .Customize(new AutoMapperCustomization(x =>
+                        x.AddMaps(typeof(ApiAutoMapperProfile), typeof(BLLAutoMapperProfile))))
                     .Customize(new ProtoProfileCustomization())
                     .Customize(new ProtoEstateCustomization()))
         {
