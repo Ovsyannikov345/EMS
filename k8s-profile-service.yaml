@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: profile
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: profile
+    template:
+        metadata:
+            labels:
+                app: profile
+        spec:
+            containers:
+                - name: profile
+                  image: localhost:5000/profile-service
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                      - containerPort: 80
+                        name: profile-port
+                  env:
+                      - name: AUTH0__DOMAIN
+                        valueFrom:
+                            secretKeyRef:
+                                name: auth0-secrets
+                                key: Domain
+                      - name: AUTH0__AUDIENCE
+                        valueFrom:
+                            secretKeyRef:
+                                name: auth0-secrets
+                                key: Audience
+                      - name: CONNECTION_STRINGS__PROFILEDATABASE
+                        value: "Host=postgres;Database=ProfileDb;Username=postgres;Password=admin"
+                      - name: CORS__ORIGINS__0
+                        value: "http://localhost:3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: profile-service
+spec:
+    selector:
+        app: profile
+    ports:
+        - name: profile-service-port
+          protocol: TCP
+          port: 80
+          targetPort: profile-port
