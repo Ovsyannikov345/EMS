@@ -71,10 +71,10 @@ namespace ChatService.Tests.HubTests
             // Assert
             await clientProxyMock.Received().SendCoreAsync(
             "Receive",
-            Arg.Is<object[]>(args => 
+            Arg.Is<object[]>(args =>
                 args.Length == 1 &&
                 (args[0] is MessageViewModel) &&
-                (args[0] as MessageViewModel)!.Equals(_mapper.Map<MessageViewModel>(message))),
+                (args[0] as MessageViewModel) == (_mapper.Map<MessageViewModel>(message))),
             default);
         }
     }
