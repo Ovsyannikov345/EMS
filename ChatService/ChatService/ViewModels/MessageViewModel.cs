@@ -2,7 +2,7 @@
 
 namespace ChatService.ViewModels
 {
-    public class MessageViewModel
+    public record MessageViewModel
     {
         public Guid Id { get; set; }
 
