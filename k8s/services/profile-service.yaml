@@ -20,19 +20,19 @@ spec:
                       - containerPort: 80
                         name: profile-port
                   env:
-                      - name: AUTH0__DOMAIN
+                      - name: Auth0__Domain
                         valueFrom:
                             secretKeyRef:
                                 name: auth0-secrets
                                 key: Domain
-                      - name: AUTH0__AUDIENCE
+                      - name: Auth0__Audience
                         valueFrom:
                             secretKeyRef:
                                 name: auth0-secrets
                                 key: Audience
-                      - name: CONNECTION_STRINGS__PROFILEDATABASE
+                      - name: ConnectionStrings__ProfileDatabase
                         value: "Host=postgres;Database=ProfileDb;Username=postgres;Password=admin"
-                      - name: CORS__ORIGINS__0
+                      - name: Cors__Origins__0
                         value: "http://localhost:3000"
 ---
 apiVersion: v1
