@@ -14,7 +14,7 @@ spec:
         spec:
             containers:
                 - name: profile
-                  image: localhost:5000/profile-service
+                  image: profile-service
                   imagePullPolicy: IfNotPresent
                   ports:
                       - containerPort: 80
@@ -31,7 +31,7 @@ spec:
                                 name: auth0-secrets
                                 key: Audience
                       - name: ConnectionStrings__ProfileDatabase
-                        value: "Host=postgres;Database=ProfileDb;Username=postgres;Password=admin"
+                        value: "Host=postgres;Port=5432;Database=ProfileDb;Username=postgres;Password=admin"
                       - name: Cors__Origins__0
                         value: "http://localhost:3000"
 ---
