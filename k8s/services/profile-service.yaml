@@ -17,8 +17,10 @@ spec:
                   image: profile-service
                   imagePullPolicy: IfNotPresent
                   ports:
-                      - containerPort: 80
-                        name: profile-port
+                      - containerPort: 8080
+                        name: http
+                      - containerPort: 5000
+                        name: grpc
                   env:
                       - name: Auth0__Domain
                         valueFrom:
@@ -40,10 +42,15 @@ kind: Service
 metadata:
     name: profile-service
 spec:
+    type: LoadBalancer
     selector:
         app: profile
     ports:
-        - name: profile-service-port
+        - name: service-http
           protocol: TCP
-          port: 80
-          targetPort: profile-port
+          port: 5001
+          targetPort: 8080
+        - name: service-grpc
+          protocol: TCP
+          port: 5011
+          targetPort: 5000

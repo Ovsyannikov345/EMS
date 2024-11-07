@@ -17,8 +17,8 @@ spec:
                   image: notification-service
                   imagePullPolicy: IfNotPresent
                   ports:
-                      - containerPort: 80
-                        name: notify-port
+                      - containerPort: 8080
+                        name: http
                   env:
                       - name: Auth0__Domain
                         valueFrom:
@@ -33,7 +33,7 @@ spec:
                       - name: ConnectionStrings__DbConnection
                         value: "Host=postgres;Port=5432;Database=NotificationServiceDatabase;Username=postgres;Password=admin"
                       - name: ConnectionStrings__ProfileService
-                        value: "https://profile-service.svc.cluster.local:80"
+                        value: "http://profile-service.default.svc.cluster.local:5001"
                       - name: RabbitMQ__Host
                         value: "rabbitmq://rabbitmq.test-rabbitmq.svc.cluster.local"
                       - name: Cors__Origins__0
@@ -44,10 +44,11 @@ kind: Service
 metadata:
     name: notification-service
 spec:
+    type: LoadBalancer
     selector:
         app: notification
     ports:
-        - name: notify-service-port
+        - name: service-http
           protocol: TCP
-          port: 80
-          targetPort: notify-port
+          port: 5004
+          targetPort: 8080
