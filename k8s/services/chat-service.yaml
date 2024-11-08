@@ -17,8 +17,8 @@ spec:
                   image: chat-service
                   imagePullPolicy: IfNotPresent
                   ports:
-                      - containerPort: 80
-                        name: chat-port
+                      - containerPort: 8080
+                        name: http
                   env:
                       - name: Auth0__Domain
                         valueFrom:
@@ -33,9 +33,9 @@ spec:
                       - name: ConnectionStrings__DbConnection
                         value: "Host=postgres;Port=5432;Database=ChatServiceDatabase;Username=postgres;Password=admin"
                       - name: ConnectionStrings__ProfileService
-                        value: "https://profile-service.svc.cluster.local:80"
+                        value: "http://profile-service.default.svc.cluster.local:5011"
                       - name: ConnectionStrings__CatalogueService
-                        value: "https://catalogue-service.svc.cluster.local:80"
+                        value: "http://catalogue-service.default.svc.cluster.local:5012"
                       - name: RabbitMQ__Host
                         value: "rabbitmq://rabbitmq.test-rabbitmq.svc.cluster.local"
                       - name: Cors__Origins__0
@@ -46,10 +46,11 @@ kind: Service
 metadata:
     name: chat-service
 spec:
+    type: LoadBalancer
     selector:
         app: chat
     ports:
-        - name: chat-service-port
+        - name: service-http
           protocol: TCP
-          port: 80
-          targetPort: chat-port
+          port: 5003
+          targetPort: 8080
