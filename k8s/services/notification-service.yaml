@@ -33,7 +33,7 @@ spec:
                       - name: ConnectionStrings__DbConnection
                         value: "Host=postgres;Port=5432;Database=NotificationServiceDatabase;Username=postgres;Password=admin"
                       - name: ConnectionStrings__ProfileService
-                        value: "http://profile-service.default.svc.cluster.local:5001"
+                        value: "http://profile-service.default.svc.cluster.local:5011"
                       - name: RabbitMQ__Host
                         value: "rabbitmq://rabbitmq.test-rabbitmq.svc.cluster.local"
                       - name: Cors__Origins__0
