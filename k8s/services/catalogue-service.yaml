@@ -17,8 +17,10 @@ spec:
                   image: catalogue-service
                   imagePullPolicy: IfNotPresent
                   ports:
-                      - containerPort: 80
-                        name: catalogue-port
+                      - containerPort: 8080
+                        name: http
+                      - containerPort: 5000
+                        name: grpc
                   env:
                       - name: Auth0__Domain
                         valueFrom:
@@ -33,7 +35,7 @@ spec:
                       - name: ConnectionStrings__DbConnection
                         value: "Host=postgres;Port=5432;Database=CatalogueServiceDatabase;Username=postgres;Password=admin"
                       - name: ConnectionStrings__ProfileService
-                        value: "https://profile-service.svc.cluster.local:80"
+                        value: "http://profile-service.default.svc.cluster.local:5011"
                       - name: RabbitMQ__Host
                         value: "rabbitmq://rabbitmq.test-rabbitmq.svc.cluster.local"
                       - name: Cors__Origins__0
@@ -44,10 +46,15 @@ kind: Service
 metadata:
     name: catalogue-service
 spec:
+    type: LoadBalancer
     selector:
         app: catalogue
     ports:
-        - name: catalogue-service-port
+        - name: service-http
           protocol: TCP
-          port: 80
-          targetPort: catalogue-port
+          port: 5002
+          targetPort: 8080
+        - name: service-grpc
+          protocol: TCP
+          port: 5012
+          targetPort: 5000
