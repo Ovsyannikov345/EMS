@@ -1,10 +1,10 @@
 ﻿using AutoFixture.Xunit2;
 using AutoMapper;
-using ChatService.BLL.Hubs;
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Grpc.Services.Profile;
+using ChatService.Hubs;
 using ChatService.Tests.DataInjection;
 using ChatService.Tests.Mapping;
 using ChatService.ViewModels;

@@ -1,4 +1,4 @@
-﻿namespace ProfileService.BLL.Utilities.Exceptions.Messages
+﻿namespace ChatService.BLL.Utilities.Exceptions.Messages
 {
     public static class ExceptionMessages
     {
