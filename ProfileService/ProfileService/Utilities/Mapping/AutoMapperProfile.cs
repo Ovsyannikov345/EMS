@@ -9,7 +9,7 @@ namespace ProfileService.Utilities.Mapping
         public AutoMapperProfile()
         {
             CreateMap<RegistrationDataViewModel, RegistrationDataModel>();
-            CreateMap<UserProfileModel, UserProfileViewModel>();
+            CreateMap<UserProfileModel, UserProfileViewModel>().ReverseMap();
             CreateMap<UserProfileModelWithPrivacy, UserProfileViewModel>();
             CreateMap<ProfileInfoVisibilityModel, ProfileInfoVisibilityViewModel>().ReverseMap();
         }
