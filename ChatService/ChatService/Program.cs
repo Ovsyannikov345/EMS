@@ -2,6 +2,7 @@ using ChatService.BLL.DI;
 using ChatService.BLL.Hubs;
 using ChatService.DAL.DI;
 using ChatService.DI;
+using ChatService.Middleware;
 using ChatService.Utilities.Mapping;
 using Serilog;
 using System.Reflection;
@@ -36,6 +37,8 @@ namespace ChatService
             services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
