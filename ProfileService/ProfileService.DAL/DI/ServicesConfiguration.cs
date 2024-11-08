@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using ProfileService.DAL.DataContext;
 using ProfileService.DAL.Repositories.IRepositories;
 using ProfileService.DAL.Repositories;
+using StackExchange.Redis;
+using ProfileService.DAL.CacheProvider.ICacheProvider;
+using ProfileService.DAL.CacheProvider;
 
 namespace ProfileService.DAL.DI
 {
@@ -15,6 +18,10 @@ namespace ProfileService.DAL.DI
                 options.UseNpgsql(configuration.GetConnectionString("ProfileDatabase")));
 
             services.AddRepositories();
+
+            services.AddSingleton<IConnectionMultiplexer>(
+                ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
+            services.AddTransient<IRedisCacheProvider, RedisCacheProvider>();
         }
 
         private static void AddRepositories(this IServiceCollection services)
