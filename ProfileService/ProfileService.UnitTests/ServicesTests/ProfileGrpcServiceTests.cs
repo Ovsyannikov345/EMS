@@ -19,8 +19,6 @@ namespace ProfileService.UnitTests.ServicesTests
 
         private readonly List<UserProfile> _profiles = DataGenerator.GenerateUserProfiles(5);
 
-        private readonly List<ProfileInfoVisibility> _visibilities = DataGenerator.GenerateProfileInfoVisibilities(5);
-
         private readonly Mapper _mapper = new(new MapperConfiguration(mc =>
             mc.AddProfile(new AutoMapperProfile())));
 
