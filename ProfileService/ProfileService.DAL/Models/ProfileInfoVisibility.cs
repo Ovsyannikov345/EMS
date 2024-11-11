@@ -1,8 +1,9 @@
 ﻿using ProfileService.DAL.Models.Enums;
+using ProfileService.DAL.Models.Interfaces;
 
 namespace ProfileService.DAL.Models
 {
-    public class ProfileInfoVisibility
+    public class ProfileInfoVisibility : ICacheable
     {
         public Guid Id { get; set; }
 

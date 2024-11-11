@@ -3,19 +3,22 @@ using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Exceptions.Messages;
+using ProfileService.DAL.CacheRepositoryManagers.ICacheRepositoryManagers;
 using ProfileService.DAL.Models;
-using ProfileService.DAL.Repositories.IRepositories;
 
 namespace ProfileService.BLL.Services
 {
     public class ProfileInfoVisibilityService(
-        IProfileInfoVisibilityRepository visibilityRepository,
-        IProfileRepository profileRepository,
+        ICacheRepositoryManager<UserProfile> profileCacheRepositoryManager,
+        ICacheRepositoryManager<ProfileInfoVisibility> visibilityCacheRepositoryManager,
         IMapper mapper) : IProfileInfoVisibilityService
     {
         public async Task<ProfileInfoVisibilityModel> GetProfileInfoVisibilityAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var visibility = await visibilityRepository.GetByFilterAsync(v => v.UserId == userId, cancellationToken)
+            var visibilityKey = nameof(ProfileInfoVisibility) + userId;
+
+            var visibility = await visibilityCacheRepositoryManager.GetEntityByFilterAsync(
+                visibilityKey, v => v.UserId == userId, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileInfoVisibility), nameof(ProfileInfoVisibility.UserId), userId));
 
             return mapper.Map<ProfileInfoVisibilityModel>(visibility);
@@ -28,7 +31,7 @@ namespace ProfileService.BLL.Services
                 throw new BadRequestException(ExceptionMessages.InvalidId(nameof(ProfileInfoVisibilityModel), userId));
             }
 
-            var profile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == currentUserAuth0Id, cancellationToken)
+            var profile = await profileCacheRepositoryManager.GetEntityByIdAsync(userId, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Auth0Id), currentUserAuth0Id));
 
             if (profile.Id != visibilityData.UserId)
@@ -36,7 +39,8 @@ namespace ProfileService.BLL.Services
                 throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(UserProfile), profile.Id));
             }
 
-            var updatedVisibility = await visibilityRepository.UpdateAsync(mapper.Map<ProfileInfoVisibility>(visibilityData), cancellationToken);
+            var updatedVisibility = await visibilityCacheRepositoryManager.UpdateEntityAsync(
+                mapper.Map<ProfileInfoVisibility>(visibilityData), [nameof(ProfileInfoVisibility) + userId], cancellationToken);
 
             return mapper.Map<ProfileInfoVisibilityModel>(updatedVisibility);
         }
