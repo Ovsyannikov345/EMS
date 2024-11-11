@@ -1,10 +1,10 @@
-﻿using ProfileService.DAL.CacheProvider.ICacheProvider;
+﻿using ProfileService.DAL.CacheProviders.ICacheProviders;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace ProfileService.DAL.CacheProvider
+namespace ProfileService.DAL.CacheProviders
 {
-    public class RedisCacheProvider : IRedisCacheProvider
+    public class RedisCacheProvider : ICacheProvider
     {
         private readonly IDatabase _redis;
 

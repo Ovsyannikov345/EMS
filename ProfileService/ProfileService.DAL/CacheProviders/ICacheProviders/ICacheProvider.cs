@@ -1,6 +1,6 @@
-﻿namespace ProfileService.DAL.CacheProvider.ICacheProvider
+﻿namespace ProfileService.DAL.CacheProviders.ICacheProviders
 {
-    public interface IRedisCacheProvider
+    public interface ICacheProvider
     {
         Task CacheData<T>(T data, TimeSpan cacheLifetime, string key);
 
