@@ -1,7 +1,7 @@
 using ChatService.BLL.DI;
-using ChatService.BLL.Hubs;
 using ChatService.DAL.DI;
 using ChatService.DI;
+using ChatService.Hubs;
 using ChatService.Middleware;
 using ChatService.Utilities.Mapping;
 using Serilog;

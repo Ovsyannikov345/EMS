@@ -14,7 +14,7 @@ namespace ChatService.Tests.ServicesTests
 {
     public class MessageServiceTests
     {
-        private readonly IMapper _mapper = new Mapper(new MapperConfiguration(mc =>
+        private readonly Mapper _mapper = new(new MapperConfiguration(mc =>
             mc.AddProfile(new AutoMapperProfile())));
 
         [Theory]

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ProfileService.DAL.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProfileService.DAL.Models
 {
-    public class UserProfile
+    public class UserProfile : ICacheable
     {
         public Guid Id { get; set; }
 

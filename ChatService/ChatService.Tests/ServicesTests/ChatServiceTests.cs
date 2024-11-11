@@ -347,7 +347,6 @@ namespace ChatService.Tests.ServicesTests
             [Frozen] IChatRepository chatRepositoryMock,
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             [Frozen] IEstateGrpcClient estateGrpcClientMock,
-            EstateModel estateModel,
             ChatModel chatModel,
             ProfileResponse profileResponse,
             EstateResponse estateResponse,

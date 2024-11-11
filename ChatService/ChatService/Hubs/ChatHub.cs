@@ -2,21 +2,20 @@
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
 using ChatService.BLL.Utilities.Exceptions;
-using ChatService.BLL.Utilities.Messages;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Grpc.Services.Profile;
 using ChatService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using ProfileService.BLL.Utilities.Exceptions.Messages;
+using ChatService.BLL.Utilities.Exceptions.Messages;
 using System.Security.Claims;
 
-namespace ChatService.BLL.Hubs
+namespace ChatService.Hubs
 {
     [Authorize]
     public class ChatHub(IChatService chatService, IMessageService messageService, IProfileGrpcClient profileGrpcClient, IMapper mapper) : Hub
     {
-        private static Dictionary<string, List<string>> _connectedUsers = new();
+        private static readonly Dictionary<string, List<string>> _connectedUsers = [];
 
         private static readonly object _lock = new();
 
@@ -30,7 +29,7 @@ namespace ChatService.BLL.Hubs
             {
                 if (!_connectedUsers.TryGetValue(userId, out List<string>? connections))
                 {
-                    connections = new();
+                    connections = [];
                     _connectedUsers[userId] = connections;
                 }
 

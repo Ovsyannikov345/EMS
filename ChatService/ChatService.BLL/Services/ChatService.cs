@@ -2,11 +2,11 @@
 using ChatService.BLL.Models;
 using ChatService.BLL.Services.IServices;
 using ChatService.BLL.Utilities.Exceptions;
+using ChatService.BLL.Utilities.Exceptions.Messages;
 using ChatService.DAL.Grpc.Services.Estate;
 using ChatService.DAL.Grpc.Services.IServices;
 using ChatService.DAL.Models.Entities;
 using ChatService.DAL.Repositories.IRepositories;
-using ProfileService.BLL.Utilities.Exceptions.Messages;
 
 namespace ChatService.BLL.Services
 {

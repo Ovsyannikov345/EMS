@@ -3,13 +3,19 @@ using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Exceptions.Messages;
+using ProfileService.DAL.CacheRepositoryManagers.ICacheRepositoryManagers;
 using ProfileService.DAL.Models;
 using ProfileService.DAL.Models.Enums;
 using ProfileService.DAL.Repositories.IRepositories;
 
 namespace ProfileService.BLL.Services
 {
-    public class UserProfileService(IMapper mapper, IProfileRepository profileRepository, IProfileInfoVisibilityRepository visibilityRepository) : IUserProfileService
+    public class UserProfileService(
+        IProfileRepository profileRepository,
+        IProfileInfoVisibilityRepository visibilityRepository,
+        IMapper mapper,
+        ICacheRepositoryManager<UserProfile> userCacheRepositoryManager,
+        ICacheRepositoryManager<ProfileInfoVisibility> visibilityCacheRepositoryManager) : IUserProfileService
     {
         public async Task<UserProfileModel> CreateProfileAsync(RegistrationDataModel userData, CancellationToken cancellationToken = default)
         {
@@ -29,10 +35,13 @@ namespace ProfileService.BLL.Services
 
         public async Task<UserProfileModelWithPrivacy> GetProfileAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByFilterAsync(p => p.Id == id, cancellationToken)
+            var userProfile = await userCacheRepositoryManager.GetEntityByIdAsync(id, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), id));
 
-            var visibilityOptions = await visibilityRepository.GetByFilterAsync(v => v.UserId == userProfile.Id, cancellationToken)
+            var visibilityKey = nameof(ProfileInfoVisibility) + id;
+
+            var visibilityOptions = await visibilityCacheRepositoryManager.GetEntityByFilterAsync(
+                visibilityKey, v => v.UserId == userProfile.Id, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileInfoVisibility), nameof(ProfileInfoVisibility.UserId), userProfile.Id));
 
             var profileModel = mapper.Map<UserProfileModelWithPrivacy>(userProfile);
@@ -52,7 +61,8 @@ namespace ProfileService.BLL.Services
 
         public async Task<UserProfileModel> GetOwnProfileAsync(string auth0Id, CancellationToken cancellationToken = default)
         {
-            var userProfile = await profileRepository.GetByFilterAsync(p => p.Auth0Id == auth0Id, cancellationToken)
+            var userProfile = await userCacheRepositoryManager.GetEntityByFilterAsync(
+                nameof(UserProfile.Auth0Id) + auth0Id, p => p.Auth0Id == auth0Id, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Auth0Id), auth0Id));
 
             return mapper.Map<UserProfileModel>(userProfile);
@@ -65,7 +75,8 @@ namespace ProfileService.BLL.Services
                 throw new BadRequestException(ExceptionMessages.InvalidId(nameof(UserProfileModel), userId));
             }
 
-            var profile = await profileRepository.GetByFilterAsync(p => p.Id == userData.Id, cancellationToken)
+            var profile = await userCacheRepositoryManager.GetEntityByIdAsync(
+                userId, updateCache: false, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Id), userData.Id));
 
             if (currentUserAuth0Id != profile.Auth0Id)
@@ -73,11 +84,12 @@ namespace ProfileService.BLL.Services
                 throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(UserProfile), profile.Id));
             }
 
-            var userToUpdate = mapper.Map<UserProfile>(userData);
+            var profileToUpdate = mapper.Map<UserProfile>(userData);
 
-            profile = await profileRepository.UpdateAsync(userToUpdate, cancellationToken);
+            var updatedProfile = await userCacheRepositoryManager.UpdateEntityAsync(
+                profileToUpdate, [nameof(UserProfile) + userId, nameof(UserProfile.Auth0Id) + profile.Auth0Id], cancellationToken);
 
-            return mapper.Map<UserProfileModel>(profile);
+            return mapper.Map<UserProfileModel>(updatedProfile);
         }
     }
 }

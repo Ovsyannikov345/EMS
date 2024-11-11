@@ -5,11 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChatService.DAL.Repositories
 {
-    public class ChatRepository(ChatDbContext context) : GenericRepository<Chat>(context), IChatRepository
+    public class ChatRepository : GenericRepository<Chat>, IChatRepository
     {
+        private readonly ChatDbContext _context;
+
+        public ChatRepository(ChatDbContext context) : base(context)
+        {
+            _context = context;
+        }
+
         public async Task<Chat?> GetChatWithMessages(Guid chatId, CancellationToken cancellationToken = default)
         {
-            return await context.Chats.AsNoTracking().Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == chatId, cancellationToken);
+            return await _context.Chats.AsNoTracking().Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == chatId, cancellationToken);
         }
     }
 }
