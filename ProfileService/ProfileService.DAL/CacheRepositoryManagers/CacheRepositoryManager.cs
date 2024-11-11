@@ -2,12 +2,11 @@
 using ProfileService.DAL.CacheRepositoryManagers.ICacheRepositoryManagers;
 using ProfileService.DAL.Models.Interfaces;
 using ProfileService.DAL.Repositories.IRepositories;
-using Serilog;
 using System.Linq.Expressions;
 
 namespace ProfileService.DAL.CacheRepositoryManagers
 {
-    public class CacheRepositoryManager<T>(ICacheProvider cacheProvider, IGenericRepository<T> repository, ILogger logger) : ICacheRepositoryManager<T> where T : class, ICacheable
+    public class CacheRepositoryManager<T>(ICacheProvider cacheProvider, IGenericRepository<T> repository) : ICacheRepositoryManager<T> where T : class, ICacheable
     {
         public async Task<T?> GetEntityByIdAsync(Guid entityId, bool updateCache = true, CancellationToken cancellationToken = default)
         {
@@ -15,10 +14,6 @@ namespace ProfileService.DAL.CacheRepositoryManagers
 
             var loadedEntity = await cacheProvider.GetDataFromCache<T>(entityKey);
 
-            if (loadedEntity is not null)
-            {
-                logger.Information("Read from cache");
-            }
 
             if (loadedEntity is null)
             {
@@ -36,11 +31,6 @@ namespace ProfileService.DAL.CacheRepositoryManagers
         public async Task<T?> GetEntityByFilterAsync(string entityKey, Expression<Func<T, bool>> filter, bool updateCache = true, CancellationToken cancellationToken = default)
         {
             var loadedEntity = await cacheProvider.GetDataFromCache<T>(entityKey);
-
-            if (loadedEntity is not null)
-            {
-                logger.Information("Read from cache");
-            }
 
             if (loadedEntity is null)
             {
