@@ -12,9 +12,9 @@ namespace ProfileService.UnitTests.ServicesTests
 {
     public class ProfileVisibilityTests
     {
-        private readonly ProfileRepositoryMock _profileRepositoryMock = new();
+        private readonly CacheRepositoryManagerMock<UserProfile> _profileCacheRepositoryManagerMock = new();
 
-        private readonly ProfileInfoVisibilityRepositoryMock _infoVisibilityRepositoryMock = new();
+        private readonly CacheRepositoryManagerMock<ProfileInfoVisibility> _visibilityCacheRepositoryManagerMock = new();
 
         private readonly List<UserProfile> _profiles = DataGenerator.GenerateUserProfiles(5);
 
@@ -25,8 +25,9 @@ namespace ProfileService.UnitTests.ServicesTests
 
         public ProfileVisibilityTests()
         {
-            _profileRepositoryMock.GetByFilterAsync(_profiles[0]);
-            _infoVisibilityRepositoryMock.GetByFilterAsync(_visibilities[0]);
+            _profileCacheRepositoryManagerMock.GetEntityByIdAsync(_profiles[0]);
+            _profileCacheRepositoryManagerMock.GetEntityByFilterAsync(_profiles[0]);
+            _visibilityCacheRepositoryManagerMock.GetEntityByFilterAsync(_visibilities[0]);
 
             for (var i = 0; i < _profiles.Count; i++)
             {
@@ -40,9 +41,12 @@ namespace ProfileService.UnitTests.ServicesTests
         public async Task GetProfileInfoVisibilityAsync_NonExistentVisibility_ThrowsNotFoundException()
         {
             // Arrange
-            _infoVisibilityRepositoryMock.GetByFilterAsyncReturnsNull();
+            _visibilityCacheRepositoryManagerMock.GetEntityByFilterAsyncReturnsNull();
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                _profileCacheRepositoryManagerMock.Object,
+                _visibilityCacheRepositoryManagerMock.Object,
+                _mapper);
 
             // Act
             var response = async () => await profileVisibilityService.GetProfileInfoVisibilityAsync(_visibilities[0].UserId, default);
@@ -57,7 +61,10 @@ namespace ProfileService.UnitTests.ServicesTests
             // Arrange
             var correctModel = _mapper.Map<ProfileInfoVisibilityModel>(_visibilities[0]);
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                _profileCacheRepositoryManagerMock.Object,
+                _visibilityCacheRepositoryManagerMock.Object,
+                _mapper);
 
             // Act
             var response = await profileVisibilityService.GetProfileInfoVisibilityAsync(_visibilities[0].UserId, default);
@@ -72,7 +79,10 @@ namespace ProfileService.UnitTests.ServicesTests
             // Arrange
             var visibilityModel = _mapper.Map<ProfileInfoVisibilityModel>(_visibilities[0]);
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                _profileCacheRepositoryManagerMock.Object,
+                _visibilityCacheRepositoryManagerMock.Object,
+                _mapper);
 
             // Act
             var response = async () => await profileVisibilityService.UpdateProfileInfoVisibilityAsync(_profiles[0].Auth0Id, _profiles[1].Id, visibilityModel, default);
@@ -87,9 +97,12 @@ namespace ProfileService.UnitTests.ServicesTests
             // Arrange
             var visibilityModel = _mapper.Map<ProfileInfoVisibilityModel>(_visibilities[0]);
 
-            _profileRepositoryMock.GetByFilterAsyncReturnsNull();
+            _profileCacheRepositoryManagerMock.GetEntityByIdAsyncReturnsNull();
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                 _profileCacheRepositoryManagerMock.Object,
+                 _visibilityCacheRepositoryManagerMock.Object,
+                 _mapper);
 
             // Act
             var response = async () => await profileVisibilityService.UpdateProfileInfoVisibilityAsync(_profiles[0].Auth0Id, visibilityModel.UserId, visibilityModel, default);
@@ -104,9 +117,12 @@ namespace ProfileService.UnitTests.ServicesTests
             // Arrange
             var visibilityModel = _mapper.Map<ProfileInfoVisibilityModel>(_visibilities[0]);
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            _profileCacheRepositoryManagerMock.GetEntityByIdAsync(_profiles[1]);
 
-            _profileRepositoryMock.GetByFilterAsync(_profiles[1]);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                _profileCacheRepositoryManagerMock.Object,
+                _visibilityCacheRepositoryManagerMock.Object,
+                _mapper);
 
             // Act
             var response = async () => await profileVisibilityService.UpdateProfileInfoVisibilityAsync(_profiles[1].Auth0Id, visibilityModel.UserId, visibilityModel, default);
@@ -126,10 +142,13 @@ namespace ProfileService.UnitTests.ServicesTests
 
             var updatedVisibilityModel = _mapper.Map<ProfileInfoVisibilityModel>(updatedVisibility);
 
-            _profileRepositoryMock.GetByFilterAsync(_profiles[0]);
-            _infoVisibilityRepositoryMock.UpdateAsync(updatedVisibility);
+            _profileCacheRepositoryManagerMock.GetEntityByIdAsync(_profiles[0]);
+            _visibilityCacheRepositoryManagerMock.UpdateEntityAsync(updatedVisibility);
 
-            var profileVisibilityService = new ProfileInfoVisibilityService(_infoVisibilityRepositoryMock.Object, _profileRepositoryMock.Object, _mapper);
+            var profileVisibilityService = new ProfileInfoVisibilityService(
+                _profileCacheRepositoryManagerMock.Object,
+                _visibilityCacheRepositoryManagerMock.Object,
+                _mapper);
 
             // Act
             var response = await profileVisibilityService.UpdateProfileInfoVisibilityAsync(_profiles[0].Auth0Id, updatedVisibilityModel.UserId, updatedVisibilityModel, default);
