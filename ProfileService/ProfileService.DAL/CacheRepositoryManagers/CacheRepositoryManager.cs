@@ -14,7 +14,6 @@ namespace ProfileService.DAL.CacheRepositoryManagers
 
             var loadedEntity = await cacheProvider.GetDataFromCache<T>(entityKey);
 
-
             if (loadedEntity is null)
             {
                 loadedEntity = await repository.GetByFilterAsync(p => p.Id == entityId, cancellationToken);
