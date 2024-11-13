@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Minio;
+using CatalogueService.DAL.BlobStorages.IBlobStorages;
+using CatalogueService.DAL.BlobStorages;
 
 namespace CatalogueService.DAL.DI
 {
@@ -29,6 +32,14 @@ namespace CatalogueService.DAL.DI
             });
 
             services.AddScoped<IProfileGrpcClient, ProfileGrpcClient>();
+
+            services.AddMinio(configureClient => configureClient
+                .WithEndpoint(configuration["Minio:Endpoint"])
+                .WithCredentials(configuration["Minio:AccessKey"], configuration["Minio:SecretKey"])
+                .WithSSL(false)
+                .Build());
+
+            services.AddScoped<IMinioStorage, MinioStorage>();
         }
     }
 }
