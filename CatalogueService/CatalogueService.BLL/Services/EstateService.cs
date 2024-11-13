@@ -95,13 +95,9 @@ namespace CatalogueService.BLL.Services
 
         private async Task<bool> IsUserEstateOwnerAsync(Guid estateId, string userAuth0Id, CancellationToken cancellationToken = default)
         {
-            var estate = await estateRepository.GetByFilterAsync(e => e.Id == estateId, cancellationToken);
-
-            if (estate is null)
-            {
-                throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), estateId));
-            }
-
+            var estate = await estateRepository.GetByFilterAsync(e => e.Id == estateId, cancellationToken)
+                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), estateId));
+            
             var owner = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
             return estate.UserId == owner.Id;

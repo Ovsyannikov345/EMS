@@ -23,7 +23,7 @@ namespace CatalogueService.DAL.Migrations
                 table: "EstateFilters",
                 type: "integer[]",
                 nullable: false,
-                defaultValue: new int[0]);
+                defaultValue: Array.Empty<int>());
         }
     }
 }
