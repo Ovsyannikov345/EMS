@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProfileService.BLL.Models;
 using ProfileService.BLL.Services.IServices;
+using ProfileService.Extensions;
 using ProfileService.ViewModels;
-using System.Security.Claims;
 
 namespace ProfileService.Controllers
 {
@@ -35,7 +35,7 @@ namespace ProfileService.Controllers
         [HttpGet("my")]
         public async Task<UserProfileViewModel> GetOwnProfile(CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             var profile = await profileService.GetOwnProfileAsync(auth0Id, cancellationToken);
 
@@ -53,7 +53,7 @@ namespace ProfileService.Controllers
         [HttpPut("{id}")]
         public async Task<UserProfileViewModel> UpdateProfile(Guid id, UserProfileViewModel userData, CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             var updatedProfile = await profileService.UpdateProfileAsync(id, mapper.Map<UserProfileModel>(userData), auth0Id, cancellationToken);
 
@@ -63,7 +63,7 @@ namespace ProfileService.Controllers
         [HttpPut("{userId}/visibility")]
         public async Task<ProfileInfoVisibilityViewModel> UpdateVisibilityOptions(Guid userId, ProfileInfoVisibilityViewModel visibilityData, CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             var visibilityToUpdate = mapper.Map<ProfileInfoVisibilityModel>(visibilityData);
 
@@ -71,7 +71,5 @@ namespace ProfileService.Controllers
 
             return mapper.Map<ProfileInfoVisibilityViewModel>(updatedVisibility);
         }
-
-        private string GetAuth0IdFromContext() => HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
     }
 }
