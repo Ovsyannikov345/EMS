@@ -9,6 +9,9 @@ using ProfileService.DAL.CacheProviders.ICacheProviders;
 using ProfileService.DAL.CacheProviders;
 using ProfileService.DAL.CacheRepositoryManagers.ICacheRepositoryManagers;
 using ProfileService.DAL.CacheRepositoryManagers;
+using Minio;
+using ProfileService.DAL.BlobStorages.IBlobStorages;
+using ProfileService.DAL.BlobStorages;
 
 namespace ProfileService.DAL.DI
 {
@@ -25,6 +28,14 @@ namespace ProfileService.DAL.DI
                 ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
             services.AddScoped<ICacheProvider, RedisCacheProvider>();
             services.AddScoped(typeof(ICacheRepositoryManager<>), typeof(CacheRepositoryManager<>));
+
+            services.AddMinio(configureClient => configureClient
+                .WithEndpoint(configuration["Minio:Endpoint"])
+                .WithCredentials(configuration["Minio:AccessKey"], configuration["Minio:SecretKey"])
+                .WithSSL(false)
+                .Build());
+
+            services.AddScoped<IMinioStorage, MinioStorage>();
         }
 
         private static void AddRepositories(this IServiceCollection services)
