@@ -80,7 +80,6 @@ namespace NotificationService.Tests.ServicesTests
         [Theory]
         [AutoDomainData]
         public async Task MarkNotificationAsReadAsync_ProfileNotExists_ThrowsNotFoundException(
-            [Frozen] INotificationRepository notificationRepositoryMock,
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             NotificationModel notificationModel,
             ProfileResponse profileResponse,
