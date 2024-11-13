@@ -38,6 +38,20 @@ spec:
                         value: redis-service.default.svc.cluster.local:6379
                       - name: Cors__Origins__0
                         value: "http://localhost:3000"
+                      - name: Minio__Endpoint
+                        value: minio-service.default.svc.cluster.local:9000
+                      - name: Minio__AccessKey
+                        valueFrom:
+                            secretKeyRef:
+                                name: minio-secrets
+                                key: RootUser
+                      - name: Minio__SecretKey
+                        valueFrom:
+                            secretKeyRef:
+                                name: minio-secrets
+                                key: RootPassword
+                      - name: Minio__BucketName
+                        value: ems-profile
 ---
 apiVersion: v1
 kind: Service
