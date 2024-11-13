@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Models;
 using CatalogueService.BLL.Services.IServices;
+using CatalogueService.Extensions;
 using CatalogueService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace CatalogueService.Controllers
 {
@@ -32,7 +32,7 @@ namespace CatalogueService.Controllers
         [HttpPost]
         public async Task<EstateViewModel> CreateEstate(EstateToCreateViewModel estateData, CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             var createdEstate = await estateService.CreateEstateAsync(mapper.Map<EstateModel>(estateData), auth0Id, cancellationToken);
 
@@ -42,7 +42,7 @@ namespace CatalogueService.Controllers
         [HttpPut]
         public async Task<EstateViewModel> UpdateEstate(EstateToUpdateViewModel estateToUpdate, CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             var updatedEstate = await estateService.UpdateEstateAsync(mapper.Map<EstateModel>(estateToUpdate), auth0Id, cancellationToken);
 
@@ -52,14 +52,9 @@ namespace CatalogueService.Controllers
         [HttpDelete("{id}")]
         public async Task DeleteEstate(Guid id, CancellationToken cancellationToken)
         {
-            var auth0Id = GetAuth0IdFromContext();
+            var auth0Id = HttpContext.GetAuth0IdFromContext();
 
             await estateService.DeleteEstateAsync(id, auth0Id, cancellationToken);
-        }
-
-        private string GetAuth0IdFromContext()
-        {
-            return HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
     }
 }
