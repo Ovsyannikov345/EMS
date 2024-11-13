@@ -5,6 +5,7 @@ using ProfileService.BLL.Services;
 using ProfileService.BLL.Utilities.Mapping;
 using System.Reflection;
 using ProfileService.DAL.DI;
+using System.Runtime.Versioning;
 
 namespace ProfileService.BLL.DI
 {
@@ -17,7 +18,8 @@ namespace ProfileService.BLL.DI
             services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 
             services.AddScoped<IUserProfileService, UserProfileService>()
-                    .AddScoped<IProfileInfoVisibilityService, ProfileInfoVisibilityService>();
+                    .AddScoped<IProfileInfoVisibilityService, ProfileInfoVisibilityService>()
+                    .AddScoped<IProfileImageService, ProfileImageService>();
         }
     }
 }
