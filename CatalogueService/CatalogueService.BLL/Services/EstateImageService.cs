@@ -113,7 +113,7 @@ namespace CatalogueService.BLL.Services
 
             using (var image = await Image.LoadAsync(fileStream, cancellationToken))
             {
-                image.SaveAsJpeg(jpegStream);
+                await image.SaveAsJpegAsync(jpegStream, cancellationToken);
             }
 
             jpegStream.Position = 0;
