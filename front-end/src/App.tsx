@@ -16,6 +16,7 @@ function App() {
             <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
                 <BrowserRouter>
                     <Header />
+                    <AppRouter />
                 </BrowserRouter>
             </LocalizationProvider>
         </Auth0Provider>
