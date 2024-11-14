@@ -36,7 +36,7 @@ const Header = () => {
                                     <>
                                         <Button
                                             variant="text"
-                                            color="inherit"
+                                            color="secondary"
                                             style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
                                             startIcon={<CatalogueIcon />}
                                         >
@@ -44,7 +44,7 @@ const Header = () => {
                                         </Button>
                                         <Button
                                             variant="text"
-                                            color="inherit"
+                                            color="secondary"
                                             style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
                                             startIcon={<CreateIcon />}
                                         >
@@ -59,14 +59,13 @@ const Header = () => {
                                 {isAuthenticated && (
                                     <>
                                         <Tooltip title="Notifications">
-                                            <IconButton size="large" color="inherit">
+                                            <IconButton size="large" color="secondary">
                                                 <NotificationsIcon fontSize="large" />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Actions">
                                             <IconButton
                                                 size="large"
-                                                color="inherit"
                                                 onClick={(event) => {
                                                     setMenuAnchorEl(event.currentTarget);
                                                 }}
@@ -90,24 +89,24 @@ const Header = () => {
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
                 <MenuItem key={1}>
-                    <ListItemIcon>
+                    <ListItemIcon sx={{ mr: "5px" }}>
                         <ProfileIcon fontSize="small" />
                     </ListItemIcon>
                     My profile
                 </MenuItem>
-                <MenuItem key={2}>
+                <MenuItem key={2} sx={{ mr: "5px" }}>
                     <ListItemIcon>
                         <MyEstateIcon fontSize="small" />
                     </ListItemIcon>
                     My estate
                 </MenuItem>
-                <MenuItem key={3}>
+                <MenuItem key={3} sx={{ mr: "5px" }}>
                     <ListItemIcon>
                         <ChatIcon fontSize="small" />
                     </ListItemIcon>
                     My chats
                 </MenuItem>
-                <MenuItem key={4} onClick={() => logout()}>
+                <MenuItem key={4} sx={{ mr: "5px" }} onClick={() => logout()}>
                     <ListItemIcon>
                         <LogoutIcon fontSize="small" />
                     </ListItemIcon>

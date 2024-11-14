@@ -5,6 +5,18 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import Header from "./components/headers/Header";
 import AppRouter from "./router/AppRouter";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#D42C2C',
+      },
+      secondary: {
+        main: '#F5E6E8',
+      },
+    },
+  });
 
 function App() {
     return (
@@ -14,10 +26,12 @@ function App() {
             authorizationParams={{ redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URL!, audience: process.env.REACT_APP_AUTH0_AUDIENCE }}
         >
             <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
-                <BrowserRouter>
-                    <Header />
-                    <AppRouter />
-                </BrowserRouter>
+                <ThemeProvider theme={theme}>
+                    <BrowserRouter>
+                        <Header />
+                        <AppRouter />
+                    </BrowserRouter>
+                </ThemeProvider>
             </LocalizationProvider>
         </Auth0Provider>
     );
