@@ -1,0 +1,121 @@
+import { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { DEFAULT_ROUTE } from "../../utils/consts";
+import LogoutIcon from "@mui/icons-material/Logout";
+import Logo from "../../images/logo.png";
+import CatalogueIcon from "@mui/icons-material/MapsHomeWork";
+import CreateIcon from "@mui/icons-material/Create";
+import ProfileIcon from "@mui/icons-material/Person";
+import MyEstateIcon from "@mui/icons-material/HolidayVillage";
+import ChatIcon from "@mui/icons-material/Chat";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+
+const Header = () => {
+    const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
+
+    const { isAuthenticated, logout } = useAuth0();
+
+    const navigate = useNavigate();
+
+    return (
+        <>
+            <Box>
+                <AppBar position="static">
+                    <Toolbar style={{ justifyContent: "space-between" }}>
+                        <Grid container mt={"5px"} mb={"5px"}>
+                            <Grid container gap={"60px"} alignItems={"center"}>
+                                <img
+                                    src={Logo}
+                                    alt="Review Guru"
+                                    style={{ maxWidth: "200px", height: "auto", borderRadius: "10px", cursor: "pointer" }}
+                                    onClick={() => navigate(DEFAULT_ROUTE)}
+                                />
+                                {isAuthenticated && (
+                                    <>
+                                        <Button
+                                            variant="text"
+                                            color="inherit"
+                                            style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
+                                            startIcon={<CatalogueIcon />}
+                                        >
+                                            Catalogue
+                                        </Button>
+                                        <Button
+                                            variant="text"
+                                            color="inherit"
+                                            style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
+                                            startIcon={<CreateIcon />}
+                                        >
+                                            Create estate
+                                        </Button>
+                                    </>
+                                )}
+                            </Grid>
+                        </Grid>
+                        <Grid container>
+                            <Grid container gap={"10px"} alignItems={"center"}>
+                                {isAuthenticated && (
+                                    <>
+                                        <Tooltip title="Notifications">
+                                            <IconButton size="large" color="inherit">
+                                                <NotificationsIcon fontSize="large" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Actions">
+                                            <IconButton
+                                                size="large"
+                                                color="inherit"
+                                                onClick={(event) => {
+                                                    setMenuAnchorEl(event.currentTarget);
+                                                }}
+                                            >
+                                                <Avatar sx={{ width: 45, height: 45 }} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
+                                )}
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
+            </Box>
+            <Menu
+                id="menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+                <MenuItem key={1}>
+                    <ListItemIcon>
+                        <ProfileIcon fontSize="small" />
+                    </ListItemIcon>
+                    My profile
+                </MenuItem>
+                <MenuItem key={2}>
+                    <ListItemIcon>
+                        <MyEstateIcon fontSize="small" />
+                    </ListItemIcon>
+                    My estate
+                </MenuItem>
+                <MenuItem key={3}>
+                    <ListItemIcon>
+                        <ChatIcon fontSize="small" />
+                    </ListItemIcon>
+                    My chats
+                </MenuItem>
+                <MenuItem key={4} onClick={() => logout()}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                </MenuItem>
+            </Menu>
+        </>
+    );
+};
+
+export default Header;
