@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CatalogueService.BLL.Grpc.Services;
-using CatalogueService.BLL.Producers.IProducers;
+﻿using CatalogueService.BLL.Producers.IProducers;
 using CatalogueService.BLL.Producers;
 using CatalogueService.BLL.Services;
 using CatalogueService.BLL.Services.IServices;
@@ -24,7 +22,8 @@ namespace CatalogueService.BLL.DI
             services.AddMassTransit(configuration);
 
             services.AddScoped<IEstateService, EstateService>()
-                    .AddScoped<IEstateFilterService, EstateFilterService>();
+                    .AddScoped<IEstateFilterService, EstateFilterService>()
+                    .AddScoped<IEstateImageService, EstateImageService>();
         }
 
         public static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
