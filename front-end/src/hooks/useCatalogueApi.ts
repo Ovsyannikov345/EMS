@@ -1,10 +1,16 @@
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
-interface EstateShortData {
+export enum EstateType {
+    None = 0,
+    Apartment = 1,
+    House = 2,
+}
+
+export interface EstateShortData {
     id: string;
     userId: string;
-    type: number;
+    type: EstateType;
     address: string;
     area: number;
     roomsCount: number;
