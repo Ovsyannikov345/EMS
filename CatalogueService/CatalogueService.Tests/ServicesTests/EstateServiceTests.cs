@@ -35,6 +35,7 @@ namespace CatalogueService.Tests.ServicesTests
         {
             // Arrange
             estate.UserId = userProfile.Id;
+            estate.ImageIds = [];
 
             var estateFilter = new EstateFilterModel
             {
@@ -162,6 +163,7 @@ namespace CatalogueService.Tests.ServicesTests
         public async Task GetEstateDetailsAsync_ValidEstateId_ReturnsEstateDetails(
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             [Frozen] IEstateRepository estateRepositoryMock,
+            [Frozen] IEstateImageService estateImageServiceMock,
             EstateWithProfileModel estate,
             EstateService sut)
         {
@@ -170,6 +172,8 @@ namespace CatalogueService.Tests.ServicesTests
                 .Returns(_mapper.Map<Estate>(estate));
             profileGrpcClientMock.GetProfile(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                 .Returns(_mapper.Map<UserProfile>(estate.User));
+            estateImageServiceMock.GetImageNameListAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(estate.ImageIds);
 
             // Act
             var result = await sut.GetEstateDetailsAsync(estate.Id, default);
@@ -182,18 +186,24 @@ namespace CatalogueService.Tests.ServicesTests
         [AutoDomainData]
         public async Task GetEstateListAsync__ReturnsEstateList(
             [Frozen] IEstateRepository estateRepositoryMock,
-            IEnumerable<Estate> estateList,
+            [Frozen] IEstateImageService estateImageServiceMock,
+            List<EstateModel> estateModelList,
             EstateService sut)
         {
             // Arrange
+            estateModelList[1].ImageIds = estateModelList[0].ImageIds;
+            estateModelList[2].ImageIds = estateModelList[0].ImageIds;
+
             estateRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Estate, bool>>>())
-                .Returns(estateList);
+                .Returns(_mapper.Map<IEnumerable<EstateModel>, IEnumerable<Estate>>(estateModelList));
+            estateImageServiceMock.GetImageNameListAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Returns(estateModelList[0].ImageIds);
 
             // Act
             var result = await sut.GetEstateListAsync(default);
 
             // Assert
-            result.Should().BeEquivalentTo(_mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estateList));
+            result.Should().BeEquivalentTo(estateModelList);
         }
 
         [Theory]
