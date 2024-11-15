@@ -9,5 +9,6 @@ namespace CatalogueService.ViewModels
         string Address,
         int Area,
         short RoomsCount,
-        decimal Price);
+        decimal Price,
+        List<string> ImageIds);
 }

@@ -16,6 +16,7 @@ namespace CatalogueService.BLL.Services
         IEstateRepository estateRepository,
         IProfileGrpcClient profileGrpcClient,
         IEstateFilterService estateFilterService,
+        IEstateImageService estateImageService,
         INotificationProducer notificationProducer,
         IMapper mapper) : IEstateService
     {
@@ -68,6 +69,8 @@ namespace CatalogueService.BLL.Services
 
                 estateFullDetails.User = mapper.Map<UserProfileModel>(estateOwnerProfile);
 
+                estateFullDetails.ImageIds = await estateImageService.GetImageNameListAsync(estate.Id, cancellationToken);
+
                 return estateFullDetails;
             }
 
@@ -78,7 +81,14 @@ namespace CatalogueService.BLL.Services
         {
             var estates = await estateRepository.GetAllAsync(cancellationToken: cancellationToken);
 
-            return mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estates);
+            var estateModels = mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estates).ToList();
+
+            for (var i = 0; i < estateModels.Count; i++)
+            {
+                estateModels[i].ImageIds = await estateImageService.GetImageNameListAsync(estateModels[i].Id, cancellationToken);
+            }
+
+            return estateModels;
         }
 
         public async Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
@@ -97,7 +107,7 @@ namespace CatalogueService.BLL.Services
         {
             var estate = await estateRepository.GetByFilterAsync(e => e.Id == estateId, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), estateId));
-            
+
             var owner = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
             return estate.UserId == owner.Id;

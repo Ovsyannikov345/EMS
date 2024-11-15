@@ -17,5 +17,7 @@ namespace CatalogueService.BLL.Models
         public short RoomsCount { get; set; }
 
         public decimal Price { get; set; }
+
+        public List<string> ImageIds { get; set; } = [];
     }
 }
