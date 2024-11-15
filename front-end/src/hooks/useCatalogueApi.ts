@@ -15,9 +15,10 @@ export interface EstateShortData {
     area: number;
     roomsCount: number;
     price: number;
+    imageIds: string[];
 }
 
-interface ApiError {
+export interface ApiError {
     error: boolean;
     statusCode?: number;
     message: string;
@@ -49,8 +50,6 @@ const useCatalogueApi = () => {
     const getEstateList = async (): Promise<ApiResponse<EstateShortData[]>> => {
         const client = await createAxiosInstance();
 
-        console.log(client);
-
         try {
             const response = await client.get("Estate");
 
@@ -65,7 +64,24 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList };
+    const getEstateImageNames = async (estateId: string): Promise<ApiResponse<string[]>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.get(`EstateImage/${estateId}`);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getEstateList, getEstateImageNames };
 };
 
 export default useCatalogueApi;
