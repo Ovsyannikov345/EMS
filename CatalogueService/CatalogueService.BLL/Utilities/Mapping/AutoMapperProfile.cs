@@ -15,7 +15,8 @@ namespace CatalogueService.BLL.Utilities.Mapping
             CreateMap<EstateModel, Estate>().ReverseMap();
             CreateMap<UserProfile, UserProfileModel>();
 
-            CreateMap<EstateWithProfileModel, ProtoEstateModel>();
+            CreateMap<EstateWithProfileModel, ProtoEstateModel>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.CreatedAt, DateTimeKind.Utc))));
             CreateMap<UserProfileModel, ProtoProfileModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));

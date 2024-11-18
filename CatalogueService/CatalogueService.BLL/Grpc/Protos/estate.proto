@@ -33,6 +33,7 @@ message ProtoEstateModel {
     int32 area = 5;
     int32 rooms_count = 6;
     string price = 7;
+    google.protobuf.Timestamp created_at = 8;
 }
 
 message EstateRequest {
