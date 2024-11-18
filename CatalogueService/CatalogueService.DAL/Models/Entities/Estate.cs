@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CatalogueService.DAL.Models.Entities
 {
-    public class Estate
+    public class Estate : EntityBase
     {
         public Guid Id { get; set; }
 

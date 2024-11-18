@@ -2,7 +2,7 @@
 
 namespace CatalogueService.BLL.Models
 {
-    public class EstateWithProfileModel
+    public class EstateWithProfileModel : ModelBase
     {
         public Guid Id { get; set; }
 

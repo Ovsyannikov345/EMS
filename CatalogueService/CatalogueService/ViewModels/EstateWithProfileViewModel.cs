@@ -10,6 +10,8 @@ namespace CatalogueService.ViewModels
         int Area,
         short RoomsCount,
         decimal Price,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
         UserProfileViewModel User,
         List<string> ImageIds);
 }

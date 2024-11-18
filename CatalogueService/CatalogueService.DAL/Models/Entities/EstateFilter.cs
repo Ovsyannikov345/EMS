@@ -2,7 +2,7 @@
 
 namespace CatalogueService.DAL.Models.Entities
 {
-    public class EstateFilter
+    public class EstateFilter : EntityBase
     {
         public Guid Id { get; set; }
 
