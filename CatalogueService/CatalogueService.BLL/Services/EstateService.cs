@@ -88,7 +88,7 @@ namespace CatalogueService.BLL.Services
                 estateModels[i].ImageIds = await estateImageService.GetImageNameListAsync(estateModels[i].Id, cancellationToken);
             }
 
-            return estateModels;
+            return await AddImageIdsToEstate(estateModels, cancellationToken);
         }
 
         public async Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
@@ -111,6 +111,16 @@ namespace CatalogueService.BLL.Services
             var owner = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken);
 
             return estate.UserId == owner.Id;
+        }
+
+        private async Task<List<EstateModel>> AddImageIdsToEstate(List<EstateModel> estateModels, CancellationToken cancellationToken = default)
+        {
+            for (var i = 0; i < estateModels.Count; i++)
+            {
+                estateModels[i].ImageIds = await estateImageService.GetImageNameListAsync(estateModels[i].Id, cancellationToken);
+            }
+
+            return estateModels;
         }
     }
 }
