@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CatalogueService.BLL.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace CatalogueService.BLL.Services.IServices
 {

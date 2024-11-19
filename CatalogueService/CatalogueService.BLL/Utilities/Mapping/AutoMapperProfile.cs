@@ -3,6 +3,7 @@ using CatalogueService.BLL.Grpc.Services;
 using CatalogueService.BLL.Models;
 using CatalogueService.DAL.Grpc.Models;
 using CatalogueService.DAL.Models.Entities;
+using CatalogueService.DAL.Utilities.Pagination;
 using Google.Protobuf.WellKnownTypes;
 
 namespace CatalogueService.BLL.Utilities.Mapping
@@ -20,6 +21,9 @@ namespace CatalogueService.BLL.Utilities.Mapping
             CreateMap<UserProfileModel, ProtoProfileModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
+
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
+                .ForMember("Results", opt => opt.MapFrom("Results"));
 
             CreateMap<EstateFilterModel, EstateFilter>().ReverseMap();
         }

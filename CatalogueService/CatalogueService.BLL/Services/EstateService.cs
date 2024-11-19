@@ -9,6 +9,9 @@ using CatalogueService.DAL.Repositories.IRepositories;
 using CatalogueService.BLL.Producers.IProducers;
 using MessageBus.Messages;
 using CatalogueService.BLL.Utilities.Exceptions.Messages;
+using CatalogueService.BLL.Utilities.QueryParameters;
+using CatalogueService.DAL.Utilities.Pagination;
+using System.Linq.Expressions;
 
 namespace CatalogueService.BLL.Services
 {
@@ -77,18 +80,42 @@ namespace CatalogueService.BLL.Services
             throw new NotFoundException(ExceptionMessages.NotFound(nameof(Estate), nameof(Estate.Id), id));
         }
 
-        public async Task<IEnumerable<EstateModel>> GetEstateListAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedResult<EstateModel>> GetEstateListAsync(
+            SortOption sortOption,
+            EstateQueryFilter filter,
+            Pagination pagination,
+            CancellationToken cancellationToken = default)
         {
-            var estates = await estateRepository.GetAllAsync(cancellationToken: cancellationToken);
-
-            var estateModels = mapper.Map<IEnumerable<Estate>, IEnumerable<EstateModel>>(estates).ToList();
-
-            for (var i = 0; i < estateModels.Count; i++)
+            Expression<Func<Estate, object>> sortParameter = sortOption switch
             {
-                estateModels[i].ImageIds = await estateImageService.GetImageNameListAsync(estateModels[i].Id, cancellationToken);
-            }
+                SortOption.DateDescending or SortOption.DateAscending => (e) => e.CreatedAt,
+                SortOption.PriceDescending or SortOption.PriceAscending => (e) => e.Price,
+                SortOption.AreaDescending or SortOption.AreaAscending => (e) => e.Area,
+                _ => (e) => e.CreatedAt,
+            };
 
-            return await AddImageIdsToEstate(estateModels, cancellationToken);
+            var isDescending =
+                sortOption == SortOption.DateDescending ||
+                sortOption == SortOption.PriceDescending ||
+                sortOption == SortOption.AreaDescending;
+
+            Expression<Func<Estate, bool>> predicate = (e) =>
+                (string.IsNullOrEmpty(filter.Address) || e.Address.Contains(filter.Address)) &&
+                (filter.MaxPrice == null || e.Price <= filter.MaxPrice) &&
+                (filter.MinPrice == null || e.Price >= filter.MinPrice) &&
+                (filter.MaxArea == null || e.Area <= filter.MaxArea) &&
+                (filter.MinArea == null || e.Area >= filter.MinArea) &&
+                (filter.MaxRoomsCount == null || e.RoomsCount <= filter.MaxRoomsCount) &&
+                (filter.MinRoomsCount == null || e.RoomsCount >= filter.MinRoomsCount);
+
+            var result = await estateRepository.GetAllAsync(
+                sortParameter, isDescending, predicate, pagination.PageNumber, pagination.PageSize, cancellationToken);
+
+            var resultWithModels = mapper.Map<PagedResult<EstateModel>>(result);
+
+            resultWithModels.Results = await AddImageIdsToEstate(resultWithModels.Results, cancellationToken);
+
+            return resultWithModels;
         }
 
         public async Task<EstateModel> UpdateEstateAsync(EstateModel estate, string ownerAuth0Id, CancellationToken cancellationToken = default)
