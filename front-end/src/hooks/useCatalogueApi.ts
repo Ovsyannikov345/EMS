@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { SortOption } from "../pages/CataloguePage";
 
 export enum EstateType {
     None = 0,
@@ -16,6 +17,16 @@ export interface EstateShortData {
     roomsCount: number;
     price: number;
     imageIds: string[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface PagedResult<T> {
+    results: T[];
+    currentPage: number;
+    pageSize: number;
+    totalPages: number;
+    totalCount: number;
 }
 
 export interface ApiError {
@@ -47,11 +58,11 @@ const useCatalogueApi = () => {
         return instance;
     };
 
-    const getEstateList = async (): Promise<ApiResponse<EstateShortData[]>> => {
+    const getEstateList = async (pageNumber: number, pageSize: number, sortOption: SortOption): Promise<ApiResponse<PagedResult<EstateShortData>>> => {
         const client = await createAxiosInstance();
 
         try {
-            const response = await client.get("Estate");
+            const response = await client.get(`Estate?pageSize=${pageSize}&pageNumber=${pageNumber}&sortOption=${sortOption}`);
 
             return response.data;
         } catch (error: any) {
