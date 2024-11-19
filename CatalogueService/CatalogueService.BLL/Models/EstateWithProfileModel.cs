@@ -19,5 +19,7 @@ namespace CatalogueService.BLL.Models
         public decimal Price { get; set; }
 
         public UserProfileModel User { get; set; } = null!;
+
+        public List<string> ImageIds { get; set; } = [];
     }
 }

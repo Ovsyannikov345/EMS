@@ -24,6 +24,7 @@ namespace CatalogueService.Controllers
             return await estateImageService.GetImageNameListAsync(estateId, cancellationToken);
         }
 
+        [AllowAnonymous]
         [HttpGet("{estateId}/{imageId}")]
         public async Task<FileStreamResult> GetEstateImage(Guid estateId, Guid imageId, CancellationToken cancellationToken)
         {

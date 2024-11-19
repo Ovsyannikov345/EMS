@@ -10,5 +10,6 @@ namespace CatalogueService.ViewModels
         int Area,
         short RoomsCount,
         decimal Price,
-        UserProfileViewModel User);
+        UserProfileViewModel User,
+        List<string> ImageIds);
 }

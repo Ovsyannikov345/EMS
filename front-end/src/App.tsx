@@ -6,6 +6,7 @@ import Header from "./components/headers/Header";
 import AppRouter from "./router/AppRouter";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { NotificationsProvider } from "@toolpad/core";
 
 const theme = createTheme({
     palette: {
@@ -27,10 +28,12 @@ function App() {
         >
             <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
                 <ThemeProvider theme={theme}>
-                    <BrowserRouter>
-                        <Header />
-                        <AppRouter />
-                    </BrowserRouter>
+                    <NotificationsProvider>
+                        <BrowserRouter>
+                            <Header />
+                            <AppRouter />
+                        </BrowserRouter>
+                    </NotificationsProvider>
                 </ThemeProvider>
             </LocalizationProvider>
         </Auth0Provider>
