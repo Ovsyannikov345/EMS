@@ -5,10 +5,12 @@ using CatalogueService.BLL.Services;
 using CatalogueService.BLL.Services.IServices;
 using CatalogueService.BLL.Utilities.Exceptions;
 using CatalogueService.BLL.Utilities.Mapping;
+using CatalogueService.BLL.Utilities.QueryParameters;
 using CatalogueService.DAL.Grpc.Models;
 using CatalogueService.DAL.Grpc.Services.IServices;
 using CatalogueService.DAL.Models.Entities;
 using CatalogueService.DAL.Repositories.IRepositories;
+using CatalogueService.DAL.Utilities.Pagination;
 using CatalogueService.Tests.DataInjection;
 using CatalogueService.Tests.Mapping;
 using FluentAssertions;
@@ -187,20 +189,29 @@ namespace CatalogueService.Tests.ServicesTests
         public async Task GetEstateListAsync__ReturnsEstateList(
             [Frozen] IEstateRepository estateRepositoryMock,
             [Frozen] IEstateImageService estateImageServiceMock,
-            List<EstateModel> estateModelList,
+            PagedResult<EstateModel> pagedEstate,
+            SortOption sortOption,
+            EstateQueryFilter estateQueryFilter,
+            Pagination pagination,
             EstateService sut)
         {
             // Arrange
+            pagedEstate.TotalCount = pagedEstate.Results.Count;
+            pagedEstate.PageSize = 2;
+            pagedEstate.CurrentPage = 1;
+
+            var estateModelList = pagedEstate.Results;
+
             estateModelList[1].ImageIds = estateModelList[0].ImageIds;
             estateModelList[2].ImageIds = estateModelList[0].ImageIds;
 
             estateRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Estate, bool>>>())
-                .Returns(_mapper.Map<IEnumerable<EstateModel>, IEnumerable<Estate>>(estateModelList));
+                .Returns(_mapper.Map<PagedResult<EstateModel>, PagedResult<Estate>>(pagedEstate));
             estateImageServiceMock.GetImageNameListAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                 .Returns(estateModelList[0].ImageIds);
 
             // Act
-            var result = await sut.GetEstateListAsync(default);
+            var result = await sut.GetEstateListAsync(sortOption, estateQueryFilter, pagination, default);
 
             // Assert
             result.Should().BeEquivalentTo(estateModelList);
