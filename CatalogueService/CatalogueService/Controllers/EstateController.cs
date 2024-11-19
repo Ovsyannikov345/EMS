@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CatalogueService.BLL.Models;
 using CatalogueService.BLL.Services.IServices;
+using CatalogueService.BLL.Utilities.QueryParameters;
+using CatalogueService.DAL.Utilities.Pagination;
 using CatalogueService.Extensions;
 using CatalogueService.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +16,16 @@ namespace CatalogueService.Controllers
     public class EstateController(IEstateService estateService, IMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<IEnumerable<EstateViewModel>> GetEstateList(CancellationToken cancellationToken)
+        public async Task<PagedResult<EstateViewModel>> GetEstateList(
+            [FromQuery] SortOption sortOption,
+            [FromQuery] EstateQueryFilter estateFilter,
+            [FromQuery] Pagination pagination,
+            CancellationToken cancellationToken)
         {
-            var estateList = await estateService.GetEstateListAsync(cancellationToken);
+            var pagedResult = await estateService.GetEstateListAsync(
+                sortOption, estateFilter, pagination, cancellationToken);
 
-            return mapper.Map<IEnumerable<EstateModel>, IEnumerable<EstateViewModel>>(estateList);
+            return mapper.Map<PagedResult<EstateModel>, PagedResult<EstateViewModel>>(pagedResult);
         }
 
         [HttpGet("{id}")]
