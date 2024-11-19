@@ -205,7 +205,13 @@ namespace CatalogueService.Tests.ServicesTests
             estateModelList[1].ImageIds = estateModelList[0].ImageIds;
             estateModelList[2].ImageIds = estateModelList[0].ImageIds;
 
-            estateRepositoryMock.GetAllAsync(Arg.Any<Expression<Func<Estate, bool>>>())
+            estateRepositoryMock.GetAllAsync(
+                Arg.Any<Expression<Func<Estate, object>>>(),
+                Arg.Any<bool>(),
+                Arg.Any<Expression<Func<Estate, bool>>>(),
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<CancellationToken>())
                 .Returns(_mapper.Map<PagedResult<EstateModel>, PagedResult<Estate>>(pagedEstate));
             estateImageServiceMock.GetImageNameListAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                 .Returns(estateModelList[0].ImageIds);
@@ -214,7 +220,7 @@ namespace CatalogueService.Tests.ServicesTests
             var result = await sut.GetEstateListAsync(sortOption, estateQueryFilter, pagination, default);
 
             // Assert
-            result.Should().BeEquivalentTo(estateModelList);
+            result.Should().BeEquivalentTo(pagedEstate);
         }
 
         [Theory]
