@@ -100,13 +100,14 @@ namespace CatalogueService.BLL.Services
                 sortOption == SortOption.AreaDescending;
 
             Expression<Func<Estate, bool>> predicate = (e) =>
+                (!filter.Types.HasValue || (filter.Types & e.Type) == e.Type) &&
                 (string.IsNullOrEmpty(filter.Address) || e.Address.Contains(filter.Address)) &&
-                (filter.MaxPrice == null || e.Price <= filter.MaxPrice) &&
-                (filter.MinPrice == null || e.Price >= filter.MinPrice) &&
-                (filter.MaxArea == null || e.Area <= filter.MaxArea) &&
-                (filter.MinArea == null || e.Area >= filter.MinArea) &&
-                (filter.MaxRoomsCount == null || e.RoomsCount <= filter.MaxRoomsCount) &&
-                (filter.MinRoomsCount == null || e.RoomsCount >= filter.MinRoomsCount);
+                (!filter.MaxPrice.HasValue || e.Price <= filter.MaxPrice) &&
+                (!filter.MinPrice.HasValue || e.Price >= filter.MinPrice) &&
+                (!filter.MaxArea.HasValue || e.Area <= filter.MaxArea) &&
+                (!filter.MinArea.HasValue || e.Area >= filter.MinArea) &&
+                (!filter.MaxRoomsCount.HasValue || e.RoomsCount <= filter.MaxRoomsCount) &&
+                (!filter.MinRoomsCount.HasValue || e.RoomsCount >= filter.MinRoomsCount);
 
             var result = await estateRepository.GetAllAsync(
                 sortParameter, isDescending, predicate, pagination.PageNumber, pagination.PageSize, cancellationToken);
