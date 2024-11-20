@@ -110,7 +110,7 @@ namespace CatalogueService.BLL.Services
                 (!filter.MinRoomsCount.HasValue || e.RoomsCount >= filter.MinRoomsCount);
 
             var result = await estateRepository.GetAllAsync(
-                sortParameter, isDescending, predicate, pagination.PageNumber, pagination.PageSize, cancellationToken);
+                sortParameter, predicate, isDescending, pagination.PageNumber, pagination.PageSize, cancellationToken);
 
             var resultWithModels = mapper.Map<PagedResult<EstateModel>>(result);
 

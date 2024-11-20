@@ -18,17 +18,13 @@ namespace CatalogueService.DAL.Repositories
 
         public async Task<PagedResult<Estate>> GetAllAsync<TKey>(
             Expression<Func<Estate, TKey>> sortParameter,
+            Expression<Func<Estate, bool>> predicate,
             bool isDescending = false,
-            Expression<Func<Estate, bool>>? predicate = null,
             int pageNumber = 1,
             int pageSize = 10,
             CancellationToken cancellationToken = default)
         {
-            var entities = predicate switch
-            {
-                null => _context.Set<Estate>().AsNoTracking(),
-                not null => _context.Set<Estate>().AsNoTracking().Where(predicate),
-            };
+            var entities = _context.Set<Estate>().AsNoTracking().Where(predicate);
 
             var sortedEntities = isDescending
                 ? entities.OrderByDescending(sortParameter)
