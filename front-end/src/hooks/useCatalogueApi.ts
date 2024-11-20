@@ -4,8 +4,8 @@ import { SortOption } from "../pages/CataloguePage";
 
 export enum EstateType {
     None = 0,
-    Apartment = 1,
-    House = 2,
+    Apartment = 1 << 0,
+    House = 1 << 1,
 }
 
 export interface EstateShortData {
@@ -19,6 +19,17 @@ export interface EstateShortData {
     imageIds: string[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface EstateQueryFilter {
+    types: EstateType;
+    address?: string;
+    minArea?: number;
+    maxArea?: number;
+    minRoomsCount?: number;
+    maxRoomsCount?: number;
+    minPrice?: number;
+    maxPrice?: number;
 }
 
 export interface PagedResult<T> {
@@ -58,11 +69,22 @@ const useCatalogueApi = () => {
         return instance;
     };
 
-    const getEstateList = async (pageNumber: number, pageSize: number, sortOption: SortOption): Promise<ApiResponse<PagedResult<EstateShortData>>> => {
+    const getEstateList = async (
+        pageNumber: number,
+        sortOption: SortOption,
+        filter: EstateQueryFilter
+    ): Promise<ApiResponse<PagedResult<EstateShortData>>> => {
         const client = await createAxiosInstance();
 
         try {
-            const response = await client.get(`Estate?pageSize=${pageSize}&pageNumber=${pageNumber}&sortOption=${sortOption}`);
+            const filterQuery = Object.entries(filter)
+                .filter(([, value]) => value)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("&");
+
+            console.log(filterQuery);
+
+            const response = await client.get(`Estate?pageNumber=${pageNumber}&sortOption=${sortOption}&${filterQuery}`);
 
             return response.data;
         } catch (error: any) {
