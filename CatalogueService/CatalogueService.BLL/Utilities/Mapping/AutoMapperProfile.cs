@@ -23,7 +23,7 @@ namespace CatalogueService.BLL.Utilities.Mapping
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
-                .ForMember("Results", opt => opt.MapFrom("Results"));
+                .ForMember(nameof(PagedResult<object>.Results), opt => opt.MapFrom(nameof(PagedResult<object>.Results)));
 
             CreateMap<EstateFilterModel, EstateFilter>().ReverseMap();
         }
