@@ -1,9 +1,23 @@
 import { useEffect, useState } from "react";
-import useCatalogueApi, { EstateShortData, PagedResult } from "../hooks/useCatalogueApi";
+import useCatalogueApi, { EstateQueryFilter, EstateShortData, EstateType, PagedResult } from "../hooks/useCatalogueApi";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import { Box, Container, FormControl, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Collapse,
+    Container,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Pagination,
+    Select,
+    SelectChangeEvent,
+    Typography,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import EstateCard from "../components/headers/EstateCard";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import EstateFilter from "../components/headers/EstateFilter";
 
 export enum SortOption {
     DateDescending = 0,
@@ -25,10 +39,13 @@ const CataloguePage = () => {
 
     const [selectedSortOption, setSelectedSortOption] = useState<SortOption>(SortOption.DateDescending);
 
+    const [displayFilter, setDisplayFilter] = useState(false);
+
+    const [filter, setFilter] = useState<EstateQueryFilter>({ types: EstateType.None });
+
     useEffect(() => {
         const loadEstate = async () => {
-            // TODO make selectable
-            const response = await getEstateList(currentPage, 10, selectedSortOption);
+            const response = await getEstateList(currentPage, selectedSortOption, filter);
 
             if ("error" in response) {
                 notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
@@ -39,7 +56,7 @@ const CataloguePage = () => {
         };
 
         loadEstate();
-    }, [currentPage, selectedSortOption]);
+    }, [currentPage, selectedSortOption, filter]);
 
     const changePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
@@ -59,7 +76,7 @@ const CataloguePage = () => {
     return (
         <Container maxWidth="lg" sx={{ pb: 5 }}>
             <Box mt={4} mb={4}>
-                <Grid container justifyContent={"space-between"} mb={5}>
+                <Grid container justifyContent={"space-between"}>
                     <Typography variant="h4">Real Estate Catalogue</Typography>
                     <FormControl>
                         <InputLabel id="sort-label">Order by</InputLabel>
@@ -82,6 +99,14 @@ const CataloguePage = () => {
                                 ))}
                         </Select>
                     </FormControl>
+                </Grid>
+                <Grid container flexDirection={"column"} alignItems={"flex-start"} spacing={2} mb={5}>
+                    <Button variant="text" startIcon={<FilterAltIcon />} onClick={() => setDisplayFilter(!displayFilter)}>
+                        {displayFilter ? "Hide Filters" : "Show Filters"}
+                    </Button>
+                    <Collapse in={displayFilter}>
+                        <EstateFilter filter={filter} onFilterChange={setFilter} />
+                    </Collapse>
                 </Grid>
                 <Grid container spacing={4}>
                     {pagedEstateList && pagedEstateList.results.length > 0 ? (
