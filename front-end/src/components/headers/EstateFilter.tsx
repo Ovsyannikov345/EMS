@@ -71,6 +71,7 @@ const EstateFilter = ({ filter, onFilterChange }: EstateFilterProps) => {
                     <InputLabel id="estate-type-label">Select Estate Types</InputLabel>
                     <Select
                         labelId="estate-type-label"
+                        label="Select Estate Types"
                         multiple
                         value={estateTypeOptions.filter((option) => isSelected(option.value)).map((option) => option.value)}
                         onChange={handleEstateTypesChange}
