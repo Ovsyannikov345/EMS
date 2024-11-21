@@ -1,10 +1,16 @@
 ﻿using CatalogueService.BLL.Models;
+using CatalogueService.BLL.Utilities.QueryParameters;
+using CatalogueService.DAL.Utilities.Pagination;
 
 namespace CatalogueService.BLL.Services.IServices
 {
     public interface IEstateService
     {
-        Task<IEnumerable<EstateModel>> GetEstateListAsync(CancellationToken cancellationToken = default);
+        Task<PagedResult<EstateModel>> GetEstateListAsync(
+            SortOption sortOption,
+            EstateQueryFilter filter,
+            Pagination pagination,
+            CancellationToken cancellationToken = default);
 
         Task<EstateWithProfileModel> GetEstateDetailsAsync(Guid id, CancellationToken cancellationToken = default);
 
