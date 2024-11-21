@@ -82,8 +82,6 @@ const useCatalogueApi = () => {
                 .map(([key, value]) => `${key}=${value}`)
                 .join("&");
 
-            console.log(filterQuery);
-
             const response = await client.get(`Estate?pageNumber=${pageNumber}&sortOption=${sortOption}&${filterQuery}`);
 
             return response.data;

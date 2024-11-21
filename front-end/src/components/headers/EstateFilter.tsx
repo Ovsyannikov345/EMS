@@ -41,10 +41,6 @@ const EstateFilter = ({ filter, onFilterChange }: EstateFilterProps) => {
 
         const result = selectedOptions.reduce((acc: number, current: number) => acc | current, 0);
 
-        console.log(selectedOptions);
-        console.log(result);
-        console.log(filters.types);
-
         setFilters((prev) => ({
             ...prev,
             types: result,
