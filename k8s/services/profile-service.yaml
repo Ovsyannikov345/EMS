@@ -34,6 +34,8 @@ spec:
                                 key: Audience
                       - name: ConnectionStrings__ProfileDatabase
                         value: "Host=postgres;Port=5432;Database=ProfileDb;Username=postgres;Password=admin"
+                      - name: ConnectionStrings__CatalogueService
+                        value: http://catalogue-service.default.svc.cluster.local:5012
                       - name: "ConnectionStrings__Redis"
                         value: redis-service.default.svc.cluster.local:6379
                       - name: Cors__Origins__0
