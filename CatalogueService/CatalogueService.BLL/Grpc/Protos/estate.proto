@@ -8,12 +8,14 @@ package estate;
 
 service EstateGrpcServiceProto {
     rpc GetEstate (EstateRequest) returns (EstateResponse);
+    rpc GetUserEstateCount (EstateCountRequest) returns (EstateCountResponse);
 }
 
 enum EstateType
 {
-    Apartment = 0;
-    House = 1;
+    None = 0;
+    Apartment = 1;
+    House = 2;
 }
 
 message ProtoProfileModel {
@@ -42,6 +44,17 @@ message EstateRequest {
 
 message EstateResponse {
     ProtoEstateModel estate = 1;
+
+    int32 statusCode = 2;
+    string message = 3;
+}
+
+message EstateCountRequest {
+    string user_id = 1;
+}
+
+message EstateCountResponse {
+    int32 count = 1;
 
     int32 statusCode = 2;
     string message = 3;

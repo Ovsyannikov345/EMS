@@ -13,5 +13,7 @@ namespace CatalogueService.DAL.Repositories.IRepositories
             int pageNumber = 1,
             int pageSize = 10,
             CancellationToken cancellationToken = default);
+
+        Task<int> CountAsync(Expression<Func<Estate, bool>> predicate, CancellationToken cancellationToken = default);
     }
 }

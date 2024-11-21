@@ -16,6 +16,11 @@ namespace CatalogueService.DAL.Repositories
             _context = context;
         }
 
+        public Task<int> CountAsync(Expression<Func<Estate, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return _context.Estates.CountAsync(predicate, cancellationToken);
+        }
+
         public async Task<PagedResult<Estate>> GetAllAsync<TKey>(
             Expression<Func<Estate, TKey>> sortParameter,
             Expression<Func<Estate, bool>> predicate,
