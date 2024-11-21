@@ -41,7 +41,9 @@ const CataloguePage = () => {
 
     const [displayFilter, setDisplayFilter] = useState(false);
 
-    const [filter, setFilter] = useState<EstateQueryFilter>({ types: EstateType.None });
+    const [filter, setFilter] = useState<EstateQueryFilter>(
+        localStorage.getItem("catalogueFilter") ? JSON.parse(localStorage.getItem("catalogueFilter")!) : { types: EstateType.None }
+    );
 
     useEffect(() => {
         const loadEstate = async () => {
@@ -64,6 +66,11 @@ const CataloguePage = () => {
 
     const changeSortOption = (event: SelectChangeEvent<SortOption>) => {
         setSelectedSortOption(Number(event.target.value) as SortOption);
+    };
+
+    const changeFilter = (filter: EstateQueryFilter) => {
+        setFilter(filter);
+        localStorage.setItem("catalogueFilter", JSON.stringify(filter));
     };
 
     const formatSortOption = (key: string): string => {
@@ -105,7 +112,7 @@ const CataloguePage = () => {
                         {displayFilter ? "Hide Filters" : "Show Filters"}
                     </Button>
                     <Collapse in={displayFilter}>
-                        <EstateFilter filter={filter} onFilterChange={setFilter} />
+                        <EstateFilter filter={filter} onFilterChange={changeFilter} />
                     </Collapse>
                 </Grid>
                 <Grid container spacing={4}>
