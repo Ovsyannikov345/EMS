@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
-import { EstateShortData, EstateType } from "../../hooks/useCatalogueApi";
+import { EstateShortData, EstateType } from "../hooks/useCatalogueApi";
 import moment from "moment";
 
 interface EstateCardProps {
@@ -14,7 +14,7 @@ const EstateCard = ({ estateData }: EstateCardProps) => {
                 component="img"
                 src={
                     estateData.imageIds && estateData.imageIds.length > 0
-                        ? `http://localhost:5002/api/EstateImage/${estateData.id}/${estateData.imageIds[0]}`
+                        ? `${process.env.REACT_APP_CATALOGUE_API_URL}/EstateImage/${estateData.id}/${estateData.imageIds[0]}`
                         : process.env.PUBLIC_URL + "/house-placeholder.png"
                 }
             ></CardMedia>
