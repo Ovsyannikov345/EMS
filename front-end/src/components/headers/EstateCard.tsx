@@ -1,5 +1,6 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 import { EstateShortData, EstateType } from "../../hooks/useCatalogueApi";
+import moment from "moment";
 
 interface EstateCardProps {
     estateData: EstateShortData;
@@ -25,6 +26,9 @@ const EstateCard = ({ estateData }: EstateCardProps) => {
                 <Typography variant="body1">Price: ${estateData.price.toLocaleString()}</Typography>
                 <Typography variant="body1">
                     {estateData.roomsCount} Rooms ({estateData.area} m² total)
+                </Typography>
+                <Typography variant="body1" textAlign={"end"}>
+                    {moment(estateData.createdAt).fromNow()}
                 </Typography>
             </CardContent>
             <CardActions>

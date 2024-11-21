@@ -12,6 +12,7 @@ using CatalogueService.BLL.Utilities.Exceptions.Messages;
 using CatalogueService.BLL.Utilities.QueryParameters;
 using CatalogueService.DAL.Utilities.Pagination;
 using System.Linq.Expressions;
+using CatalogueService.DAL.Models.Enums;
 
 namespace CatalogueService.BLL.Services
 {
@@ -100,7 +101,7 @@ namespace CatalogueService.BLL.Services
                 sortOption == SortOption.AreaDescending;
 
             Expression<Func<Estate, bool>> predicate = (e) =>
-                (!filter.Types.HasValue || (filter.Types & e.Type) == e.Type) &&
+                (!filter.Types.HasValue || (e.Type != EstateType.None && (filter.Types & e.Type) == e.Type)) &&
                 (string.IsNullOrEmpty(filter.Address) || e.Address.Contains(filter.Address)) &&
                 (!filter.MaxPrice.HasValue || e.Price <= filter.MaxPrice) &&
                 (!filter.MinPrice.HasValue || e.Price >= filter.MinPrice) &&
