@@ -207,8 +207,8 @@ namespace CatalogueService.Tests.ServicesTests
 
             estateRepositoryMock.GetAllAsync(
                 Arg.Any<Expression<Func<Estate, object>>>(),
-                Arg.Any<bool>(),
                 Arg.Any<Expression<Func<Estate, bool>>>(),
+                Arg.Any<bool>(),
                 Arg.Any<int>(),
                 Arg.Any<int>(),
                 Arg.Any<CancellationToken>())

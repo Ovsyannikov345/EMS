@@ -8,8 +8,8 @@ namespace CatalogueService.DAL.Repositories.IRepositories
     {
         Task<PagedResult<Estate>> GetAllAsync<TKey>(
             Expression<Func<Estate, TKey>> sortParameter,
+            Expression<Func<Estate, bool>>? predicate,
             bool isDescending = false,
-            Expression<Func<Estate, bool>>? predicate = null,
             int pageNumber = 1,
             int pageSize = 10,
             CancellationToken cancellationToken = default);
