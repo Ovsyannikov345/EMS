@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { SortOption } from "../pages/CataloguePage";
+import QueryParamNames from "../utils/queryParamNames";
 
 export enum EstateType {
     None = 0,
@@ -82,7 +83,9 @@ const useCatalogueApi = () => {
                 .map(([key, value]) => `${key}=${value}`)
                 .join("&");
 
-            const response = await client.get(`Estate?pageNumber=${pageNumber}&sortOption=${sortOption}&${filterQuery}`);
+            const response = await client.get(
+                `Estate?${QueryParamNames.PAGE_NUMBER}=${pageNumber}&${QueryParamNames.SORT_OPTION}=${sortOption}&${filterQuery}`
+            );
 
             return response.data;
         } catch (error: any) {
