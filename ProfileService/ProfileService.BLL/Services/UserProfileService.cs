@@ -4,6 +4,7 @@ using ProfileService.BLL.Services.IServices;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Exceptions.Messages;
 using ProfileService.DAL.CacheRepositoryManagers.ICacheRepositoryManagers;
+using ProfileService.DAL.Grpc.Services.IServices;
 using ProfileService.DAL.Models;
 using ProfileService.DAL.Models.Enums;
 using ProfileService.DAL.Repositories.IRepositories;
@@ -13,6 +14,7 @@ namespace ProfileService.BLL.Services
     public class UserProfileService(
         IProfileRepository profileRepository,
         IProfileInfoVisibilityRepository visibilityRepository,
+        IEstateGrpcClient estateGrpcClient,
         IMapper mapper,
         ICacheRepositoryManager<UserProfile> userCacheRepositoryManager,
         ICacheRepositoryManager<ProfileInfoVisibility> visibilityCacheRepositoryManager) : IUserProfileService
@@ -56,6 +58,8 @@ namespace ProfileService.BLL.Services
                 profileModel.PhoneNumber = null;
             }
 
+            profileModel.EstateCount = await estateGrpcClient.GetEstateCount(id, cancellationToken);
+
             return profileModel;
         }
 
@@ -65,7 +69,12 @@ namespace ProfileService.BLL.Services
                 nameof(UserProfile.Auth0Id) + auth0Id, p => p.Auth0Id == auth0Id, cancellationToken: cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfile), nameof(UserProfile.Auth0Id), auth0Id));
 
-            return mapper.Map<UserProfileModel>(userProfile);
+            var profileModel = mapper.Map<UserProfileModel>(userProfile);
+
+
+            profileModel.EstateCount = await estateGrpcClient.GetEstateCount(profileModel.Id, cancellationToken);
+
+            return profileModel;
         }
 
         public async Task<UserProfileModel> UpdateProfileAsync(Guid userId, UserProfileModel userData, string currentUserAuth0Id, CancellationToken cancellationToken = default)
