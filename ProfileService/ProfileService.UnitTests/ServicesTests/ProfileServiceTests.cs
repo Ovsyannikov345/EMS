@@ -22,6 +22,8 @@ namespace ProfileService.UnitTests.ServicesTests
 
         private readonly CacheRepositoryManagerMock<ProfileInfoVisibility> _visibilityCacheRepositoryManagerMock = new();
 
+        private readonly EstateGrpcClientMock _estateGrpcClientMock = new();
+
         private readonly List<UserProfile> _profiles = DataGenerator.GenerateUserProfiles(5);
 
         private readonly Mapper _mapper = new(new MapperConfiguration(mc =>
@@ -52,6 +54,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -72,6 +75,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -92,6 +96,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -112,6 +117,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -145,6 +151,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -167,6 +174,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -187,6 +195,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -207,6 +216,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -229,6 +239,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -251,6 +262,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);
@@ -279,6 +291,7 @@ namespace ProfileService.UnitTests.ServicesTests
             var service = new UserProfileService(
                 _profileRepositoryMock.Object,
                 _infoVisibilityRepositoryMock.Object,
+                _estateGrpcClientMock.Object,
                 _mapper,
                 _profileCacheRepositoryManagerMock.Object,
                 _visibilityCacheRepositoryManagerMock.Object);

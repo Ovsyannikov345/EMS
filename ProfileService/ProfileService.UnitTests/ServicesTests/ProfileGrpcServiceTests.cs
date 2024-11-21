@@ -4,7 +4,6 @@ using Grpc.Core;
 using Grpc.Core.Testing;
 using ProfileService.BLL.Grpc.Services;
 using ProfileService.BLL.Models;
-using ProfileService.BLL.Services;
 using ProfileService.BLL.Utilities.Exceptions;
 using ProfileService.BLL.Utilities.Mapping;
 using ProfileService.DAL.Models;
