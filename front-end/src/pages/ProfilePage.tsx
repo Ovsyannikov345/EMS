@@ -77,8 +77,6 @@ const ProfilePage = () => {
         );
     }
 
-    // TODO real createdAt
-
     return profile ? (
         <Container maxWidth="md" sx={{ mt: 2 }}>
             <Grid container justifyContent={"space-between"}>
@@ -98,7 +96,7 @@ const ProfilePage = () => {
             </Box>
             <Grid container spacing={2}>
                 <ProfileCard title="Estate Count" value={profile.estateCount} />
-                <ProfileCard title="Member for" value="14 days" />
+                <ProfileCard title="Member for" value={moment(profile.createdAt).fromNow(true)} />
                 <ProfileCard title="Birth date" value={moment(profile.birthDate).format("ll")} />
                 <ProfileCard title="Phone number" value={profile.phoneNumber} />
             </Grid>
