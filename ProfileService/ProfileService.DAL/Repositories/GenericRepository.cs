@@ -48,6 +48,8 @@ namespace ProfileService.DAL.Repositories
             context.Update(entity);
             await context.SaveChangesAsync(cancellationToken);
 
+            await context.Entry(entity).ReloadAsync(cancellationToken);
+
             return entity;
         }
     }
