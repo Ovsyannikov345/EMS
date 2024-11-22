@@ -3,7 +3,7 @@ using ProfileService.DAL.Models.Interfaces;
 
 namespace ProfileService.DAL.Models
 {
-    public class ProfileInfoVisibility : ICacheable
+    public class ProfileInfoVisibility : EntityBase, ICacheable
     {
         public Guid Id { get; set; }
 
