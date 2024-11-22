@@ -1,6 +1,8 @@
-﻿namespace ProfileService.BLL.Models
+﻿using ProfileService.DAL.Models;
+
+namespace ProfileService.BLL.Models
 {
-    public class UserProfileModelWithPrivacy
+    public class UserProfileModelWithPrivacy : EntityBase
     {
         public Guid Id { get; set; }
 

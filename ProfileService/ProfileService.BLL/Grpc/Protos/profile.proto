@@ -18,6 +18,8 @@ message ProtoProfileModel {
     string last_name = 4;
     string phone_number = 5;
     google.protobuf.Timestamp birth_date = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 }
 
 message ProfileRequest {
