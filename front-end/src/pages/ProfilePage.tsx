@@ -4,6 +4,7 @@ import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
 import { Alert, Avatar, Box, Button, CircularProgress, Container, Grid2 as Grid, Typography } from "@mui/material";
 import moment from "moment";
 import UndoIcon from "@mui/icons-material/Undo";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ProfileCard from "../components/ProfileCard";
 import GoBackButton from "../components/buttons/GoBackButton";
 import EditButton from "../components/buttons/EditButton";
@@ -102,7 +103,7 @@ const ProfilePage = () => {
     return profile ? (
         <Container maxWidth="md" sx={{ mt: 2 }}>
             <Grid container justifyContent={"space-between"}>
-                <GoBackButton />
+                {!isEditing && <GoBackButton />}
                 {!id && !isEditing && <EditButton onClick={() => setIsEditing(true)} />}
             </Grid>
             {isEditing ? (
@@ -122,8 +123,11 @@ const ProfilePage = () => {
                     <Grid container spacing={2}>
                         <ProfileCard title="Estate Count" value={profile.estateCount} />
                         <ProfileCard title="Member for" value={moment(profile.createdAt).fromNow(true)} />
-                        <ProfileCard title="Birth date" value={moment(profile.birthDate).format("ll")} />
-                        <ProfileCard title="Phone number" value={profile.phoneNumber} />
+                        <ProfileCard
+                            title="Birth date"
+                            value={profile.birthDate ? moment(profile.birthDate).format("ll") : <VisibilityOffIcon fontSize="large" />}
+                        />
+                        <ProfileCard title="Phone number" value={profile.phoneNumber ?? <VisibilityOffIcon fontSize="large" />} />
                     </Grid>
                 </>
             )}
