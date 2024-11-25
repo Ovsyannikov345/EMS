@@ -11,7 +11,7 @@ const ProfileCard = ({ title, value, onClick }: ProfileCardProps) => {
         <Grid size={{ xs: 12, sm: 6 }}>
             <Card sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
                 {onClick ? (
-                    <CardActionArea onClick={onClick}>
+                    <CardActionArea onClick={onClick} sx={{ p: 0.5 }}>
                         <CardContent>
                             <Typography variant="h6" textAlign={"center"}>
                                 {title}
