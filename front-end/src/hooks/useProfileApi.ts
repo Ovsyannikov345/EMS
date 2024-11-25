@@ -67,8 +67,6 @@ const useProfileApi = () => {
         try {
             const response = await client.get(`Profile/${id}`);
 
-            console.log(response)
-
             return response.data;
         } catch (error: any) {
             if (error.response) {

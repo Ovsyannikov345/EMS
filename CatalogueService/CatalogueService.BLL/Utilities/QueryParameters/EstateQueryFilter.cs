@@ -10,5 +10,6 @@ namespace CatalogueService.BLL.Utilities.QueryParameters
         short? MinRoomsCount,
         short? MaxRoomsCount,
         decimal? MinPrice,
-        decimal? MaxPrice);
+        decimal? MaxPrice,
+        Guid? UserId);
 }
