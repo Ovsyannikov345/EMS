@@ -149,7 +149,7 @@ const useProfileApi = () => {
         const client = await createAxiosInstance();
 
         try {
-            const response = await client.get(`Profile/${updatedOptions.userId}/visibility`);
+            const response = await client.put(`Profile/${updatedOptions.userId}/visibility`, updatedOptions);
 
             return response.data;
         } catch (error: any) {
