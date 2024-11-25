@@ -4,6 +4,7 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     Box,
     Button,
+    Chip,
     Collapse,
     Container,
     FormControl,
@@ -18,6 +19,9 @@ import Grid from "@mui/material/Grid2";
 import EstateCard from "../components/EstateCard";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import EstateFilter from "../components/EstateFilter";
+import { useNavigate, useParams } from "react-router-dom";
+import useProfileApi from "../hooks/useProfileApi";
+import { CATALOGUE_ROUTE } from "../utils/consts";
 
 export enum SortOption {
     DateDescending = 0,
@@ -29,7 +33,13 @@ export enum SortOption {
 }
 
 const CataloguePage = () => {
+    const { userId } = useParams();
+
+    const navigate = useNavigate();
+
     const { getEstateList } = useCatalogueApi();
+
+    const { getProfile } = useProfileApi();
 
     const notifications = useNotifications();
 
@@ -45,9 +55,11 @@ const CataloguePage = () => {
         localStorage.getItem("catalogueFilter") ? JSON.parse(localStorage.getItem("catalogueFilter")!) : { types: EstateType.None }
     );
 
+    const [ownerName, setOwnerName] = useState<string | undefined>();
+
     useEffect(() => {
         const loadEstate = async () => {
-            const response = await getEstateList(currentPage, selectedSortOption, filter);
+            const response = await getEstateList(currentPage, selectedSortOption, { ...filter, userId: userId });
 
             if ("error" in response) {
                 notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
@@ -57,8 +69,25 @@ const CataloguePage = () => {
             setPagedEstateList(response);
         };
 
+        const loadOwnerProfile = async (id: string) => {
+            const response = await getProfile(id);
+
+            if ("error" in response) {
+                notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+                return;
+            }
+
+            setOwnerName(response.firstName + " " + response.lastName);
+        };
+
+        if (userId) {
+            loadOwnerProfile(userId);
+        } else {
+            setOwnerName(undefined);
+        }
+
         loadEstate();
-    }, [currentPage, selectedSortOption, filter]);
+    }, [currentPage, selectedSortOption, filter, userId]);
 
     const changePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
@@ -111,6 +140,7 @@ const CataloguePage = () => {
                     <Button variant="text" startIcon={<FilterAltIcon />} onClick={() => setDisplayFilter(!displayFilter)}>
                         {displayFilter ? "Hide Filters" : "Show Filters"}
                     </Button>
+                    {ownerName && <Chip label={`${ownerName}'s estate`} onDelete={() => navigate(CATALOGUE_ROUTE)} />}
                     <Collapse in={displayFilter}>
                         <EstateFilter filter={filter} onFilterChange={changeFilter} />
                     </Collapse>
