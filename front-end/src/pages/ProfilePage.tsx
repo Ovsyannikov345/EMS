@@ -7,6 +7,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import ProfileCard from "../components/ProfileCard";
 import GoBackButton from "../components/buttons/GoBackButton";
 import EditButton from "../components/buttons/EditButton";
+import { USER_ESTATE_ROUTE } from "../utils/consts";
 
 const ProfilePage = () => {
     const { id } = useParams();
@@ -95,7 +96,11 @@ const ProfilePage = () => {
                 </Typography>
             </Box>
             <Grid container spacing={2}>
-                <ProfileCard title="Estate Count" value={profile.estateCount} />
+                <ProfileCard
+                    title="Estate Count"
+                    value={profile.estateCount}
+                    onClick={() => navigate(USER_ESTATE_ROUTE.replace(":userId", profile.id))}
+                />
                 <ProfileCard title="Member for" value={moment(profile.createdAt).fromNow(true)} />
                 <ProfileCard title="Birth date" value={moment(profile.birthDate).format("ll")} />
                 <ProfileCard title="Phone number" value={profile.phoneNumber} />
