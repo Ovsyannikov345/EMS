@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_ROUTE } from "../../utils/consts";
+import { CATALOGUE_ROUTE, DEFAULT_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Logo from "../../images/logo.png";
 import CatalogueIcon from "@mui/icons-material/MapsHomeWork";
@@ -18,6 +18,11 @@ const Header = () => {
     const { isAuthenticated, logout } = useAuth0();
 
     const navigate = useNavigate();
+
+    const onMenuClick = (destinationRoute: string) => {
+        setMenuAnchorEl(null);
+        navigate(destinationRoute);
+    };
 
     return (
         <>
@@ -39,6 +44,7 @@ const Header = () => {
                                             color="secondary"
                                             style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
                                             startIcon={<CatalogueIcon />}
+                                            onClick={() => navigate(CATALOGUE_ROUTE)}
                                         >
                                             Catalogue
                                         </Button>
@@ -88,7 +94,7 @@ const Header = () => {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <MenuItem key={1}>
+                <MenuItem key={1} onClick={() => onMenuClick(OWN_PROFILE_ROUTE)}>
                     <ListItemIcon sx={{ mr: "5px" }}>
                         <ProfileIcon fontSize="small" />
                     </ListItemIcon>

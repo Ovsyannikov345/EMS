@@ -12,6 +12,8 @@ using ProfileService.DAL.CacheRepositoryManagers;
 using Minio;
 using ProfileService.DAL.BlobStorages.IBlobStorages;
 using ProfileService.DAL.BlobStorages;
+using ProfileService.DAL.Grpc.Services;
+using ProfileService.DAL.Grpc.Services.IServices;
 
 namespace ProfileService.DAL.DI
 {
@@ -28,6 +30,13 @@ namespace ProfileService.DAL.DI
                 ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
             services.AddScoped<ICacheProvider, RedisCacheProvider>();
             services.AddScoped(typeof(ICacheRepositoryManager<>), typeof(CacheRepositoryManager<>));
+
+            services.AddGrpcClient<EstateGrpcServiceProto.EstateGrpcServiceProtoClient>(options =>
+            {
+                options.Address = new Uri(configuration.GetConnectionString("CatalogueService")!);
+            });
+
+            services.AddScoped<IEstateGrpcClient, EstateGrpcClient>();
 
             services.AddMinio(configureClient => configureClient
                 .WithEndpoint(configuration["Minio:Endpoint"])

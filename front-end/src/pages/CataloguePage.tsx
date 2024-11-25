@@ -15,9 +15,9 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import EstateCard from "../components/headers/EstateCard";
+import EstateCard from "../components/EstateCard";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import EstateFilter from "../components/headers/EstateFilter";
+import EstateFilter from "../components/EstateFilter";
 
 export enum SortOption {
     DateDescending = 0,

@@ -10,7 +10,7 @@ import {
     SelectChangeEvent,
     TextField,
 } from "@mui/material";
-import { EstateQueryFilter, EstateType } from "../../hooks/useCatalogueApi";
+import { EstateQueryFilter, EstateType } from "../hooks/useCatalogueApi";
 import { useState } from "react";
 
 interface EstateFilterProps {

@@ -13,5 +13,7 @@
         public string? PhoneNumber { get; set; }
 
         public DateTime? BirthDate { get; set; }
+
+        public int EstateCount { get; set; }
     }
 }

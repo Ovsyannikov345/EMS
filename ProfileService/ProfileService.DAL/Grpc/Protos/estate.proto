@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "ChatService.DAL.Grpc.Services.Estate";
+option csharp_namespace = "ProfileService.DAL.Grpc.Services";
 
 import "google/protobuf/timestamp.proto";
 
