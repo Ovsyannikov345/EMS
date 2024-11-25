@@ -60,7 +60,7 @@ const ProfilePage = () => {
         };
 
         loadProfile();
-    }, [reloadProfile]);
+    }, [reloadProfile, id]);
 
     const handleProfileUpdate = async (updatedProfile: UserProfile) => {
         const response = await updateProfile(updatedProfile);
