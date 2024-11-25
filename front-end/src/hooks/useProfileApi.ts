@@ -17,6 +17,20 @@ export interface ProfileImage {
     blob: Blob;
 }
 
+export interface InfoVisibilityOptions {
+    id: string;
+    userId: string;
+    phoneNumberVisibility: InfoVisibility;
+    birthDateVisibility: InfoVisibility;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export enum InfoVisibility {
+    Public = 0,
+    Private = 1,
+}
+
 export interface ApiError {
     error: boolean;
     statusCode?: number;
@@ -67,8 +81,6 @@ const useProfileApi = () => {
         try {
             const response = await client.get(`Profile/${id}`);
 
-            console.log(response)
-
             return response.data;
         } catch (error: any) {
             if (error.response) {
@@ -99,7 +111,58 @@ const useProfileApi = () => {
         }
     };
 
-    return { getOwnProfile, getProfile, getProfileImage };
+    const updateProfile = async (updatedProfile: UserProfile): Promise<ApiResponse<UserProfile>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.put(`Profile/${updatedProfile.id}`, updatedProfile);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    const getProfileVisibility = async (userId: string): Promise<ApiResponse<InfoVisibilityOptions>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.get(`Profile/${userId}/visibility`);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    const updateProfileVisibility = async (updatedOptions: InfoVisibilityOptions): Promise<ApiResponse<InfoVisibilityOptions>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.put(`Profile/${updatedOptions.userId}/visibility`, updatedOptions);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getOwnProfile, getProfile, getProfileImage, updateProfile, getProfileVisibility, updateProfileVisibility };
 };
 
 export default useProfileApi;
