@@ -1,12 +1,16 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 import { EstateShortData, EstateType } from "../hooks/useCatalogueApi";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { ESTATE_DETAILS_ROUTE } from "../utils/consts";
 
 interface EstateCardProps {
     estateData: EstateShortData;
 }
 
 const EstateCard = ({ estateData }: EstateCardProps) => {
+    const navigate = useNavigate();
+
     return (
         <Card>
             <CardMedia
@@ -32,7 +36,7 @@ const EstateCard = ({ estateData }: EstateCardProps) => {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button variant="outlined" fullWidth>
+                <Button variant="outlined" fullWidth onClick={() => navigate(ESTATE_DETAILS_ROUTE.replace(":id", estateData.id))}>
                     Details
                 </Button>
             </CardActions>
