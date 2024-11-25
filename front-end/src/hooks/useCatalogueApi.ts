@@ -2,6 +2,7 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { SortOption } from "../pages/CataloguePage";
 import QueryParamNames from "../utils/queryParamNames";
+import { UserProfile } from "./useProfileApi";
 
 export enum EstateType {
     None = 0,
@@ -40,6 +41,20 @@ export interface PagedResult<T> {
     pageSize: number;
     totalPages: number;
     totalCount: number;
+}
+
+export interface EstateFullData {
+    id: string;
+    userId: string;
+    type: EstateType;
+    address: string;
+    area: number;
+    roomsCount: number;
+    price: number;
+    createdAt: Date;
+    updatedAt: Date;
+    user: UserProfile;
+    imageIds: string[];
 }
 
 export interface ApiError {
@@ -99,6 +114,23 @@ const useCatalogueApi = () => {
         }
     };
 
+    const getEstate = async (estateId: string): Promise<ApiResponse<EstateFullData>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.get(`Estate/${estateId}`);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
     const getEstateImageNames = async (estateId: string): Promise<ApiResponse<string[]>> => {
         const client = await createAxiosInstance();
 
@@ -116,7 +148,7 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList, getEstateImageNames };
+    return { getEstateList, getEstate, getEstateImageNames };
 };
 
 export default useCatalogueApi;
