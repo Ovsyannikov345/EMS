@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProfileService.DAL.Models
 {
-    public class UserProfile : ICacheable
+    public class UserProfile : EntityBase, ICacheable
     {
         public Guid Id { get; set; }
 

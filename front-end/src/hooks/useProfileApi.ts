@@ -9,6 +9,8 @@ export interface UserProfile {
     phoneNumber?: string;
     birthDate?: Date;
     estateCount: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface ProfileImage {

@@ -3,7 +3,7 @@ using ProfileService.DAL.Models;
 
 namespace ProfileService.BLL.Models
 {
-    public class ProfileInfoVisibilityModel
+    public class ProfileInfoVisibilityModel : EntityBase
     {
         public Guid Id { get; set; }
 

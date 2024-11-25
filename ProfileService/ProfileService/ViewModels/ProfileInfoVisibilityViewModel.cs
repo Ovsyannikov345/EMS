@@ -1,5 +1,4 @@
 ﻿using ProfileService.DAL.Models.Enums;
-using ProfileService.DAL.Models;
 
 namespace ProfileService.ViewModels
 {
@@ -12,5 +11,9 @@ namespace ProfileService.ViewModels
         public InfoVisibility PhoneNumberVisibility { get; set; }
 
         public InfoVisibility BirthDateVisibility { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }
