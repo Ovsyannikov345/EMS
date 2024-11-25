@@ -10,6 +10,7 @@ import {
     FormControl,
     MenuItem,
     Collapse,
+    SelectChangeEvent,
 } from "@mui/material";
 import useProfileApi, { InfoVisibility, InfoVisibilityOptions, UserProfile } from "../../hooks/useProfileApi";
 import moment from "moment";
@@ -39,7 +40,7 @@ interface UserProfileFormValues {
 }
 
 const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormProps) => {
-    const { getProfileVisibility } = useProfileApi();
+    const { getProfileVisibility, updateProfileVisibility } = useProfileApi();
 
     const notifications = useNotifications();
 
@@ -49,26 +50,41 @@ const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormPro
 
     const [isReadyToSave, setIsReadyToSave] = useState(false);
 
-    // TODO handle visibility update.
-
     useEffect(() => {
         const loadProfileVisibility = async () => {
             const response = await getProfileVisibility(initialData.id);
 
             if ("error" in response) {
-                notifications.show("Failed to load user profile", { severity: "error", autoHideDuration: 3000 });
+                notifications.show("Failed to load settings", { severity: "error", autoHideDuration: 3000 });
                 setIsReadyToSave(false);
 
                 return;
             }
 
             setProfileVisibility(response);
-            console.log(response);
             setIsReadyToSave(true);
         };
 
         loadProfileVisibility();
     }, []);
+
+    const handleVisibilityChange = (field: keyof InfoVisibilityOptions) => async (event: React.ChangeEvent<any> | SelectChangeEvent<any>) => {
+        const value = event.target.value;
+
+        setProfileVisibility({ ...profileVisibility!, [field]: parseInt(value) });
+    };
+
+    const updateVisibility = async () => {
+        const response = await updateProfileVisibility(profileVisibility!);
+
+        if ("error" in response) {
+            notifications.show("Failed to update settings", { severity: "error", autoHideDuration: 3000 });
+
+            return false;
+        }
+
+        return true;
+    };
 
     const formik = useFormik<UserProfileFormValues>({
         initialValues: {
@@ -83,7 +99,11 @@ const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormPro
             };
 
             try {
-                await onSubmit(formattedData);
+                let success = await updateVisibility();
+
+                if (success) {
+                    await onSubmit(formattedData);
+                }
             } finally {
                 setSubmitting(false);
             }
@@ -150,6 +170,7 @@ const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormPro
                     variant="text"
                     startIcon={showProfileVisibility ? <VisibilityOffIcon /> : <VisibilityIcon />}
                     onClick={() => setShowProfileVisibility(!showProfileVisibility)}
+                    disabled={!isReadyToSave}
                 >
                     {showProfileVisibility ? "Hide Visibility" : "Edit visibility"}
                 </Button>
@@ -162,8 +183,8 @@ const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormPro
                                     fullWidth
                                     labelId="phone-visibility-label"
                                     label="Phone number"
-                                    value={profileVisibility?.phoneNumberVisibility}
-                                    //onChange={changeSortOption}
+                                    value={profileVisibility ? profileVisibility.phoneNumberVisibility : ""}
+                                    onChange={handleVisibilityChange("phoneNumberVisibility")}
                                 >
                                     {Object.keys(InfoVisibility)
                                         .filter((key) => isNaN(Number(key)))
@@ -184,8 +205,8 @@ const EditProfileForm = ({ initialData, onSubmit, onCancel }: EditProfileFormPro
                                 <Select
                                     labelId="birth-date-label"
                                     label="Birth date"
-                                    value={profileVisibility?.birthDateVisibility}
-                                    //onChange={changeSortOption}
+                                    value={profileVisibility ? profileVisibility.birthDateVisibility : ""}
+                                    onChange={handleVisibilityChange("birthDateVisibility")}
                                 >
                                     {Object.keys(InfoVisibility)
                                         .filter((key) => isNaN(Number(key)))
