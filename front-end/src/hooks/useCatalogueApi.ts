@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { SortOption } from "../pages/CataloguePage";
 import QueryParamNames from "../utils/queryParamNames";
@@ -73,6 +73,10 @@ export interface EstateToUpdateData {
     area: number;
     roomsCount: number;
     price: number;
+}
+
+export interface EstateImage {
+    id: string;
 }
 
 export interface ApiError {
@@ -200,7 +204,47 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { createEstate, getEstateList, getEstate, getEstateImageNames, updateEstate };
+    const uploadEstateImage = async (estateId: string, file: File): Promise<ApiResponse<EstateImage>> => {
+        const client = await createAxiosInstance();
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        try {
+            const response = await client.post(`EstateImage/${estateId}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            return { id: response.data };
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    const deleteEstateImage = async (estateId: string, imageId: string): Promise<ApiResponse<AxiosResponse>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.delete(`EstateImage/${estateId}/${imageId}`);
+
+            return response;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage };
 };
 
 export default useCatalogueApi;
