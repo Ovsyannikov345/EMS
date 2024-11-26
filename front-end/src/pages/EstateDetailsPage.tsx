@@ -17,6 +17,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ActionsButton from "../components/buttons/ActionsButton";
+import ManageEstateImageModal from "../components/modals/ManageEstateImageModal";
 
 const EstateDetailsPage = () => {
     const { id } = useParams();
@@ -43,7 +44,7 @@ const EstateDetailsPage = () => {
 
     const { getProfileImage, getOwnProfile } = useProfileApi();
 
-    const { getEstate, updateEstate } = useCatalogueApi();
+    const { getEstate, updateEstate, uploadEstateImage, deleteEstateImage } = useCatalogueApi();
 
     useEffect(() => {
         const loadData = async () => {
@@ -101,6 +102,40 @@ const EstateDetailsPage = () => {
 
     const cancelChanges = () => {
         setEditing(false);
+    };
+
+    const createImage = async (file: File) => {
+        if (!estate) {
+            return;
+        }
+
+        const response = await uploadEstateImage(estate.id, file);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        setEstate({ ...estate, imageIds: [...estate.imageIds, response.id] });
+        notifications.show("Changes saved", { severity: "success", autoHideDuration: 3000 });
+    };
+
+    const deleteImage = async (imageId: string) => {
+        if (!estate) {
+            return;
+        }
+
+        const response = await deleteEstateImage(estate.id, imageId);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        setEstate({ ...estate, imageIds: estate.imageIds.filter((id) => id !== imageId) });
+        notifications.show("Changes saved", { severity: "success", autoHideDuration: 3000 });
     };
 
     if (error) {
@@ -260,7 +295,7 @@ const EstateDetailsPage = () => {
                     key={3}
                     sx={{ mr: "5px" }}
                     onClick={() => {
-                        //setChangingImages(true);
+                        // TODO implement deletion
                         setMenuAnchorEl(null);
                     }}
                 >
@@ -270,6 +305,13 @@ const EstateDetailsPage = () => {
                     Delete estate
                 </MenuItem>
             </Menu>
+            <ManageEstateImageModal
+                open={changingImages}
+                onClose={() => setChangingImages(false)}
+                onImageCreate={createImage}
+                onImageDelete={deleteImage}
+                estateData={estate}
+            />
         </>
     );
 };
