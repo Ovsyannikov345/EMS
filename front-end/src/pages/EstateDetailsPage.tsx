@@ -10,6 +10,8 @@ import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { PROFILE_ROUTE } from "../utils/consts";
+import PersonIcon from "@mui/icons-material/Person";
+import SendIcon from "@mui/icons-material/Send";
 
 const EstateDetailsPage = () => {
     const { id } = useParams();
@@ -161,15 +163,20 @@ const EstateDetailsPage = () => {
                         <Typography variant="h6">
                             {estate.user.firstName} {estate.user.lastName}
                         </Typography>
-                        <Button
-                            sx={{ pl: 0, ml: -1 }}
-                            fullWidth
-                            variant="text"
-                            onClick={() => navigate(PROFILE_ROUTE.replace(":id", estate.user.id))}
-                        >
-                            Profile
-                        </Button>
+                        <Grid container spacing={2} mt={1}>
+                            <Button
+                                variant="outlined"
+                                startIcon={<PersonIcon />}
+                                onClick={() => navigate(PROFILE_ROUTE.replace(":id", estate.user.id))}
+                            >
+                                Profile
+                            </Button>
+                            <Button variant="contained" startIcon={<SendIcon />}>
+                                Message
+                            </Button>
+                        </Grid>
                     </Box>
+                    <Box></Box>
                 </Box>
             </Box>
         </Container>
