@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
 interface EditButtonProps {
-    onClick: () => void;
+    onClick: (arg: any) => void;
 }
 
 const EditButton = ({ onClick }: EditButtonProps) => {

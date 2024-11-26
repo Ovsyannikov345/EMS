@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import useCatalogueApi, { EstateFullData, EstateToUpdateData, EstateType } from "../hooks/useCatalogueApi";
 import { useNavigate, useParams } from "react-router-dom";
-import { Alert, Avatar, Box, Button, Container, Grid2 as Grid, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Container, Grid2 as Grid, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import UndoIcon from "@mui/icons-material/Undo";
 import GoBackButton from "../components/buttons/GoBackButton";
-import EditButton from "../components/buttons/EditButton";
 import EstateDetailsSkeleton from "../components/skeletons/EstateDetailsSkeleton";
 import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
 import { Carousel } from "react-responsive-carousel";
@@ -14,6 +13,10 @@ import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import EditEstateForm from "../components/forms/EditEstateForm";
 import { useNotifications } from "@toolpad/core";
+import InfoIcon from "@mui/icons-material/Info";
+import ImageIcon from "@mui/icons-material/Image";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ActionsButton from "../components/buttons/ActionsButton";
 
 const EstateDetailsPage = () => {
     const { id } = useParams();
@@ -21,6 +24,8 @@ const EstateDetailsPage = () => {
     const navigate = useNavigate();
 
     const notifications = useNotifications();
+
+    const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
 
     const [estate, setEstate] = useState<EstateFullData>();
 
@@ -33,6 +38,8 @@ const EstateDetailsPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     const [editing, setEditing] = useState(false);
+
+    const [changingImages, setChangingImages] = useState(false);
 
     const { getProfileImage, getOwnProfile } = useProfileApi();
 
@@ -128,84 +135,142 @@ const EstateDetailsPage = () => {
     }
 
     return (
-        <Container maxWidth="md" sx={{ mt: 4, pb: 6 }}>
-            <Grid container justifyContent={"space-between"} mb={1}>
-                {!editing && <GoBackButton />}
-                {currentUser.id === estate.userId && !editing && <EditButton onClick={() => setEditing(true)} />}
-            </Grid>
-            <Box>
-                <Box sx={{ mb: 3 }}>
-                    <Typography variant="h4">Estate details</Typography>
-                </Box>
-                {estate.imageIds.length > 0 ? (
-                    <Box sx={{ mb: 4, maxWidth: "700px" }}>
-                        <Carousel useKeyboardArrows={true}>
-                            {estate.imageIds.map((imageId, index) => (
-                                <div className="slide" key={index}>
-                                    <img alt="estate" src={`${process.env.REACT_APP_CATALOGUE_API_URL}/EstateImage/${estate.id}/${imageId}`} />
-                                </div>
-                            ))}
-                        </Carousel>
+        <>
+            <Container maxWidth="md" sx={{ mt: 4, pb: 6 }}>
+                <Grid container justifyContent={"space-between"} mb={1}>
+                    <GoBackButton />
+                    {currentUser.id === estate.userId && (
+                        <ActionsButton
+                            onClick={(event) => {
+                                setMenuAnchorEl(event.currentTarget);
+                            }}
+                        />
+                    )}
+                </Grid>
+                <Box>
+                    <Box sx={{ mb: 3 }}>
+                        <Typography variant="h4">Estate details</Typography>
                     </Box>
-                ) : (
-                    <Box
-                        sx={{
-                            mb: 2,
-                            p: 2,
-                            border: "1px solid #ddd",
-                            borderRadius: 2,
-                            maxWidth: "200px",
-                        }}
-                    >
-                        <img alt="estate" src={`${process.env.PUBLIC_URL}/house-placeholder.png`} style={{ width: "100%" }} />
-                    </Box>
-                )}
-                <Box sx={{ mb: 3 }}>
-                    <Typography variant="h5" gutterBottom>
-                        {estate.address}
-                    </Typography>
-                    <Typography variant="h6">
-                        <strong>Type:</strong> {EstateType[estate.type]}
-                    </Typography>
-                    <Typography variant="h6">
-                        <strong>Area:</strong> {estate.area} m²
-                    </Typography>
-                    <Typography variant="h6">
-                        <strong>Rooms:</strong> {estate.roomsCount}
-                    </Typography>
-                    <Typography variant="h6">
-                        <strong>Price:</strong> ${estate.price.toLocaleString()}
-                    </Typography>
-                </Box>
-                <Typography variant="h5" mb={2}>
-                    Estate owner
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar sx={{ width: 80, height: 80 }} src={userImageSrc} alt={`${estate.user.firstName} ${estate.user.lastName}`} />
-                    <Box>
-                        <Typography variant="h6">
-                            {estate.user.firstName} {estate.user.lastName} {currentUser.id === estate.userId && "(You)"}
+                    {estate.imageIds.length > 0 ? (
+                        <Box sx={{ mb: 4, maxWidth: "700px" }}>
+                            <Carousel useKeyboardArrows={true}>
+                                {estate.imageIds.map((imageId, index) => (
+                                    <div className="slide" key={index}>
+                                        <img
+                                            alt="estate"
+                                            src={`${process.env.REACT_APP_CATALOGUE_API_URL}/EstateImage/${estate.id}/${imageId}`}
+                                        />
+                                    </div>
+                                ))}
+                            </Carousel>
+                        </Box>
+                    ) : (
+                        <Box
+                            sx={{
+                                mb: 2,
+                                p: 2,
+                                border: "1px solid #ddd",
+                                borderRadius: 2,
+                                maxWidth: "200px",
+                            }}
+                        >
+                            <img alt="estate" src={`${process.env.PUBLIC_URL}/house-placeholder.png`} style={{ width: "100%" }} />
+                        </Box>
+                    )}
+                    <Box sx={{ mb: 3 }}>
+                        <Typography variant="h5" gutterBottom>
+                            {estate.address}
                         </Typography>
-                        <Grid container spacing={2} mt={1}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<PersonIcon />}
-                                sx={{ width: "130px" }}
-                                onClick={() => navigate(PROFILE_ROUTE.replace(":id", estate.user.id))}
-                            >
-                                Profile
-                            </Button>
-                            {currentUser.id !== estate.userId && (
-                                <Button variant="contained" startIcon={<SendIcon />} sx={{ width: "130px" }}>
-                                    Message
-                                </Button>
-                            )}
-                        </Grid>
+                        <Typography variant="h6">
+                            <strong>Type:</strong> {EstateType[estate.type]}
+                        </Typography>
+                        <Typography variant="h6">
+                            <strong>Area:</strong> {estate.area} m²
+                        </Typography>
+                        <Typography variant="h6">
+                            <strong>Rooms:</strong> {estate.roomsCount}
+                        </Typography>
+                        <Typography variant="h6">
+                            <strong>Price:</strong> ${estate.price.toLocaleString()}
+                        </Typography>
                     </Box>
-                    <Box></Box>
+                    <Typography variant="h5" mb={2}>
+                        Estate owner
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Avatar sx={{ width: 80, height: 80 }} src={userImageSrc} alt={`${estate.user.firstName} ${estate.user.lastName}`} />
+                        <Box>
+                            <Typography variant="h6">
+                                {estate.user.firstName} {estate.user.lastName} {currentUser.id === estate.userId && "(You)"}
+                            </Typography>
+                            <Grid container spacing={2} mt={1}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<PersonIcon />}
+                                    sx={{ width: "130px" }}
+                                    onClick={() => navigate(PROFILE_ROUTE.replace(":id", estate.user.id))}
+                                >
+                                    Profile
+                                </Button>
+                                {currentUser.id !== estate.userId && (
+                                    <Button variant="contained" startIcon={<SendIcon />} sx={{ width: "130px" }}>
+                                        Message
+                                    </Button>
+                                )}
+                            </Grid>
+                        </Box>
+                        <Box></Box>
+                    </Box>
                 </Box>
-            </Box>
-        </Container>
+            </Container>
+            <Menu
+                id="menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+                <MenuItem
+                    key={1}
+                    onClick={() => {
+                        setEditing(true);
+                        setMenuAnchorEl(null);
+                    }}
+                >
+                    <ListItemIcon sx={{ mr: "5px" }}>
+                        <InfoIcon fontSize="small" />
+                    </ListItemIcon>
+                    Edit info
+                </MenuItem>
+                <MenuItem
+                    key={2}
+                    sx={{ mr: "5px" }}
+                    onClick={() => {
+                        setChangingImages(true);
+                        setMenuAnchorEl(null);
+                    }}
+                >
+                    <ListItemIcon>
+                        <ImageIcon fontSize="small" />
+                    </ListItemIcon>
+                    Manage Images
+                </MenuItem>
+                <MenuItem
+                    key={3}
+                    sx={{ mr: "5px" }}
+                    onClick={() => {
+                        //setChangingImages(true);
+                        setMenuAnchorEl(null);
+                    }}
+                >
+                    <ListItemIcon>
+                        <DeleteIcon fontSize="small" />
+                    </ListItemIcon>
+                    Delete estate
+                </MenuItem>
+            </Menu>
+        </>
     );
 };
 
