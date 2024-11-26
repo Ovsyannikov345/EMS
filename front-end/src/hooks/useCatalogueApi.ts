@@ -57,6 +57,16 @@ export interface EstateFullData {
     imageIds: string[];
 }
 
+export interface EstateToUpdateData {
+    id: string;
+    userId: string;
+    type: EstateType;
+    address: string;
+    area: number;
+    roomsCount: number;
+    price: number;
+}
+
 export interface ApiError {
     error: boolean;
     statusCode?: number;
@@ -148,7 +158,24 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList, getEstate, getEstateImageNames };
+    const updateEstate = async (updatedEstate: EstateToUpdateData): Promise<ApiResponse<EstateShortData>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.put(`Estate`, updatedEstate);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getEstateList, getEstate, getEstateImageNames, updateEstate };
 };
 
 export default useCatalogueApi;
