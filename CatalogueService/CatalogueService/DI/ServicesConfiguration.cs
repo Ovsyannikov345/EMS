@@ -38,6 +38,7 @@ namespace CatalogueService.DI
                 options.AddPolicy("CorsPolicy",
                         builder => builder.WithOrigins(corsOrigins)
                                           .AllowAnyHeader()
+                                          .AllowAnyMethod()
                                           .AllowCredentials());
             });
         }
