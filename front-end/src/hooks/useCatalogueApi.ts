@@ -10,6 +10,14 @@ export enum EstateType {
     House = 1 << 1,
 }
 
+export interface EstateToCreateData {
+    type: EstateType;
+    address: string;
+    area: number;
+    roomsCount: number;
+    price: number;
+}
+
 export interface EstateShortData {
     id: string;
     userId: string;
@@ -96,6 +104,23 @@ const useCatalogueApi = () => {
         return instance;
     };
 
+    const createEstate = async (estateData: EstateToCreateData): Promise<ApiResponse<EstateShortData>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.post(`Estate`, estateData);
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
     const getEstateList = async (
         pageNumber: number,
         sortOption: SortOption,
@@ -175,7 +200,7 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList, getEstate, getEstateImageNames, updateEstate };
+    return { createEstate, getEstateList, getEstate, getEstateImageNames, updateEstate };
 };
 
 export default useCatalogueApi;
