@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export interface UserProfile {
@@ -162,7 +162,30 @@ const useProfileApi = () => {
         }
     };
 
-    return { getOwnProfile, getProfile, getProfileImage, updateProfile, getProfileVisibility, updateProfileVisibility };
+    const updateProfileImage = async (file: File): Promise<ApiResponse<AxiosResponse>> => {
+        const client = await createAxiosInstance();
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        try {
+            const response = await client.post("ProfileImage", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            return response;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getOwnProfile, getProfile, getProfileImage, updateProfile, getProfileVisibility, updateProfileVisibility, updateProfileImage };
 };
 
 export default useProfileApi;
