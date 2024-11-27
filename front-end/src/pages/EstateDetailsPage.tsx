@@ -6,8 +6,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import GoBackButton from "../components/buttons/GoBackButton";
 import EstateDetailsSkeleton from "../components/skeletons/EstateDetailsSkeleton";
 import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Carousel from "react-material-ui-carousel";
 import { PROFILE_ROUTE } from "../utils/consts";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
@@ -187,18 +186,35 @@ const EstateDetailsPage = () => {
                         <Typography variant="h4">Estate details</Typography>
                     </Box>
                     {estate.imageIds.length > 0 ? (
-                        <Box sx={{ mb: 4, maxWidth: "700px" }}>
-                            <Carousel useKeyboardArrows={true}>
+                        <Container maxWidth="sm" sx={{ pb: 4 }}>
+                            <Carousel sx={{ width: "100%" }} animation="slide">
                                 {estate.imageIds.map((imageId, index) => (
-                                    <div className="slide" key={index}>
+                                    <div
+                                        key={index}
+                                        style={{
+                                            position: "relative",
+                                            width: "100%",
+                                            paddingTop: "56.25%",
+                                            overflow: "hidden",
+                                            borderRadius: "8px",
+                                        }}
+                                    >
                                         <img
                                             alt="estate"
+                                            style={{
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                            }}
                                             src={`${process.env.REACT_APP_CATALOGUE_API_URL}/EstateImage/${estate.id}/${imageId}`}
                                         />
                                     </div>
                                 ))}
                             </Carousel>
-                        </Box>
+                        </Container>
                     ) : (
                         <Box
                             sx={{
