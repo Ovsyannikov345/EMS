@@ -31,6 +31,7 @@ export interface EstateQueryFilter {
     maxRoomsCount?: number;
     minPrice?: number;
     maxPrice?: number;
+    userId?: string;
 }
 
 export interface PagedResult<T> {

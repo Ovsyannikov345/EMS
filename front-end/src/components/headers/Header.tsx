@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import ProfileIcon from "@mui/icons-material/Person";
 import MyEstateIcon from "@mui/icons-material/HolidayVillage";
 import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import useProfileApi from "../../hooks/useProfileApi";
 
 const Header = () => {
     const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
@@ -18,6 +19,30 @@ const Header = () => {
     const { isAuthenticated, logout } = useAuth0();
 
     const navigate = useNavigate();
+
+    const { getOwnProfile, getProfileImage } = useProfileApi();
+
+    const [imageSrc, setImageSrc] = useState<string>();
+
+    useEffect(() => {
+        const loadProfileImage = async () => {
+            const response = await getOwnProfile();
+
+            if ("error" in response) {
+                return;
+            }
+
+            const imageResponse = await getProfileImage(response.id);
+
+            if ("error" in imageResponse) {
+                return;
+            }
+
+            setImageSrc(URL.createObjectURL(imageResponse.blob));
+        };
+
+        loadProfileImage();
+    }, []);
 
     const onMenuClick = (destinationRoute: string) => {
         setMenuAnchorEl(null);
@@ -76,7 +101,7 @@ const Header = () => {
                                                     setMenuAnchorEl(event.currentTarget);
                                                 }}
                                             >
-                                                <Avatar sx={{ width: 45, height: 45 }} />
+                                                <Avatar sx={{ width: 45, height: 45 }} src={imageSrc} />
                                             </IconButton>
                                         </Tooltip>
                                     </>

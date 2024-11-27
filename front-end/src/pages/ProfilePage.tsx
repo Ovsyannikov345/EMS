@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
-import { Alert, Avatar, Box, Button, CircularProgress, Container, Grid2 as Grid, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, CircularProgress, Container, Grid2 as Grid, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import moment from "moment";
 import UndoIcon from "@mui/icons-material/Undo";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ProfileCard from "../components/ProfileCard";
 import GoBackButton from "../components/buttons/GoBackButton";
 import EditButton from "../components/buttons/EditButton";
+import { USER_ESTATE_ROUTE } from "../utils/consts";
 import EditProfileForm from "../components/forms/EditProfileForm";
 import { useNotifications } from "@toolpad/core";
+import InfoIcon from "@mui/icons-material/Info";
+import ImageIcon from "@mui/icons-material/Image";
+import UpdateProfileImageModal from "../components/modals/UpdateProfileImageModal";
 
 const ProfilePage = () => {
     const { id } = useParams();
@@ -18,7 +22,9 @@ const ProfilePage = () => {
 
     const navigate = useNavigate();
 
-    const { getOwnProfile, getProfile, getProfileImage, updateProfile } = useProfileApi();
+    const { getOwnProfile, getProfile, getProfileImage, updateProfile, updateProfileImage } = useProfileApi();
+
+    const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
 
     const [profile, setProfile] = useState<UserProfile | null>();
 
@@ -29,6 +35,8 @@ const ProfilePage = () => {
     const [error, setError] = useState<string | null>(null);
 
     const [isEditing, setIsEditing] = useState(false);
+
+    const [isChangingImage, setIsChangingImage] = useState(false);
 
     const [reloadProfile, setReloadProfile] = useState(false);
 
@@ -59,7 +67,7 @@ const ProfilePage = () => {
         };
 
         loadProfile();
-    }, [reloadProfile]);
+    }, [reloadProfile, id]);
 
     const handleProfileUpdate = async (updatedProfile: UserProfile) => {
         const response = await updateProfile(updatedProfile);
@@ -73,6 +81,29 @@ const ProfilePage = () => {
         setIsEditing(false);
         notifications.show("Profile updated", { severity: "success", autoHideDuration: 3000 });
         setReloadProfile(!reloadProfile);
+    };
+
+    const handleImageSave = async (file: File): Promise<boolean> => {
+        const response = await updateProfileImage(file);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return false;
+        }
+
+        notifications.show("Image saved", { severity: "success", autoHideDuration: 3000 });
+
+        const imageResponse = await getProfileImage(profile!.id);
+
+        if ("error" in imageResponse) {
+            setReloadProfile(!reloadProfile);
+            return true;
+        }
+
+        setImageSrc(URL.createObjectURL(imageResponse.blob));
+
+        return true;
     };
 
     if (isLoading) {
@@ -104,7 +135,13 @@ const ProfilePage = () => {
         <Container maxWidth="md" sx={{ mt: 2 }}>
             <Grid container justifyContent={"space-between"}>
                 {!isEditing && <GoBackButton />}
-                {!id && !isEditing && <EditButton onClick={() => setIsEditing(true)} />}
+                {!id && !isEditing && (
+                    <EditButton
+                        onClick={(event) => {
+                            setMenuAnchorEl(event.currentTarget);
+                        }}
+                    />
+                )}
             </Grid>
             {isEditing ? (
                 <EditProfileForm initialData={profile} onSubmit={handleProfileUpdate} onCancel={() => setIsEditing(false)} />
@@ -121,7 +158,11 @@ const ProfilePage = () => {
                         </Typography>
                     </Box>
                     <Grid container spacing={2}>
-                        <ProfileCard title="Estate Count" value={profile.estateCount} />
+                        <ProfileCard
+                            title="Estate Count"
+                            value={profile.estateCount}
+                            onClick={() => navigate(USER_ESTATE_ROUTE.replace(":userId", profile.id))}
+                        />
                         <ProfileCard title="Member for" value={moment(profile.createdAt).fromNow(true)} />
                         <ProfileCard
                             title="Birth date"
@@ -129,6 +170,41 @@ const ProfilePage = () => {
                         />
                         <ProfileCard title="Phone number" value={profile.phoneNumber ?? <VisibilityOffIcon fontSize="large" />} />
                     </Grid>
+                    <Menu
+                        id="menu"
+                        anchorEl={menuAnchorEl}
+                        open={Boolean(menuAnchorEl)}
+                        onClose={() => setMenuAnchorEl(null)}
+                        transformOrigin={{ horizontal: "right", vertical: "top" }}
+                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                    >
+                        <MenuItem
+                            key={1}
+                            onClick={() => {
+                                setIsEditing(true);
+                                setMenuAnchorEl(null);
+                            }}
+                        >
+                            <ListItemIcon sx={{ mr: "5px" }}>
+                                <InfoIcon fontSize="small" />
+                            </ListItemIcon>
+                            Edit info
+                        </MenuItem>
+                        <MenuItem
+                            key={2}
+                            sx={{ mr: "5px" }}
+                            onClick={() => {
+                                setIsChangingImage(true);
+                                setMenuAnchorEl(null);
+                            }}
+                        >
+                            <ListItemIcon>
+                                <ImageIcon fontSize="small" />
+                            </ListItemIcon>
+                            Change image
+                        </MenuItem>
+                    </Menu>
+                    <UpdateProfileImageModal open={isChangingImage} onClose={() => setIsChangingImage(false)} onSave={handleImageSave} />
                 </>
             )}
         </Container>

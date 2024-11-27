@@ -108,7 +108,8 @@ namespace CatalogueService.BLL.Services
                 (!filter.MaxArea.HasValue || e.Area <= filter.MaxArea) &&
                 (!filter.MinArea.HasValue || e.Area >= filter.MinArea) &&
                 (!filter.MaxRoomsCount.HasValue || e.RoomsCount <= filter.MaxRoomsCount) &&
-                (!filter.MinRoomsCount.HasValue || e.RoomsCount >= filter.MinRoomsCount);
+                (!filter.MinRoomsCount.HasValue || e.RoomsCount >= filter.MinRoomsCount) &&
+                (!filter.UserId.HasValue || e.UserId == filter.UserId);
 
             var result = await estateRepository.GetAllAsync(
                 sortParameter, predicate, isDescending, pagination.PageNumber, pagination.PageSize, cancellationToken);
