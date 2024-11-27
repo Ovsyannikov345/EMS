@@ -7,11 +7,11 @@ import GoBackButton from "../components/buttons/GoBackButton";
 import EstateDetailsSkeleton from "../components/skeletons/EstateDetailsSkeleton";
 import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
 import Carousel from "react-material-ui-carousel";
-import { PROFILE_ROUTE } from "../utils/consts";
+import { CATALOGUE_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import EditEstateForm from "../components/forms/EditEstateForm";
-import { useNotifications } from "@toolpad/core";
+import { useDialogs, useNotifications } from "@toolpad/core";
 import InfoIcon from "@mui/icons-material/Info";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,6 +24,8 @@ const EstateDetailsPage = () => {
     const navigate = useNavigate();
 
     const notifications = useNotifications();
+
+    const dialogs = useDialogs();
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
 
@@ -43,7 +45,7 @@ const EstateDetailsPage = () => {
 
     const { getProfileImage, getOwnProfile } = useProfileApi();
 
-    const { getEstate, updateEstate, uploadEstateImage, deleteEstateImage } = useCatalogueApi();
+    const { getEstate, updateEstate, uploadEstateImage, deleteEstateImage, deleteEstate } = useCatalogueApi();
 
     useEffect(() => {
         const loadData = async () => {
@@ -135,6 +137,28 @@ const EstateDetailsPage = () => {
 
         setEstate({ ...estate, imageIds: estate.imageIds.filter((id) => id !== imageId) });
         notifications.show("Changes saved", { severity: "success", autoHideDuration: 3000 });
+    };
+
+    const onDeleteEstate = async (estateId: string) => {
+        const confirmed = await dialogs.confirm(<Typography variant="body1">Delete estate?</Typography>, {
+            okText: "Yes",
+            cancelText: "No",
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        const response = await deleteEstate(estateId);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        notifications.show("Estate deleted", { severity: "success", autoHideDuration: 3000 });
+        navigate(CATALOGUE_ROUTE);
     };
 
     if (error) {
@@ -311,8 +335,8 @@ const EstateDetailsPage = () => {
                     key={3}
                     sx={{ mr: "5px" }}
                     onClick={() => {
-                        // TODO implement deletion
                         setMenuAnchorEl(null);
+                        onDeleteEstate(estate.id);
                     }}
                 >
                     <ListItemIcon>

@@ -219,7 +219,24 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage };
+    const deleteEstate = async (estateId: string): Promise<ApiResponse<AxiosResponse>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.delete(`Estate/${estateId}`);
+
+            return response;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage, deleteEstate };
 };
 
 export default useCatalogueApi;
