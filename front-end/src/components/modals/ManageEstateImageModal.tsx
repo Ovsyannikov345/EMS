@@ -1,8 +1,21 @@
 import React, { useState } from "react";
-import { Grid2 as Grid, Button, IconButton, Card, CardMedia, Box, CircularProgress, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+    Grid2 as Grid,
+    Button,
+    IconButton,
+    Card,
+    CardMedia,
+    Box,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { EstateShortData } from "../../hooks/useCatalogueApi";
+import { useDialogs } from "@toolpad/core";
 
 interface ManageEstateImageModalProps {
     open: boolean;
@@ -18,6 +31,8 @@ export interface EstateImage {
 }
 
 const ManageEstateImageModal = ({ open, onClose, onImageCreate, onImageDelete, estateData }: ManageEstateImageModalProps) => {
+    const dialogs = useDialogs();
+
     const [isUploading, setIsUploading] = useState(false);
 
     const handleAddImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +50,15 @@ const ManageEstateImageModal = ({ open, onClose, onImageCreate, onImageDelete, e
     };
 
     const handleDeleteImage = async (id: string) => {
+        const confirmed = await dialogs.confirm(<Typography variant="body1">Delete image?</Typography>, {
+            okText: "Yes",
+            cancelText: "No",
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
         setIsUploading(true);
 
         await onImageDelete(id);
