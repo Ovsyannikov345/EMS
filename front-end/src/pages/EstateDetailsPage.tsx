@@ -7,15 +7,16 @@ import GoBackButton from "../components/buttons/GoBackButton";
 import EstateDetailsSkeleton from "../components/skeletons/EstateDetailsSkeleton";
 import useProfileApi, { UserProfile } from "../hooks/useProfileApi";
 import Carousel from "react-material-ui-carousel";
-import { PROFILE_ROUTE } from "../utils/consts";
+import { CATALOGUE_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import EditEstateForm from "../components/forms/EditEstateForm";
-import { useNotifications } from "@toolpad/core";
+import { useDialogs, useNotifications } from "@toolpad/core";
 import InfoIcon from "@mui/icons-material/Info";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ActionsButton from "../components/buttons/ActionsButton";
+import ManageEstateImageModal from "../components/modals/ManageEstateImageModal";
 
 const EstateDetailsPage = () => {
     const { id } = useParams();
@@ -23,6 +24,8 @@ const EstateDetailsPage = () => {
     const navigate = useNavigate();
 
     const notifications = useNotifications();
+
+    const dialogs = useDialogs();
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
 
@@ -42,7 +45,7 @@ const EstateDetailsPage = () => {
 
     const { getProfileImage, getOwnProfile } = useProfileApi();
 
-    const { getEstate, updateEstate } = useCatalogueApi();
+    const { getEstate, updateEstate, uploadEstateImage, deleteEstateImage, deleteEstate } = useCatalogueApi();
 
     useEffect(() => {
         const loadData = async () => {
@@ -100,6 +103,62 @@ const EstateDetailsPage = () => {
 
     const cancelChanges = () => {
         setEditing(false);
+    };
+
+    const createImage = async (file: File) => {
+        if (!estate) {
+            return;
+        }
+
+        const response = await uploadEstateImage(estate.id, file);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        setEstate({ ...estate, imageIds: [...estate.imageIds, response.id] });
+        notifications.show("Changes saved", { severity: "success", autoHideDuration: 3000 });
+    };
+
+    const deleteImage = async (imageId: string) => {
+        if (!estate) {
+            return;
+        }
+
+        const response = await deleteEstateImage(estate.id, imageId);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        setEstate({ ...estate, imageIds: estate.imageIds.filter((id) => id !== imageId) });
+        notifications.show("Changes saved", { severity: "success", autoHideDuration: 3000 });
+    };
+
+    const onDeleteEstate = async (estateId: string) => {
+        const confirmed = await dialogs.confirm(<Typography variant="body1">Delete estate?</Typography>, {
+            okText: "Yes",
+            cancelText: "No",
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        const response = await deleteEstate(estateId);
+
+        if ("error" in response) {
+            notifications.show(response.message, { severity: "error", autoHideDuration: 3000 });
+
+            return;
+        }
+
+        notifications.show("Estate deleted", { severity: "success", autoHideDuration: 3000 });
+        navigate(CATALOGUE_ROUTE);
     };
 
     if (error) {
@@ -276,8 +335,8 @@ const EstateDetailsPage = () => {
                     key={3}
                     sx={{ mr: "5px" }}
                     onClick={() => {
-                        //setChangingImages(true);
                         setMenuAnchorEl(null);
+                        onDeleteEstate(estate.id);
                     }}
                 >
                     <ListItemIcon>
@@ -286,6 +345,13 @@ const EstateDetailsPage = () => {
                     Delete estate
                 </MenuItem>
             </Menu>
+            <ManageEstateImageModal
+                open={changingImages}
+                onClose={() => setChangingImages(false)}
+                onImageCreate={createImage}
+                onImageDelete={deleteImage}
+                estateData={estate}
+            />
         </>
     );
 };

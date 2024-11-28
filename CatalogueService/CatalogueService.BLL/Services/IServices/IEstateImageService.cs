@@ -11,6 +11,6 @@ namespace CatalogueService.BLL.Services.IServices
 
         Task<List<string>> GetImageNameListAsync(Guid estateId, CancellationToken cancellationToken = default);
 
-        Task UploadImageAsync(Guid estateId, string userAuth0Id, IFormFile file, CancellationToken cancellationToken = default);
+        Task<string> UploadImageAsync(Guid estateId, string userAuth0Id, IFormFile file, CancellationToken cancellationToken = default);
     }
 }

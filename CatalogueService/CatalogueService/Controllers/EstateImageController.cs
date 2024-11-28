@@ -11,11 +11,11 @@ namespace CatalogueService.Controllers
     public class EstateImageController(IEstateImageService estateImageService) : ControllerBase
     {
         [HttpPost("{estateId}")]
-        public async Task UploadImage(Guid estateId, IFormFile file, CancellationToken cancellationToken)
+        public async Task<string> UploadImage(Guid estateId, IFormFile file, CancellationToken cancellationToken)
         {
             var auth0Id = HttpContext.GetAuth0IdFromContext();
 
-            await estateImageService.UploadImageAsync(estateId, auth0Id, file, cancellationToken);
+            return await estateImageService.UploadImageAsync(estateId, auth0Id, file, cancellationToken);
         }
 
         [HttpGet("{estateId}")]

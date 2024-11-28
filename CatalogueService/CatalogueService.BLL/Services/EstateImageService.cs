@@ -31,7 +31,7 @@ namespace CatalogueService.BLL.Services
             return stream;
         }
 
-        public async Task UploadImageAsync(Guid estateId, string userAuth0Id, IFormFile file, CancellationToken cancellationToken = default)
+        public async Task<string> UploadImageAsync(Guid estateId, string userAuth0Id, IFormFile file, CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
             {
@@ -68,13 +68,17 @@ namespace CatalogueService.BLL.Services
                 throw new BadRequestException(FileExceptionMessages.CountLimitExceeded(_maxImagesPerEstate));
             }
 
-            var newImageName = $"{estateId}/{Guid.NewGuid()}";
+            var imageId = Guid.NewGuid();
+
+            var fullImageName = $"{estateId}/{imageId}";
 
             using var fileStream = file.OpenReadStream();
 
             using var jpegStream = await ConvertToJpegStream(fileStream, cancellationToken);
 
-            await minioStorage.SaveFileAsync(jpegStream, newImageName, "image/jpeg", cancellationToken);
+            await minioStorage.SaveFileAsync(jpegStream, fullImageName, "image/jpeg", cancellationToken);
+
+            return imageId.ToString();
         }
 
         public async Task<List<string>> GetImageNameListAsync(Guid estateId, CancellationToken cancellationToken = default)
