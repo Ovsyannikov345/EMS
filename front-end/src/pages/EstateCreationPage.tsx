@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useFormik } from "formik";
 import useCatalogueApi, { EstateToCreateData, EstateType } from "../hooks/useCatalogueApi";
 import estateValidationSchema from "../utils/validation/estateValidationSchema";
@@ -8,6 +9,7 @@ import {
     Container,
     FormControl,
     Grid2 as Grid,
+    IconButton,
     InputLabel,
     MenuItem,
     Select,
@@ -16,16 +18,55 @@ import {
     Typography,
 } from "@mui/material";
 import { useNotifications } from "@toolpad/core";
-import { create } from "domain";
 import { useNavigate } from "react-router-dom";
 import { ESTATE_DETAILS_ROUTE } from "../utils/consts";
+import CloseIcon from "@mui/icons-material/Close";
 
 const EstateCreationPage = () => {
     const navigate = useNavigate();
 
     const notifications = useNotifications();
 
-    const { createEstate } = useCatalogueApi();
+    const { createEstate, uploadEstateImage } = useCatalogueApi();
+
+    const [images, setImages] = useState<Image[]>([]);
+
+    const [dragActive, setDragActive] = useState(false);
+
+    const addImage = (file: File) => {
+        console.log([...images, { file: file, url: URL.createObjectURL(file) }]);
+
+        setImages([...images, { file: file, url: URL.createObjectURL(file) }]);
+    };
+
+    const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            addImage(event.target.files[0]);
+        }
+    };
+
+    const handleDeleteImage = (url: string) => {
+        console.log(images.filter((img) => img.url !== url));
+
+        setImages(images.filter((img) => img.url !== url));
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setDragActive(true);
+    };
+
+    const handleDragLeave = () => {
+        setDragActive(false);
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setDragActive(false);
+        if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            addImage(event.dataTransfer.files[0]);
+        }
+    };
 
     const formik = useFormik<EstateToCreateData>({
         initialValues: {
@@ -46,6 +87,18 @@ const EstateCreationPage = () => {
                 return;
             }
 
+            let imageResponse;
+
+            for (let i = 0; i < images.length; i++) {
+                imageResponse = await uploadEstateImage(response.id, images[i].file);
+
+                if ("error" in imageResponse) {
+                    notifications.show(imageResponse.message, { severity: "error", autoHideDuration: 3000 });
+
+                    break;
+                }
+            }
+
             navigate(ESTATE_DETAILS_ROUTE.replace(":id", response.id));
             setSubmitting(false);
         },
@@ -53,9 +106,82 @@ const EstateCreationPage = () => {
 
     return (
         <Container maxWidth="sm" sx={{ mt: 3, pb: 5 }}>
-            <Typography variant="h5" mb={4}>
+            <Typography variant="h4" mb={2}>
                 Create estate
             </Typography>
+            <Grid container spacing={1} mb={3}>
+                {images.map((image) => (
+                    <Grid size={{ xs: 12, sm: 6 }} key={image.url}>
+                        <div
+                            style={{
+                                position: "relative",
+                                width: "100%",
+                                paddingTop: "56.25%",
+                                overflow: "hidden",
+                                borderRadius: "8px",
+                            }}
+                        >
+                            <img
+                                alt="estate"
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                }}
+                                src={image.url}
+                            />
+                            <IconButton
+                                size="small"
+                                color="secondary"
+                                onClick={() => handleDeleteImage(image.url)}
+                                sx={{
+                                    position: "absolute",
+                                    top: 5,
+                                    right: 5,
+                                    backgroundColor: "primary.main",
+                                    "&:hover": {
+                                        backgroundColor: "primary.dark",
+                                    },
+                                }}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </div>
+                    </Grid>
+                ))}
+                <Grid
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{
+                        border: `2px dashed ${dragActive ? "blue" : "grey"}`,
+                        padding: 4,
+                        textAlign: "center",
+                        borderRadius: 1,
+                        cursor: "pointer",
+                    }}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => document.getElementById("file-input")?.click()}
+                >
+                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                        Drag and drop an image here or click to select
+                    </Typography>
+                    <input
+                        id="file-input"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                            handleAddImage(e);
+                            e.target.value = "";
+                        }}
+                    />
+                </Grid>
+            </Grid>
+
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid size={12}>
@@ -101,7 +227,7 @@ const EstateCreationPage = () => {
                             helperText={formik.touched.address && formik.errors.address}
                         />
                     </Grid>
-                    <Grid size={12}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                         <TextField
                             fullWidth
                             id="area"
@@ -115,7 +241,7 @@ const EstateCreationPage = () => {
                             helperText={formik.touched.area && formik.errors.area}
                         />
                     </Grid>
-                    <Grid size={12}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                         <TextField
                             fullWidth
                             id="roomsCount"
@@ -129,7 +255,7 @@ const EstateCreationPage = () => {
                             helperText={formik.touched.roomsCount && formik.errors.roomsCount}
                         />
                     </Grid>
-                    <Grid size={12}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                         <TextField
                             fullWidth
                             id="price"
