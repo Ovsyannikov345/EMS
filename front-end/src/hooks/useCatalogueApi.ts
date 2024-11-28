@@ -139,7 +139,7 @@ const useCatalogueApi = () => {
                 .join("&");
 
             const response = await client.get(
-                `Estate?${QueryParamNames.PAGE_NUMBER}=${pageNumber}&${QueryParamNames.SORT_OPTION}=${sortOption}&${filterQuery}`
+                `Estate?${QueryParamNames.PAGE_NUMBER}=${pageNumber}&${QueryParamNames.PAGE_SIZE}=9&${QueryParamNames.SORT_OPTION}=${sortOption}&${filterQuery}`
             );
 
             return response.data;
@@ -244,7 +244,24 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { createEstate, getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage };
+    const deleteEstate = async (estateId: string): Promise<ApiResponse<AxiosResponse>> => {
+        const client = await createAxiosInstance();
+
+        try {
+            const response = await client.delete(`Estate/${estateId}`);
+
+            return response;
+        } catch (error: any) {
+            if (error.response) {
+                const { status, data } = error.response;
+                return { error: true, statusCode: status, message: data.message ?? "Unknown error" };
+            } else {
+                return { error: true, message: "An unexpected error occurred." };
+            }
+        }
+    };
+
+    return { createEstate, getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage, deleteEstate };
 };
 
 export default useCatalogueApi;

@@ -6,18 +6,18 @@ import Header from "./components/headers/Header";
 import AppRouter from "./router/AppRouter";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { NotificationsProvider } from "@toolpad/core";
+import ToolpadProvider from "./utils/materialUI/ToolpadProvider";
 
 const theme = createTheme({
     palette: {
-      primary: {
-        main: '#D42C2C',
-      },
-      secondary: {
-        main: '#F5E6E8',
-      },
+        primary: {
+            main: "#D42C2C",
+        },
+        secondary: {
+            main: "#F5E6E8",
+        },
     },
-  });
+});
 
 function App() {
     return (
@@ -28,7 +28,7 @@ function App() {
         >
             <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
                 <ThemeProvider theme={theme}>
-                    <NotificationsProvider>
+                    <ToolpadProvider>
                         <BrowserRouter
                             future={{
                                 v7_relativeSplatPath: true,
@@ -38,7 +38,7 @@ function App() {
                             <Header />
                             <AppRouter />
                         </BrowserRouter>
-                    </NotificationsProvider>
+                    </ToolpadProvider>
                 </ThemeProvider>
             </LocalizationProvider>
         </Auth0Provider>
