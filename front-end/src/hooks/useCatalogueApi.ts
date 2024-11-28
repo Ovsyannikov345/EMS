@@ -114,7 +114,7 @@ const useCatalogueApi = () => {
                 .join("&");
 
             const response = await client.get(
-                `Estate?${QueryParamNames.PAGE_NUMBER}=${pageNumber}&${QueryParamNames.SORT_OPTION}=${sortOption}&${filterQuery}`
+                `Estate?${QueryParamNames.PAGE_NUMBER}=${pageNumber}&${QueryParamNames.PAGE_SIZE}=9&${QueryParamNames.SORT_OPTION}=${sortOption}&${filterQuery}`
             );
 
             return response.data;
