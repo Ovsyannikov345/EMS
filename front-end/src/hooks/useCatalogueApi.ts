@@ -244,7 +244,7 @@ const useCatalogueApi = () => {
         }
     };
 
-    return { getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage };
+    return { createEstate, getEstateList, getEstate, getEstateImageNames, updateEstate, uploadEstateImage, deleteEstateImage };
 };
 
 export default useCatalogueApi;
