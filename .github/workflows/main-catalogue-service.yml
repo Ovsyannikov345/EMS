@@ -40,8 +40,8 @@ jobs:
     - name: Sonar Scan CatalogueService
       uses: highbyte/sonarscan-dotnet@v2.3.0
       with:
-        sonarProjectKey: ${{ vars.SONARPROJECTKEY }}
-        sonarProjectName: ${{ vars.SONARPROJECTNAME }}
+        sonarProjectKey: ${{ vars.SONARPROJECTKEYBACKEND }}
+        sonarProjectName: ${{ vars.SONARPROJECTNAMEBACKEND }}
         sonarOrganization: ${{ vars.SONARORGANIZATION }}
         dotnetBuildArguments: ./CatalogueService --configuration Release
         dotnetTestArguments: ./CatalogueService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
