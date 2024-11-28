@@ -21,6 +21,12 @@ import { useNotifications } from "@toolpad/core";
 import { useNavigate } from "react-router-dom";
 import { ESTATE_DETAILS_ROUTE } from "../utils/consts";
 import CloseIcon from "@mui/icons-material/Close";
+import EstateCreationMap from "../components/map/EstateCreationMap";
+
+interface Image {
+    file: File;
+    url: string;
+}
 
 const EstateCreationPage = () => {
     const navigate = useNavigate();
@@ -66,6 +72,10 @@ const EstateCreationPage = () => {
         if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
             addImage(event.dataTransfer.files[0]);
         }
+    };
+
+    const handleChangeLocation = (address: string) => {
+        formik.setFieldValue("address", address);
     };
 
     const formik = useFormik<EstateToCreateData>({
@@ -213,16 +223,19 @@ const EstateCreationPage = () => {
                             )}
                         </FormControl>
                     </Grid>
+                    <EstateCreationMap onLocationChange={handleChangeLocation} />
                     <Grid size={12}>
                         <TextField
                             fullWidth
                             id="address"
                             name="address"
-                            label="Address"
-                            autoComplete="address"
+                            placeholder="Address"
+                            slotProps={{
+                                input: {
+                                    readOnly: true,
+                                },
+                            }}
                             value={formik.values.address}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
                             error={formik.touched.address && Boolean(formik.errors.address)}
                             helperText={formik.touched.address && formik.errors.address}
                         />
