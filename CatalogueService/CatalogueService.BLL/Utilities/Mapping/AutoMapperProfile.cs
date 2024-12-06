@@ -18,6 +18,8 @@ namespace CatalogueService.BLL.Utilities.Mapping
 
             CreateMap<EstateWithProfileModel, ProtoEstateModel>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.CreatedAt, DateTimeKind.Utc))));
+            CreateMap<Estate, ProtoEstateModel>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.CreatedAt, DateTimeKind.Utc))));
             CreateMap<UserProfileModel, ProtoProfileModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc))));

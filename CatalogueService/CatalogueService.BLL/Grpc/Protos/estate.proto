@@ -8,6 +8,8 @@ package estate;
 
 service EstateGrpcServiceProto {
     rpc GetEstate (EstateRequest) returns (EstateResponse);
+    rpc GetEstateList (EstateListRequest) returns (EstateListResponse);
+    rpc GetUserEstate (UserEstateRequest) returns (EstateListResponse);
     rpc GetUserEstateCount (EstateCountRequest) returns (EstateCountResponse);
 }
 
@@ -36,6 +38,7 @@ message ProtoEstateModel {
     int32 rooms_count = 6;
     string price = 7;
     google.protobuf.Timestamp created_at = 8;
+    string user_id = 9;
 }
 
 message EstateRequest {
@@ -55,6 +58,21 @@ message EstateCountRequest {
 
 message EstateCountResponse {
     int32 count = 1;
+
+    int32 statusCode = 2;
+    string message = 3;
+}
+
+message UserEstateRequest {
+    string userId = 1;
+}
+
+message EstateListRequest {
+    repeated string estateIds = 1;
+}
+
+message EstateListResponse {
+    repeated ProtoEstateModel estateList = 1;
 
     int32 statusCode = 2;
     string message = 3;

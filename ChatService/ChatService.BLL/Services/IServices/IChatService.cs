@@ -6,7 +6,7 @@ namespace ChatService.BLL.Services.IServices
     {
         Task<ChatModel> GetChatAsync(Guid id, string userAuth0Id, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<ChatModel>> GetEstateChatListAsync(Guid estateId, string currentUserAuth0Id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<ChatModel>> GetEstateChatListAsync(string currentUserAuth0Id, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<ChatModel>> GetUserChatListAsync(string userAuth0Id, CancellationToken cancellationToken = default);
 

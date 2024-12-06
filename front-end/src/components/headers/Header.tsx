@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { CATALOGUE_ROUTE, DEFAULT_ROUTE, ESTATE_CREATION_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
+import { CATALOGUE_ROUTE, CHAT_LIST_ROUTE, DEFAULT_ROUTE, ESTATE_CREATION_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Logo from "../../images/logo.png";
 import CatalogueIcon from "@mui/icons-material/MapsHomeWork";
@@ -49,9 +49,19 @@ const Header = () => {
         navigate(destinationRoute);
     };
 
+    const getUserId = async (): Promise<string | undefined> => {
+        const response = await getOwnProfile();
+
+        if ("error" in response) {
+            return undefined;
+        }
+
+        return response.id;
+    };
+
     return (
         <>
-            <Box>
+            <Box id="header">
                 <AppBar position="static">
                     <Toolbar style={{ justifyContent: "space-between" }}>
                         <Grid container mt={"5px"} mb={"5px"}>
@@ -126,13 +136,13 @@ const Header = () => {
                     </ListItemIcon>
                     My profile
                 </MenuItem>
-                <MenuItem key={2} sx={{ mr: "5px" }}>
+                <MenuItem key={2} sx={{ mr: "5px" }} onClick={async () => onMenuClick(`${CATALOGUE_ROUTE}/user/${await getUserId()}`)}>
                     <ListItemIcon>
                         <MyEstateIcon fontSize="small" />
                     </ListItemIcon>
                     My estate
                 </MenuItem>
-                <MenuItem key={3} sx={{ mr: "5px" }}>
+                <MenuItem key={3} sx={{ mr: "5px" }} onClick={() => onMenuClick(CHAT_LIST_ROUTE)}>
                     <ListItemIcon>
                         <ChatIcon fontSize="small" />
                     </ListItemIcon>
