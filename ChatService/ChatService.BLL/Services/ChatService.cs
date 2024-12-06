@@ -39,30 +39,26 @@ namespace ChatService.BLL.Services
             return chatModel;
         }
 
-        public async Task<IEnumerable<ChatModel>> GetEstateChatListAsync(Guid estateId, string currentUserAuth0Id, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ChatModel>> GetEstateChatListAsync(string currentUserAuth0Id, CancellationToken cancellationToken = default)
         {
             var profileResponse = await profileGrpcClient.GetOwnProfile(currentUserAuth0Id, cancellationToken);
 
             var currentUser = mapper.Map<UserProfileModel>(profileResponse.Profile)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(UserProfileModel), nameof(UserProfileModel.Auth0Id), currentUserAuth0Id));
 
-            var estateResponse = await estateGrpcClient.GetEstateAsync(estateId, cancellationToken);
+            var estateResponse = await estateGrpcClient.GetUserEstateAsync(currentUser.Id, cancellationToken);
 
-            var estate = mapper.Map<EstateModel>(estateResponse.Estate)
-                ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(EstateModel), nameof(EstateModel.Id), estateId));
+            var estate = mapper.Map<IEnumerable<ProtoEstateModel>, IEnumerable<EstateModel>>(estateResponse.EstateList).ToDictionary(e => e.Id);
 
-            if (estate.User.Id != currentUser.Id)
-            {
-                throw new ForbiddenException(ExceptionMessages.AccessDenied(nameof(UserProfileModel), estate.User.Id));
-            }
+            var estateIds = estate.Keys.ToList();
 
-            var chats = await chatRepository.GetAllAsync(c => c.EstateId == estateId, cancellationToken);
+            var chats = await chatRepository.GetAllAsync(c => estateIds.Contains(c.EstateId), cancellationToken);
 
             var chatModels = mapper.Map<IEnumerable<Chat>, IEnumerable<ChatModel>>(chats);
 
             foreach (var chatModel in chatModels)
             {
-                chatModel.Estate = estate;
+                chatModel.Estate = estate[chatModel.EstateId];
 
                 profileResponse = await profileGrpcClient.GetProfile(chatModel.UserId, cancellationToken);
 
@@ -81,13 +77,19 @@ namespace ChatService.BLL.Services
 
             var chats = await chatRepository.GetAllAsync(c => c.UserId == currentUser.Id, cancellationToken);
 
-            var chatModels = mapper.Map<IEnumerable<Chat>, IEnumerable<ChatModel>>(chats);
+            var chatModels = mapper.Map<IEnumerable<Chat>, IEnumerable<ChatModel>>(chats).ToList();
 
-            foreach (var chatModel in chatModels)
+            var estateResponse = await estateGrpcClient.GetEstateListAsync(chats.Select(chat => chat.EstateId), cancellationToken);
+
+            var estate = estateResponse.EstateList.ToDictionary(e => e.Id);
+
+            for (var i = 0; i < chatModels.Count; i++)
             {
-                var estateResponse = await estateGrpcClient.GetEstateAsync(chatModel.EstateId, cancellationToken);
+                chatModels[i].Estate = mapper.Map<EstateModel>(estate[chatModels[i].EstateId.ToString()]);
 
-                chatModel.Estate = mapper.Map<EstateModel>(estateResponse.Estate);
+                profileResponse = await profileGrpcClient.GetProfile(Guid.Parse(estate[chatModels[i].EstateId.ToString()].UserId), cancellationToken);
+
+                chatModels[i].Estate.User = mapper.Map<UserProfileModel>(profileResponse.Profile);
             }
 
             return chatModels;

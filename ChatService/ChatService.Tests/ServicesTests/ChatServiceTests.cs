@@ -102,7 +102,6 @@ namespace ChatService.Tests.ServicesTests
         [AutoDomainData]
         public async Task GetEstateChatListAsync_UserNotExists_ThrowsNotFoundException(
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
-            EstateModel estateModel,
             ProfileResponse profileResponse,
             ChatService.BLL.Services.ChatService sut)
         {
@@ -111,7 +110,7 @@ namespace ChatService.Tests.ServicesTests
                 .Returns(new ProfileResponse());
 
             // Act
-            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+            var result = async () => await sut.GetEstateChatListAsync(profileResponse.Profile.Auth0Id, default);
 
             // Assert
             await result.Should().ThrowAsync<NotFoundException>();
@@ -122,7 +121,6 @@ namespace ChatService.Tests.ServicesTests
         public async Task GetEstateChatListAsync_EstateNotExists_ThrowsNotFoundException(
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             [Frozen] IEstateGrpcClient estateGrpcClientMock,
-            EstateModel estateModel,
             ProfileResponse profileResponse,
             ChatService.BLL.Services.ChatService sut)
         {
@@ -133,7 +131,7 @@ namespace ChatService.Tests.ServicesTests
                 .Returns(new EstateResponse());
 
             // Act
-            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+            var result = async () => await sut.GetEstateChatListAsync(profileResponse.Profile.Auth0Id, default);
 
             // Assert
             await result.Should().ThrowAsync<NotFoundException>();
@@ -144,7 +142,6 @@ namespace ChatService.Tests.ServicesTests
         public async Task GetEstateChatListAsync_OtherPersonsEstate_ThrowsForbiddenException(
             [Frozen] IProfileGrpcClient profileGrpcClientMock,
             [Frozen] IEstateGrpcClient estateGrpcClientMock,
-            EstateModel estateModel,
             EstateResponse estateResponse,
             ProfileResponse profileResponse,
             ChatService.BLL.Services.ChatService sut)
@@ -156,7 +153,7 @@ namespace ChatService.Tests.ServicesTests
                 .Returns(estateResponse);
 
             // Act
-            var result = async () => await sut.GetEstateChatListAsync(estateModel.Id, profileResponse.Profile.Auth0Id, default);
+            var result = async () => await sut.GetEstateChatListAsync(profileResponse.Profile.Auth0Id, default);
 
             // Assert
             await result.Should().ThrowAsync<ForbiddenException>();
@@ -192,7 +189,7 @@ namespace ChatService.Tests.ServicesTests
                 .Returns(_mapper.Map<IEnumerable<ChatModel>, IEnumerable<Chat>>(chatModels));
 
             // Act
-            var result = await sut.GetEstateChatListAsync(Guid.Parse(estateResponse.Estate.Id), profileResponse.Profile.Auth0Id, default);
+            var result = await sut.GetEstateChatListAsync(profileResponse.Profile.Auth0Id, default);
 
             // Assert
             result.Should().BeEquivalentTo(chatModels);
