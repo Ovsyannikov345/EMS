@@ -1,7 +1,15 @@
-import { CATALOGUE_ROUTE, ESTATE_DETAILS_ROUTE, OWN_PROFILE_ROUTE, PROFILE_ROUTE, USER_ESTATE_ROUTE } from "../utils/consts";
+import {
+    CATALOGUE_ROUTE,
+    ESTATE_CREATION_ROUTE,
+    ESTATE_DETAILS_ROUTE,
+    OWN_PROFILE_ROUTE,
+    PROFILE_ROUTE,
+    USER_ESTATE_ROUTE,
+} from "../utils/consts";
 import CataloguePage from "../pages/CataloguePage";
 import ProfilePage from "../pages/ProfilePage";
 import EstateDetailsPage from "../pages/EstateDetailsPage";
+import EstateCreationPage from "../pages/EstateCreationPage";
 
 const authorizedRoutes = [
     {
@@ -23,6 +31,10 @@ const authorizedRoutes = [
     {
         path: ESTATE_DETAILS_ROUTE,
         Component: EstateDetailsPage,
+    },
+    {
+        path: ESTATE_CREATION_ROUTE,
+        Component: EstateCreationPage,
     },
 ];
 
