@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { CATALOGUE_ROUTE, CHAT_LIST_ROUTE, DEFAULT_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
+import { CATALOGUE_ROUTE, CHAT_LIST_ROUTE, DEFAULT_ROUTE, ESTATE_CREATION_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Logo from "../../images/logo.png";
 import CatalogueIcon from "@mui/icons-material/MapsHomeWork";
@@ -88,6 +88,7 @@ const Header = () => {
                                             color="secondary"
                                             style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
                                             startIcon={<CreateIcon />}
+                                            onClick={() => navigate(ESTATE_CREATION_ROUTE)}
                                         >
                                             Create estate
                                         </Button>
