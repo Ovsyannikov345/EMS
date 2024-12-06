@@ -172,12 +172,6 @@ const ChatDetails = ({ chatId, onClose }: ChatDetailsProps) => {
         return groupsArray;
     }, [chat]);
 
-    // useEffect(() => {
-    //     if (scrollRef.current) {
-    //         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    //     }
-    // }, [groupedMessages]);
-
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
