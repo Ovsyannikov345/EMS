@@ -67,13 +67,15 @@ namespace ChatService.Hubs
 
             var chat = await chatService.GetChatAsync(chatId, auth0Id);
 
+            MessageViewModel createdMessage = new();
+
             if (auth0Id == chat.Estate.User.Auth0Id)
             {
                 _connectedUsers.TryGetValue(chat.User.Auth0Id, out List<string>? userConnections);
 
                 var profile = await GetUserProfile(auth0Id);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, userConnections);
+                createdMessage = await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, userConnections);
             }
             else if (auth0Id == chat.User.Auth0Id)
             {
@@ -81,14 +83,35 @@ namespace ChatService.Hubs
 
                 var profile = await GetUserProfile(auth0Id);
 
-                await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, estateOwnerConnections);
+                createdMessage = await CreateAndSendMessageAsync(new MessageModel() { Text = message, ChatId = chatId, UserId = profile.Id }, estateOwnerConnections);
             }
+
+            _connectedUsers.TryGetValue(auth0Id, out List<string>? senderConnections);
+
+            await ReturnCreatedMessageAsync(createdMessage, senderConnections);
         }
 
-        private async Task CreateAndSendMessageAsync(MessageModel messageModel, IEnumerable<string>? connectionIds = default, CancellationToken cancellationToken = default)
+        private async Task<MessageViewModel> CreateAndSendMessageAsync(MessageModel messageModel, IEnumerable<string>? connectionIds = default, CancellationToken cancellationToken = default)
         {
             var createdMessage = await messageService.CreateAsync(messageModel, cancellationToken);
 
+            var message = mapper.Map<MessageViewModel>(createdMessage);
+
+            if (connectionIds is null)
+            {
+                return message;
+            }
+
+            foreach (var connectionId in connectionIds)
+            {
+                await Clients.Client(connectionId).SendAsync("Receive", message, cancellationToken);
+            }
+
+            return message;
+        }
+
+        private async Task ReturnCreatedMessageAsync(MessageViewModel messageViewModel, IEnumerable<string>? connectionIds = default, CancellationToken cancellationToken = default)
+        {
             if (connectionIds is null)
             {
                 return;
@@ -96,7 +119,7 @@ namespace ChatService.Hubs
 
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("Receive", mapper.Map<MessageViewModel>(createdMessage), cancellationToken);
+                await Clients.Client(connectionId).SendAsync("MessageSent", messageViewModel, cancellationToken);
             }
         }
 
