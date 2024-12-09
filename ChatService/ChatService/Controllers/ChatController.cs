@@ -23,12 +23,12 @@ namespace ChatService.Controllers
             return mapper.Map<ChatViewModel>(chat);
         }
 
-        [HttpGet("estate/{estateId}")]
-        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(Guid estateId, CancellationToken cancellationToken)
+        [HttpGet("my-estate")]
+        public async Task<IEnumerable<ChatViewModel>> GetEstateChatList(CancellationToken cancellationToken)
         {
             var userId = GetAuth0IdFromContext();
 
-            var chatList = await chatService.GetEstateChatListAsync(estateId, userId, cancellationToken);
+            var chatList = await chatService.GetEstateChatListAsync(userId, cancellationToken);
 
             return mapper.Map<IEnumerable<ChatModel>, IEnumerable<ChatViewModel>>(chatList);
         }
