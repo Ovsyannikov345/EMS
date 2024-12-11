@@ -27,7 +27,7 @@ namespace NotificationService.BLL.Services
             var profile = await profileGrpcClient.GetOwnProfile(userAuth0Id, cancellationToken)
                 ?? throw new NotFoundException(ExceptionMessages.NotFound(nameof(ProfileResponse.Profile), nameof(ProfileResponse.Profile.Auth0Id), userAuth0Id));
 
-            var notificationList = await notificationRepository.GetAllAsync(n => n.UserId == Guid.Parse(profile.Profile.Id), cancellationToken);
+            var notificationList = await notificationRepository.GetAllAsync(n => n.UserId == Guid.Parse(profile.Profile.Id), n => n.CreatedAt, isDescending: true, cancellationToken);
 
             return mapper.Map<IEnumerable<Notification>, IEnumerable<NotificationModel>>(notificationList);
         }
