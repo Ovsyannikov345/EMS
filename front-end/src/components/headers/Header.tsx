@@ -1,6 +1,26 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, AppBar, Toolbar, Grid2 as Grid, Button, Tooltip, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    Grid2 as Grid,
+    Button,
+    Tooltip,
+    IconButton,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    Avatar,
+    Typography,
+    Divider,
+    List,
+    ListItem,
+    ListItemText,
+    FormControlLabel,
+    Switch,
+    Badge,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { CATALOGUE_ROUTE, CHAT_LIST_ROUTE, DEFAULT_ROUTE, ESTATE_CREATION_ROUTE, OWN_PROFILE_ROUTE } from "../../utils/consts";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -12,17 +32,61 @@ import MyEstateIcon from "@mui/icons-material/HolidayVillage";
 import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import useProfileApi from "../../hooks/useProfileApi";
+import useNotificationsApi, { Notification } from "../../hooks/useNotficationApi";
+import { useNotifications } from "@toolpad/core";
+import MarkChatUnreadIcon from "@mui/icons-material/CheckCircleOutline";
+import moment from "moment";
 
 const Header = () => {
     const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
+
+    const [notificationAnchorEl, setNotificationAnchorEl] = useState<Element | null>(null);
+
+    const [notificationsList, setNotificationsList] = useState<Notification[]>([]);
+
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    const [showUnreadOnly, setShowUnreadOnly] = useState(true);
 
     const { isAuthenticated, logout } = useAuth0();
 
     const navigate = useNavigate();
 
+    const notifications = useNotifications();
+
     const { getOwnProfile, getProfileImage } = useProfileApi();
 
+    const { getNotificationList, readNotification } = useNotificationsApi();
+
     const [imageSrc, setImageSrc] = useState<string>();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchNotifications();
+        }
+    }, [isAuthenticated]);
+
+    const fetchNotifications = async () => {
+        const response = await getNotificationList();
+
+        if (Array.isArray(response)) {
+            setNotificationsList(response);
+            setUnreadCount(response.filter((n) => !n.isRead).length);
+        } else {
+            notifications.show("Error while loading notifications", { severity: "error", autoHideDuration: 3000 });
+        }
+    };
+
+    const handleMarkAsRead = async (notificationId: string) => {
+        const response = await readNotification(notificationId);
+
+        if ("error" in response) {
+            notifications.show("Error while reading the notification", { severity: "error", autoHideDuration: 3000 });
+            return;
+        }
+
+        fetchNotifications();
+    };
 
     useEffect(() => {
         const loadProfileImage = async () => {
@@ -101,8 +165,14 @@ const Header = () => {
                                 {isAuthenticated && (
                                     <>
                                         <Tooltip title="Notifications">
-                                            <IconButton size="large" color="secondary">
-                                                <NotificationsIcon fontSize="large" />
+                                            <IconButton
+                                                size="large"
+                                                color="secondary"
+                                                onClick={(event) => setNotificationAnchorEl(event.currentTarget)}
+                                            >
+                                                <Badge badgeContent={unreadCount} color="secondary">
+                                                    <NotificationsIcon fontSize="large" />
+                                                </Badge>
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Actions">
@@ -154,6 +224,54 @@ const Header = () => {
                     </ListItemIcon>
                     Logout
                 </MenuItem>
+            </Menu>
+            <Menu
+                id="notification-menu"
+                anchorEl={notificationAnchorEl}
+                open={Boolean(notificationAnchorEl)}
+                onClose={() => setNotificationAnchorEl(null)}
+                PaperProps={{ style: { width: "300px" } }}
+            >
+                <Box p={1} display="flex" justifyContent="center" alignItems="center">
+                    <Typography variant="h6" textAlign={"center"}>
+                        Notifications
+                    </Typography>
+                </Box>
+                <Divider />
+                <Box px={2} py={1} display="flex" alignItems="center" justifyContent="space-between">
+                    <FormControlLabel
+                        control={<Switch checked={showUnreadOnly} onChange={() => setShowUnreadOnly(!showUnreadOnly)} />}
+                        label="Show unread only"
+                    />
+                </Box>
+                <List>
+                    {notificationsList
+                        .filter((n) => (showUnreadOnly ? !n.isRead : true))
+                        .map((notification) => (
+                            <ListItem
+                                key={notification.id}
+                                secondaryAction={
+                                    !notification.isRead && (
+                                        <Tooltip title="Mark as read">
+                                            <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>
+                                                <MarkChatUnreadIcon color="secondary" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )
+                                }
+                            >
+                                <ListItemText
+                                    primary={notification.title}
+                                    secondary={moment(notification.createdAt).format("MMM Do YYYY, hh:mm:ss")}
+                                />
+                            </ListItem>
+                        ))}
+                </List>
+                {notificationsList.length === 0 && (
+                    <Typography textAlign="center" p={2}>
+                        No notifications
+                    </Typography>
+                )}
             </Menu>
         </>
     );
