@@ -17,6 +17,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ActionsButton from "../components/buttons/ActionsButton";
 import ManageEstateImageModal from "../components/modals/ManageEstateImageModal";
+import useChatApi from "../hooks/useChatApi";
 
 const EstateDetailsPage = () => {
     const { id } = useParams();
@@ -46,6 +47,8 @@ const EstateDetailsPage = () => {
     const { getProfileImage, getOwnProfile } = useProfileApi();
 
     const { getEstate, updateEstate, uploadEstateImage, deleteEstateImage, deleteEstate } = useCatalogueApi();
+
+    const { getChatDetails, createChat } = useChatApi();
 
     useEffect(() => {
         const loadData = async () => {
@@ -159,6 +162,11 @@ const EstateDetailsPage = () => {
 
         notifications.show("Estate deleted", { severity: "success", autoHideDuration: 3000 });
         navigate(CATALOGUE_ROUTE);
+    };
+
+    const onStartChat = async () => {
+        // let response = await getChatDetails();
+        // TODO implement
     };
 
     if (error) {
